@@ -1,0 +1,69 @@
+# Used by app
+[security.password]
+# Critical: This value must be kept secret and should be changed in production
+# Losing or changing this value will invalidate all existing password hashes
+# IMPORTANT: Replace the placeholder below with your own secure random string
+# Recommended: Use a cryptographically secure random generator to create a
+# string of at least 32 characters including numbers, letters, and symbols
+PASSWORD_PEPPER = "REPLACE_THIS_WITH_YOUR_OWN_SECRET_PEPPER_VALUE"
+
+# Used by app
+[security.auth]
+# Recommended: Use a cryptographically secure random generator to create a
+# string of at least 32 characters including numbers, letters, and symbols
+JWT_SECRET = "REPLACE_THIS_WITH_YOUR_OWN_SECRET_VALUE"
+# JWT_ALGORITHM can be set to "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"
+JWT_ALGORITHM = "HS256"
+# SESSION_TTL_MIN must be at least 1 (number of minutes)
+SESSION_TTL_MIN = 5
+# SESSION_REFRESH_THRESHOLD must be a number (fraction, 0 < fraction < 1)
+SESSION_REFRESH_THRESHOLD = 0.2
+
+# Used by app
+[security.cookies]
+# Secure can be set to 0 or 1
+# Choose 1 for production (secure=True, samesite="Strict")
+SECURE = 0
+
+# Used by app
+[logging]
+# Level can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+LOG_LEVEL = "DEBUG"
+
+# Used by app
+[db.sqla_engine]
+SQLA_ECHO = false
+SQLA_ECHO_POOL = false
+SQLA_POOL_SIZE = 50
+SQLA_MAX_OVERFLOW = 10
+
+# Used by app
+# Used by docker compose
+[db.postgres]
+# Specify as in Docker network
+POSTGRES_USER = "postgres"
+POSTGRES_PASSWORD = "changethis"
+POSTGRES_DB = "web_app_db_pg"
+# Set host to localhost for local dev
+# Don't forget to regenerate dotenv
+# Don't forget to apply alembic rev
+# Set host to web_app_db_pg for prod
+#POSTGRES_HOST = "localhost"
+POSTGRES_HOST = "web_app_db_pg"
+POSTGRES_PORT = 5432
+
+# Used by docker compose
+[uvicorn]
+UVICORN_HOST = "0.0.0.0"
+UVICORN_PORT = 9999
+
+# Used by Makefile
+# No '/' after dir name !
+[structure]
+SRC_DIR = "src"
+PYPROJECT_TOML = "pyproject.toml"
+
+# Used by Makefile
+[docker-compose]
+COMPOSE_COMMAND = "docker compose"
+COMPOSE_FILE = "docker-compose.yaml"

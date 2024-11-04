@@ -1,0 +1,40 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" version="25.0.3">
+  <diagram name="Page-1" id="1ur79tEdD7kPHw3umYK0">
+    <mxGraphModel dx="-1116" dy="748" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="&lt;span style=&quot;color: rgb(51, 51, 51);&quot;&gt;FastAPI&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="2740" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Request Data&lt;div&gt;(Pydantic)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C4D0FF;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="2560" y="100" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="8" target="3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="8" target="2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="8" target="11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="8" target="10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="Infrastructure Logic Controllers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C4D0FF;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="2740" y="100" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="10" target="11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="Infrastructure&lt;br&gt;Handlers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ADD4AC;strokeColor=#82b366;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="2740" y="200" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="Request / Response&lt;br&gt;Data&amp;nbsp;&lt;span style=&quot;background-color: initial;&quot;&gt;(Dataclass)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ADD4AC;strokeColor=#82b366;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="2560" y="200" width="140" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
