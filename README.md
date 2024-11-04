@@ -256,7 +256,7 @@ while allowing flexible integration with infrastructure and external services.
 
 - `/` (POST): Allows an admin to create a new user, including admin users, if the username is unique.
 - `/` (GET): Allows an admin to retrieve a paginated list of existing users with relevant information.
-- `/inactivate`: Allows an admin to soft-delete an existing user, making them inactive. Fully functional, but should be
+- `/inactivate`: Allows an admin to soft-delete an existing user, making that user inactive. Fully functional, but should be
   reworked if the system requires superuser control (currently, admins can manage other admins).
 - `/reactivate`: Allows an admin to restore a previously soft-deleted user. Fully functional, but should be reworked if
   the system requires superuser control.
