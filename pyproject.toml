@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "clean-fastapi"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+authors = [
+    { name = "Ivan Borovets", email = "130386813+ivan-borovets@users.noreply.github.com" },
+]
+requires-python = ">=3.12.0"
+
+dependencies = [
+    "alembic==1.14.0",
+    "alembic-postgresql-enum==1.4.0",
+    "bcrypt==4.2.1",
+    "dishka==1.4.2",
+    "fastapi==0.115.6",
+    "orjson==3.10.12",
+    "psycopg[binary]==3.2.3",
+    "pydantic[email]==2.10.3",
+    "pyjwt[crypto]==2.10.1",
+    "rtoml==0.11.0",
+    "sqlalchemy[mypy]==2.0.36",
+    "uuid6==2024.7.10",
+    "uvicorn==0.32.1",
+    "uvloop==0.21.0"
+]
+
+[project.optional-dependencies]
+test = [
+    "coverage==7.6.9",
+    "pytest==8.3.4",
+    "pytest-asyncio==0.24.0"
+]
+
+dev = [
+    "bandit==1.8.0",
+    "black==24.10.0",
+    "isort==5.13.2",
+    "line-profiler==4.2.0",
+    "mypy==1.13.0",
+    "pre-commit==4.0.1",
+    "pylint==3.3.2",
+    "ruff==0.8.2"
+]
+
+[tool.bandit.assert_used]
+skips = ['*_test.py', '*/test_*.py']
+
+[tool.black]
+line-length = 88
+exclude = 'README\.md'
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = [
+    "pydantic.mypy",
+    "sqlalchemy.ext.mypy.plugin",
+]
+exclude = "^.*alembic.*$"
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+disallow_untyped_defs = false
+
+[tool.pylint.main]
+ignore-paths = "^.*alembic.*$"
+disable = [
+    "C0111", # "missing-docstring"
+    "E1101", # "no-member"
+    "R0801", # "duplicate-code"
+    "R0902", # "too-many-instance-attributes"
+    "R0903", # "too-few-public-methods"
+    "R0913", # "too-many-arguments"
+    "R0917", # "too-many-positional-arguments"
+    "R1705", # "no-else-return"
+    "R1711", # "useless-return"
+    "R1720", # "no-else-raise"
+    "W0613", # "unused-argument"
+    "W0706", # "try-except-raise"
+    "W0718", # "broad-exception-caught"
+]
+good-names-rgxs = ["^.*DTO$"]
+init-hook = 'import sys; sys.path.append("src")'
+max-line-length = 88
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint.per-file-ignores]
+"src/app/infrastructure/persistence/alembic/*.py" = ["F401"]  # Unused imports
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+# works via Makefile, but not directly
+asyncio_default_fixture_loop_scope = "auto"
+
+[tool.coverage.run]
+disable_warnings = ["no-data-collected"]
+source = ["src"]
+
+[tool.coverage.report]
+omit = [
+    "**/__init__.py",
+    "**/alembic/*",
+]
+show_missing = true
