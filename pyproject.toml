@@ -1,0 +1,113 @@
+[tool.poetry]
+name = "clean-fastapi"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Borovets <130386813+ivan-borovets@users.noreply.github.com>"]
+readme = "README.md"
+packages = [
+    { from = "src", include = "app" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+alembic = "^1.13.2"
+alembic-postgresql-enum = "^1.3.0"
+bcrypt = "^4.2.0"
+dishka = "^1.3.0"
+fastapi = "^0.115.0"
+orjson = "^3.10.7"
+psycopg = { extras = ["binary"], version = "^3.2.3" }
+pydantic = { extras = ["email"], version = "^2.9.0" }
+pyjwt = { extras = ["crypto"], version = "^2.9.0" }
+rtoml = "^0.11.0"
+sqlalchemy = { version = "2.0.36", extras = ["mypy"] }
+uuid6 = "^2024.7.10"
+uvicorn = "^0.32.0"
+uvloop = "^0.21.0"
+
+[tool.poetry.group.test.dependencies]
+coverage = "^7.6.1"
+pytest = "^8.3.2"
+pytest-asyncio = "^0.24.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.7.9"
+black = "^24.8.0"
+isort = "^5.13.2"
+line-profiler = "^4.1.3"
+mypy = "^1.11.2"
+pre-commit = "^3.8.0"
+pylint = "^3.3.0"
+ruff = "^0.6.3"
+
+[tool.bandit.assert_used]
+skips = ['*_test.py', '*/test_*.py']
+
+[tool.black]
+line-length = 88
+exclude = 'README\.md'
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = [
+    "pydantic.mypy",
+    "sqlalchemy.ext.mypy.plugin",
+]
+exclude = "^.*alembic.*$"
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+disallow_untyped_defs = false
+
+[tool.pylint.main]
+ignore-paths = "^.*alembic.*$"
+disable = [
+    "C0111", # "missing-docstring"
+    "E1101", # "no-member"
+    "R0801", # "duplicate-code"
+    "R0902", # "too-many-instance-attributes"
+    "R0903", # "too-few-public-methods"
+    "R0913", # "too-many-arguments"
+    "R0917", # "too-many-positional-arguments"
+    "R1705", # "no-else-return"
+    "R1711", # "useless-return"
+    "R1720", # "no-else-raise"
+    "W0613", # "unused-argument"
+    "W0706", # "try-except-raise"
+    "W0718", # "broad-exception-caught"
+]
+good-names-rgxs = [
+    "^.*DTO$", # data transfer object
+]
+init-hook = 'import sys; sys.path.append("src")'
+max-line-length = 88
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint.per-file-ignores]
+"src/app/common/c_infrastructure/persistence/alembic/*.py" = ["F401"] # Unused imports
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src",
+]
+testpaths = [
+    "tests",
+]
+# works via Makefile, but not directly
+asyncio_default_fixture_loop_scope = "auto"
+
+[tool.coverage.run]
+disable_warnings = ["no-data-collected"]
+source = ["src"]
+
+[tool.coverage.report]
+omit = [
+    "**/__init__.py",
+    "**/alembic/*",
+]
+show_missing = true
