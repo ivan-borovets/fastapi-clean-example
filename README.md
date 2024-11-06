@@ -256,8 +256,8 @@ while allowing flexible integration with infrastructure and external services.
 
 - `/` (POST): Allows an admin to create a new user, including admin users, if the username is unique.
 - `/` (GET): Allows an admin to retrieve a paginated list of existing users with relevant information.
-- `/inactivate`: Allows an admin to soft-delete an existing user, making that user inactive. Fully functional, but should be
-  reworked if the system requires superuser control (currently, admins can manage other admins).
+- `/inactivate`: Allows an admin to soft-delete an existing user, making that user inactive. Fully functional, but
+  should be reworked if the system requires superuser control (currently, admins can manage other admins).
 - `/reactivate`: Allows an admin to restore a previously soft-deleted user. Fully functional, but should be reworked if
   the system requires superuser control.
 - `/grant`: Allows an admin to grant admin rights to a specified user. Fully functional, but should be reworked if the
@@ -366,19 +366,29 @@ Generate `.env` file **in one** of the ways:
 
 ##### Alternative: database only
 
+One downside of this launch method is that it **automatically attempts to rewrite** `config.toml` **to create** `.env`.
+
 - To run only the database in Docker and use the app locally, use the following command:
 
     - ```shell
       make up-local-db
       ```
+- Then, apply the migrations with:
+
+    - ```shell
+      alembic upgrade head
+      ``` 
 
 - To stop the containers, use:
     - ```shell
       make down
       ```
 
-The downside of the above launch method is that it **automatically attempts to rewrite**
-`config.toml` **to create** `.env`.
+- To completely remove the database along with the applied migrations, run:
+
+    - ```shell
+      docker compose down -v
+      ```
 
 Feel free to take a look at [`Makefile`](Makefile), it contains many more useful commands.
 
