@@ -1,5 +1,5 @@
 # pylint: disable=C0301 (line-too-long)
-__all__ = ("initialize_mapping",)
+__all__ = ("initialize_mapping", "create_app_with_container")
 
 from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka

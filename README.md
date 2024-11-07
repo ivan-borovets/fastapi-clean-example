@@ -291,7 +291,7 @@ of `config.toml`, modifications to the application's settings code will be neces
 
 <p align="center">
   <img src="docs/configuration_flow_app.svg" alt="Configuration flow (app)" />
-  <br><em>Figure 8: Configuration flow (app)</em>
+  <br><em>Figure 9: Configuration flow (app)</em>
 </p>
 
 #### Setup

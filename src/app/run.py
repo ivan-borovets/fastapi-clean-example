@@ -12,7 +12,7 @@ app: FastAPI = create_app_with_container(settings)
 
 if __name__ == "__main__":
     uvicorn.run(
-        app="run:app",
+        app="app.run:app",
         host=settings.uvicorn.host,
         port=settings.uvicorn.port,
         reload=settings.uvicorn.reload,
