@@ -10,13 +10,13 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from app.infrastructure.persistence.sqla import initialize_mapping
-from app.presentation.http_controllers.exception_handler import (
+from app.presentation_http.exception_handler import (
     ExceptionHandler,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
-from app.presentation.http_controllers.router_root import root_router
-from app.presentation.http_middleware.middleware_auth import AuthMiddleware
+from app.presentation_http.middleware_auth import AuthMiddleware
+from app.presentation_http.router_root import root_router
 from app.setup.config.settings import Settings
 from app.setup.ioc.ioc_registry import get_providers
 

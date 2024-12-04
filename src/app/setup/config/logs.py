@@ -1,10 +1,11 @@
 import logging
+from typing import Literal
 
-from app.infrastructure.custom_types import LoggingLevel
+LoggingLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 def configure_logging(level: LoggingLevel = "INFO") -> None:
-    level_map: dict[str, int] = {
+    level_map: dict[LoggingLevel, int] = {
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
         "WARNING": logging.WARNING,
