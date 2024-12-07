@@ -1,14 +1,34 @@
 import uvicorn
+from dishka import AsyncContainer
+from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from app.setup.app_factory import create_app_with_container
+from app.presentation.exception_handler import ExceptionMapper, ExceptionMessageProvider
+from app.presentation.http_routers.router_root import root_router
+from app.setup.app_factory import configure_app, create_app, create_async_ioc_container
 from app.setup.config.logs import configure_logging
 from app.setup.config.settings import Settings
+from app.setup.ioc.ioc_registry import get_providers
 
 settings: Settings = Settings.from_file()
-configure_logging(level=settings.logging.level)
-app: FastAPI = create_app_with_container(settings)
 
+configure_logging(level=settings.logging.level)
+
+app: FastAPI = create_app()
+configure_app(
+    app=app,
+    root_router=root_router,
+    exception_message_provider=ExceptionMessageProvider(),
+    exception_mapper=ExceptionMapper(),
+)
+async_ioc_container: AsyncContainer = create_async_ioc_container(
+    providers=get_providers(),
+    settings=settings,
+)
+setup_dishka(
+    container=async_ioc_container,
+    app=app,
+)
 
 if __name__ == "__main__":
     uvicorn.run(
