@@ -6,7 +6,7 @@ from app.infrastructure.custom_types import (
     JwtSecret,
     SessionRefreshThreshold,
 )
-from app.presentation_http.cookie_params import CookieParams
+from app.presentation.cookie_params import CookieParams
 from app.setup.config.settings import Settings
 from app.setup.ioc.enum_component import ComponentEnum
 

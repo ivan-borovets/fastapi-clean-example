@@ -5,6 +5,8 @@ from dishka import FromComponent, Provider, Scope, from_context, provide, provid
 from starlette.requests import Request
 
 from app.domain.user.service import UserService
+from app.infrastructure.account_scenarios.log_in.interactor import LogInInteractor
+from app.infrastructure.account_scenarios.log_out.interactor import LogOutInteractor
 from app.infrastructure.adapters_application.identity_provider_session import (
     SessionIdentityProvider,
 )
@@ -23,9 +25,7 @@ from app.infrastructure.session.services.session import SessionService
 from app.infrastructure.session.session_data_mapper_sqla import SqlaSessionDataMapper
 from app.infrastructure.session.session_id_generator_str import StrSessionIdGenerator
 from app.infrastructure.session.session_timer_utc import UtcSessionTimer
-from app.infrastructure_scenarios.account_log_in.interactor import LogInInteractor
-from app.infrastructure_scenarios.account_log_out.interactor import LogOutInteractor
-from app.presentation_http.adapters_infrastructure.access_token_request_handler_cookie import (
+from app.presentation.adapters_infrastructure.access_token_request_handler_cookie import (
     CookieAccessTokenRequestHandler,
 )
 from app.setup.ioc.enum_component import ComponentEnum
