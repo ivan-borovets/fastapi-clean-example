@@ -18,7 +18,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 ENTRYPOINT []
 
-ARG UVICORN_PORT
-EXPOSE ${UVICORN_PORT}
+EXPOSE 8888
 
-CMD ["scripts/docker-compose/run_server.sh"]
+CMD ["uvicorn", "app.run:app", "--host", "0.0.0.0", "--port", "8888", "--loop", "uvloop"]

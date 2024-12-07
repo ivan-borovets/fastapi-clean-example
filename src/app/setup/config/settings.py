@@ -6,8 +6,7 @@ from typing import Any, Literal, Self
 from pydantic import BaseModel, Field, PostgresDsn, field_validator
 
 from app.setup.config.constants import BASE_DIR
-from app.setup.config.readers.abstract import ConfigReader
-from app.setup.config.readers.toml import TomlConfigReader
+from app.setup.config.reader_toml import TomlConfigReader
 
 log = logging.getLogger(__name__)
 
@@ -75,12 +74,6 @@ class LoggingSettings(BaseModel):
     ] = Field(alias="LOG_LEVEL")
 
 
-class UvicornSettings(BaseModel):
-    host: str = Field(alias="UVICORN_HOST")
-    port: int = Field(alias="UVICORN_PORT")
-    reload: bool = Field(alias="UVICORN_RELOAD")
-
-
 class PostgresSettings(BaseModel):
     username: str = Field(alias="POSTGRES_USER")
     password: str = Field(alias="POSTGRES_PASSWORD")
@@ -117,7 +110,6 @@ class DbSettings(BaseModel):
 class Settings(BaseModel):
     security: SecuritySettings
     logging: LoggingSettings
-    uvicorn: UvicornSettings
     db: DbSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
@@ -126,7 +118,7 @@ class Settings(BaseModel):
     def from_file(
         cls,
         path: Path = _cfg_toml_path,
-        reader: ConfigReader = TomlConfigReader(),
+        reader: TomlConfigReader = TomlConfigReader(),
         strict: bool = False,
     ) -> Self:
         if not path.is_file():

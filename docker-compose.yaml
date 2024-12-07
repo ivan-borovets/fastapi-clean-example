@@ -26,23 +26,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        - ${UVICORN_PORT}
     image: web_app:latest
     env_file:
       - .env
     environment:
-      PYTHONPATH: "/app/${SRC_DIR}"
+      PYTHONPATH: "/app/src"
+      UVICORN_HOST: ${UVICORN_HOST}
+      UVICORN_PORT: ${UVICORN_PORT}
     ports:
       - "${UVICORN_PORT}:${UVICORN_PORT}"
-    volumes:
-      - ./${SRC_DIR}:/app/${SRC_DIR}
-      - ./${CONFIG_TOML}:/app/${CONFIG_TOML}
-      - ./.env:/app/.env
     depends_on:
-      - web_app_db_pg
-    command: [ "sh", "scripts/docker-compose/run_server.sh" ]
-
+      web_app_db_pg:
+        condition: service_healthy
+    command: >
+      sh -c "
+      echo 'Running alembic migrations...' &&
+      alembic upgrade head &&
+      echo 'Starting Uvicorn...' &&
+      uvicorn app.run:app --host ${UVICORN_HOST} --port ${UVICORN_PORT} --loop uvloop
+      "
 
 volumes:
   pgdata:

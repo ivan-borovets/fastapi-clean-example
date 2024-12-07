@@ -35,7 +35,7 @@ LOG_LEVEL = "DEBUG"
 # Used by docker-compose
 [uvicorn]
 UVICORN_HOST = "0.0.0.0"
-UVICORN_PORT = 8888
+UVICORN_PORT = 9999
 UVICORN_RELOAD = false
 
 # Used by app

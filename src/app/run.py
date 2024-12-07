@@ -32,9 +32,8 @@ setup_dishka(
 
 if __name__ == "__main__":
     uvicorn.run(
-        app="app.run:app",
-        host=settings.uvicorn.host,
-        port=settings.uvicorn.port,
-        reload=settings.uvicorn.reload,
+        app=app,
+        port=8000,
+        reload=False,
         loop="uvloop",
     )

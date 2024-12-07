@@ -4,11 +4,11 @@ from pathlib import Path
 import pytest
 from pydantic import PostgresDsn, ValidationError
 
-from app.setup.config.readers.abstract import ConfigReader
+from app.setup.config.reader_toml import TomlConfigReader
 from app.setup.config.settings import LoggingSettings, SessionSettings, Settings
 
 
-def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
+def test_settings_from_file(mock_config_reader: TomlConfigReader, tmp_path: Path):
     fake_path: Path = tmp_path / "test_config.toml"
     fake_path.touch()
     settings: Settings = Settings.from_file(
@@ -24,10 +24,6 @@ def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
     assert settings.security.cookies.secure is False
 
     assert settings.logging.level == "WARNING"
-
-    assert settings.uvicorn.host == "test_host"
-    assert settings.uvicorn.port == 1234
-    assert settings.uvicorn.reload is True
 
     assert settings.db.postgres.username == "test_user"
     assert settings.db.postgres.password == "test_password"
@@ -52,26 +48,11 @@ def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
     assert settings.db.sqla_engine.max_overflow == 0
 
 
-def test_settings_from_file_not_found(mock_config_reader: ConfigReader):
+def test_settings_from_file_not_found(mock_config_reader: TomlConfigReader):
     fake_path: Path = Path("fake_path")
 
     with pytest.raises(FileNotFoundError):
         Settings.from_file(fake_path, mock_config_reader)
-
-
-def test_settings_with_env_variables(
-    monkeypatch, mock_config_reader: ConfigReader, tmp_path: Path
-):
-    monkeypatch.setenv("UVICORN_HOST", "127.0.0.1")
-    monkeypatch.setenv("UVICORN_PORT", "9999")
-
-    fake_path: Path = tmp_path / "test_config.toml"
-    fake_path.touch()
-
-    settings: Settings = Settings.from_file(path=fake_path, reader=mock_config_reader)
-
-    assert settings.uvicorn.host != "127.0.0.1"
-    assert settings.uvicorn.port != 9999
 
 
 def test_jwt_algorithm_validation():

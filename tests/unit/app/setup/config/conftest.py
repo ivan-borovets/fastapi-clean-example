@@ -3,10 +3,10 @@ from typing import Any
 
 import pytest
 
-from app.setup.config.readers.abstract import ConfigReader
 
 
-class MockConfigReader(ConfigReader):
+
+class MockConfigReader:
     def read(self, path: Path) -> dict[str, Any]:
         return {
             "security": {
@@ -25,11 +25,6 @@ class MockConfigReader(ConfigReader):
             },
             "logging": {
                 "LOG_LEVEL": "WARNING",
-            },
-            "uvicorn": {
-                "UVICORN_HOST": "test_host",
-                "UVICORN_PORT": 1234,
-                "UVICORN_RELOAD": True,
             },
             "db": {
                 "postgres": {
