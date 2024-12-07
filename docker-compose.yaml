@@ -15,16 +15,19 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   web_app:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - ${PYPROJECT_TOML}
-        - ${POETRY_LOCK}
         - ${UVICORN_PORT}
-      target: runtime
     image: web_app:latest
     env_file:
       - .env

@@ -68,7 +68,6 @@ SQLA_MAX_OVERFLOW = 10
 SRC_DIR = "src"
 CONFIG_TOML = "config.toml"
 PYPROJECT_TOML = "pyproject.toml"
-POETRY_LOCK = "poetry.lock"
 
 # Used by Makefile
 [docker-compose]
