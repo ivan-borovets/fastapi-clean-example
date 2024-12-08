@@ -20,4 +20,4 @@ ENTRYPOINT []
 
 EXPOSE 8888
 
-CMD ["uvicorn", "app.run:app", "--host", "0.0.0.0", "--port", "8888", "--loop", "uvloop"]
+CMD ["uvicorn", "app.run:make_app", "--host", "0.0.0.0", "--port", "8888", "--loop", "uvloop"]
