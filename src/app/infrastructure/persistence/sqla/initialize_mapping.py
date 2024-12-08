@@ -22,5 +22,5 @@ during database migrations.
 # pylint: disable=C0301 (line-too-long)
 __all__ = ("user_persistence_sqla", "session_persistence_sqla")
 
-from app.infrastructure.session import persistence_sqla as session_persistence_sqla
-from app.infrastructure.user import persistence_sqla as user_persistence_sqla
+from app.infrastructure.persistence import session as session_persistence_sqla
+from app.infrastructure.persistence import user as user_persistence_sqla

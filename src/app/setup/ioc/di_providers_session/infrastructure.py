@@ -5,14 +5,6 @@ from dishka import FromComponent, Provider, Scope, from_context, provide, provid
 from starlette.requests import Request
 
 from app.domain.user.service import UserService
-from app.infrastructure.account_scenarios.log_in.interactor import LogInInteractor
-from app.infrastructure.account_scenarios.log_out.interactor import LogOutInteractor
-from app.infrastructure.adapters_application.identity_provider_session import (
-    SessionIdentityProvider,
-)
-from app.infrastructure.adapters_application.user_data_mapper_sqla import (
-    SqlaUserDataMapper,
-)
 from app.infrastructure.persistence.sqla.committer import SqlaCommitter
 from app.infrastructure.session.access_token_processor_jwt import (
     JwtAccessTokenProcessor,
@@ -20,12 +12,20 @@ from app.infrastructure.session.access_token_processor_jwt import (
 from app.infrastructure.session.ports.access_token_request_handler import (
     AccessTokenRequestHandler,
 )
+from app.infrastructure.session.scenarios.log_in.interactor import LogInInteractor
+from app.infrastructure.session.scenarios.log_out.interactor import LogOutInteractor
 from app.infrastructure.session.services.jwt_token import JwtTokenService
 from app.infrastructure.session.services.session import SessionService
 from app.infrastructure.session.session_data_mapper_sqla import SqlaSessionDataMapper
 from app.infrastructure.session.session_id_generator_str import StrSessionIdGenerator
 from app.infrastructure.session.session_timer_utc import UtcSessionTimer
-from app.presentation.adapters_infrastructure.access_token_request_handler_cookie import (
+from app.infrastructure.user.adapters_application.identity_provider_session import (
+    SessionIdentityProvider,
+)
+from app.infrastructure.user.adapters_application.user_data_mapper_sqla import (
+    SqlaUserDataMapper,
+)
+from app.presentation.session.adapters_infrastructure.access_token_request_handler_cookie import (
     CookieAccessTokenRequestHandler,
 )
 from app.setup.ioc.enum_component import ComponentEnum
