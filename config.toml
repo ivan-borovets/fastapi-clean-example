@@ -48,8 +48,8 @@ POSTGRES_DB = "web_app_db_pg"
 # Don't forget to regenerate dotenv
 # Don't forget to apply alembic rev
 # Set host to web_app_db_pg for prod
-#POSTGRES_HOST = "localhost"
-POSTGRES_HOST = "web_app_db_pg"
+POSTGRES_HOST = "localhost"
+#POSTGRES_HOST = "web_app_db_pg"
 POSTGRES_PORT = 5432
 
 # Used by docker compose

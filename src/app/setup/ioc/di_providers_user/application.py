@@ -70,13 +70,10 @@ class UserApplicationPortsProvider(Provider):
             SessionService,
             FromComponent(ComponentEnum.SESSION),
         ],
-        sqla_user_data_mapper: Annotated[
-            SqlaUserDataMapper,
-            FromComponent(ComponentEnum.USER),
-        ],
     ) -> IdentityProvider:
         return SessionIdentityProvider(
-            jwt_token_service, session_service, sqla_user_data_mapper
+            jwt_token_service,
+            session_service,
         )
 
     @provide

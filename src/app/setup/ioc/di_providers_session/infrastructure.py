@@ -71,15 +71,10 @@ class SessionInfraConcreteProvider(Provider):
         self,
         jwt_token_service: JwtTokenService,
         session_service: SessionService,
-        sqla_user_data_mapper: Annotated[
-            SqlaUserDataMapper,
-            FromComponent(ComponentEnum.USER),
-        ],
     ) -> SessionIdentityProvider:
         return SessionIdentityProvider(
             jwt_token_service,
             session_service,
-            sqla_user_data_mapper,
         )
 
 
