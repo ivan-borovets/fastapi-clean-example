@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.operators import eq
 
 from app.application.exceptions import DataGatewayError
-from app.application.user.ports.user_data_gateway import UserDataGateway
+from app.application.user_helpers.ports.user_data_gateway import UserDataGateway
 from app.domain.user.value_objects import UserId, Username
 from app.infrastructure.user.persistence_sqla import User
 

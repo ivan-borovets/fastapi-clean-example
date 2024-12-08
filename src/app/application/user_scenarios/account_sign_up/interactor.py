@@ -3,12 +3,12 @@ import logging
 from app.application.base.interactors import InteractorStrict
 from app.application.committer import Committer
 from app.application.enums import ResponseStatusEnum
-from app.application.user.exceptions import (
+from app.application.user_helpers.exceptions import (
     AlreadyAuthenticatedError,
     AuthenticationError,
 )
-from app.application.user.ports.identity_provider import IdentityProvider
-from app.application.user.ports.user_data_gateway import UserDataGateway
+from app.application.user_helpers.ports.identity_provider import IdentityProvider
+from app.application.user_helpers.ports.user_data_gateway import UserDataGateway
 from app.application.user_scenarios.account_sign_up.payload import (
     SignUpRequest,
     SignUpResponse,

@@ -1,7 +1,7 @@
 import logging
 
-from app.application.user.exceptions import AuthorizationError
-from app.application.user.ports.identity_provider import IdentityProvider
+from app.application.user_helpers.exceptions import AuthorizationError
+from app.application.user_helpers.ports.identity_provider import IdentityProvider
 from app.domain.user.enums import UserRoleEnum
 
 log = logging.getLogger(__name__)

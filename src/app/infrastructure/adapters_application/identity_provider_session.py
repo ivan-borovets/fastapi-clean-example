@@ -1,8 +1,8 @@
 import logging
 
 from app.application.exceptions import DataGatewayError
-from app.application.user.exceptions import AuthenticationError
-from app.application.user.ports.identity_provider import IdentityProvider
+from app.application.user_helpers.exceptions import AuthenticationError
+from app.application.user_helpers.ports.identity_provider import IdentityProvider
 from app.domain.user.entity import User
 from app.domain.user.enums import UserRoleEnum
 from app.domain.user.exceptions.non_existence import UserNotFoundById

@@ -10,7 +10,7 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
-from app.application.user.exceptions import (
+from app.application.user_helpers.exceptions import (
     AlreadyAuthenticatedError,
     AuthenticationError,
     AuthorizationError,

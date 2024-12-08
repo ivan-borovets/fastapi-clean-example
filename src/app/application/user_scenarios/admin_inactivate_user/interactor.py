@@ -3,9 +3,9 @@ import logging
 from app.application.base.interactors import InteractorStrict
 from app.application.committer import Committer
 from app.application.enums import ResponseStatusEnum
-from app.application.user.ports.global_logout_service import GlobalLogoutService
-from app.application.user.ports.user_data_gateway import UserDataGateway
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user_helpers.ports.global_logout_service import GlobalLogoutService
+from app.application.user_helpers.ports.user_data_gateway import UserDataGateway
+from app.application.user_helpers.service_authorization import AuthorizationService
 from app.application.user_scenarios.admin_inactivate_user.payload import (
     InactivateUserRequest,
     InactivateUserResponse,

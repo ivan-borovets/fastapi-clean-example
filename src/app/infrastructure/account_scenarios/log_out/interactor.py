@@ -2,7 +2,7 @@ import logging
 
 from app.application.base.interactors import InteractorFlexible
 from app.application.exceptions import DataGatewayError
-from app.application.user.exceptions import AuthenticationError
+from app.application.user_helpers.exceptions import AuthenticationError
 from app.domain.user.entity import User
 from app.domain.user.value_objects import UserId
 from app.infrastructure.account_scenarios.log_out.payload import LogOutResponse

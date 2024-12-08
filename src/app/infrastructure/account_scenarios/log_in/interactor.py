@@ -1,6 +1,6 @@
 import logging
 
-from app.application.user.exceptions import (
+from app.application.user_helpers.exceptions import (
     AlreadyAuthenticatedError,
     AuthenticationError,
 )

@@ -4,10 +4,10 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide, provide_all
 
 from app.application.committer import Committer
-from app.application.user.ports.global_logout_service import GlobalLogoutService
-from app.application.user.ports.identity_provider import IdentityProvider
-from app.application.user.ports.user_data_gateway import UserDataGateway
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user_helpers.ports.global_logout_service import GlobalLogoutService
+from app.application.user_helpers.ports.identity_provider import IdentityProvider
+from app.application.user_helpers.ports.user_data_gateway import UserDataGateway
+from app.application.user_helpers.service_authorization import AuthorizationService
 from app.application.user_scenarios.account_sign_up.interactor import SignUpInteractor
 from app.application.user_scenarios.admin_create_user.interactor import (
     CreateUserInteractor,

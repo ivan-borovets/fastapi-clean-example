@@ -1,6 +1,6 @@
 import logging
 
-from app.application.user.ports.global_logout_service import GlobalLogoutService
+from app.application.user_helpers.ports.global_logout_service import GlobalLogoutService
 from app.domain.user.value_objects import UserId
 from app.infrastructure.persistence.sqla.committer import SqlaCommitter
 from app.infrastructure.session.session_data_mapper_sqla import SqlaSessionDataMapper
