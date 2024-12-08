@@ -38,8 +38,7 @@ class ExceptionSchemaRich:
 
 
 class ExceptionMessageProvider:
-    @staticmethod
-    def get_exception_message(exc: Exception, status_code: int) -> str:
+    def get_exception_message(self, exc: Exception, status_code: int) -> str:
         return "Internal server error." if status_code == 500 else str(exc)
 
 

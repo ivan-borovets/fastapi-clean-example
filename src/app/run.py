@@ -1,5 +1,4 @@
-import uvicorn
-from dishka import AsyncContainer
+from dishka import AsyncContainer, Provider
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
@@ -11,7 +10,10 @@ from app.setup.config.settings import Settings
 from app.setup.ioc.ioc_registry import get_providers
 
 
-def make_app(settings: Settings | None = None) -> FastAPI:
+def make_app(
+    *di_providers: Provider,
+    settings: Settings | None = None,
+) -> FastAPI:
     if not settings:
         settings = Settings.from_file()
 
@@ -25,7 +27,7 @@ def make_app(settings: Settings | None = None) -> FastAPI:
         exception_mapper=ExceptionMapper(),
     )
     async_ioc_container: AsyncContainer = create_async_ioc_container(
-        providers=get_providers(),
+        providers=(*get_providers(), *di_providers),
         settings=settings,
     )
     setup_dishka(
@@ -36,6 +38,8 @@ def make_app(settings: Settings | None = None) -> FastAPI:
 
 
 if __name__ == "__main__":
+    import uvicorn
+
     uvicorn.run(
         app=make_app(),
         port=8000,
