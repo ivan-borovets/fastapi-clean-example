@@ -4,24 +4,26 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, from_context, provide, provide_all
 from starlette.requests import Request
 
+from app.application.committer import Committer
 from app.domain.user.service import UserService
 from app.infrastructure.persistence.sqla.committer import SqlaCommitter
 from app.infrastructure.session.access_token_processor_jwt import (
     JwtAccessTokenProcessor,
+)
+from app.infrastructure.session.adapters_application.identity_provider_session import (
+    SessionIdentityProvider,
 )
 from app.infrastructure.session.ports.access_token_request_handler import (
     AccessTokenRequestHandler,
 )
 from app.infrastructure.session.scenarios.log_in.interactor import LogInInteractor
 from app.infrastructure.session.scenarios.log_out.interactor import LogOutInteractor
+from app.infrastructure.session.scenarios.sign_up.interactor import SignUpInteractor
 from app.infrastructure.session.services.jwt_token import JwtTokenService
 from app.infrastructure.session.services.session import SessionService
 from app.infrastructure.session.session_data_mapper_sqla import SqlaSessionDataMapper
 from app.infrastructure.session.session_id_generator_str import StrSessionIdGenerator
 from app.infrastructure.session.session_timer_utc import UtcSessionTimer
-from app.infrastructure.user.adapters_application.identity_provider_session import (
-    SessionIdentityProvider,
-)
 from app.infrastructure.user.adapters_application.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
@@ -64,23 +66,37 @@ class SessionInfraConcreteProvider(Provider):
         SqlaCommitter,
         JwtTokenService,
         JwtAccessTokenProcessor,
+        SessionIdentityProvider,
     )
-
-    @provide
-    def provide_session_identity_provider(
-        self,
-        jwt_token_service: JwtTokenService,
-        session_service: SessionService,
-    ) -> SessionIdentityProvider:
-        return SessionIdentityProvider(
-            jwt_token_service,
-            session_service,
-        )
 
 
 class SessionInfraInteractorProvider(Provider):
     component = ComponentEnum.SESSION
     scope = Scope.REQUEST
+
+    @provide
+    def provide_sign_up_interactor(
+        self,
+        session_identity_provider: SessionIdentityProvider,
+        sqla_user_data_mapper: Annotated[
+            SqlaUserDataMapper,
+            FromComponent(ComponentEnum.USER),
+        ],
+        user_service: Annotated[
+            UserService,
+            FromComponent(ComponentEnum.USER),
+        ],
+        sqla_committer: Annotated[
+            Committer,
+            FromComponent(ComponentEnum.USER),
+        ],
+    ) -> SignUpInteractor:
+        return SignUpInteractor(
+            session_identity_provider,
+            sqla_user_data_mapper,
+            user_service,
+            sqla_committer,
+        )
 
     @provide
     def provide_login_interactor(

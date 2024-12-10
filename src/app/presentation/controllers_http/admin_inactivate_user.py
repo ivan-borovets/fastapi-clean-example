@@ -41,7 +41,7 @@ async def inactivate_user(
 ) -> InactivateUserResponse:
     # :raises AuthenticationError 401:
     # :raises AuthorizationError 403:
+    # :raises DataMapperError 500:
     # :raises DomainFieldError 400:
-    # :raises DataGatewayError 500:
     # :raises UserNotFoundByUsername 404:
     return await interactor(request_data)

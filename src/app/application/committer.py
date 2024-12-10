@@ -12,5 +12,5 @@ class Committer(Protocol):
     @abstractmethod
     async def commit(self) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """

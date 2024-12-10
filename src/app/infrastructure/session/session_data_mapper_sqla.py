@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.dml import ReturningDelete
 from sqlalchemy.sql.operators import eq
 
-from app.application.exceptions import DataGatewayError
 from app.domain.user.value_objects import UserId
+from app.infrastructure.exceptions import DataMapperError
 from app.infrastructure.record_session import SessionRecord
 
 
@@ -15,22 +15,22 @@ class SqlaSessionDataMapper:
 
     async def save(self, session_record: SessionRecord) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         try:
             self._session.add(session_record)
             await self._session.flush()
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def read(
         self, session_id: str, for_update: bool = False
     ) -> SessionRecord | None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         try:
             session: SessionRecord | None = await self._session.get(
@@ -42,13 +42,13 @@ class SqlaSessionDataMapper:
             return session
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def delete(self, session_id: str) -> bool:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         delete_stmt: ReturningDelete[tuple[str, ...]] = (
             delete(SessionRecord)
@@ -64,13 +64,13 @@ class SqlaSessionDataMapper:
             return bool(deleted_ids)
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def delete_all_for_user(self, user_id: UserId) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         delete_stmt: Delete = delete(SessionRecord).where(
             eq(SessionRecord.user_id, user_id)  # type: ignore
@@ -81,6 +81,6 @@ class SqlaSessionDataMapper:
             await self._session.flush()
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error

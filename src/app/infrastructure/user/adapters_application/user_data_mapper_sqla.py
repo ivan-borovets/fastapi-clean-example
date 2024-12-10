@@ -3,9 +3,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.operators import eq
 
-from app.application.exceptions import DataGatewayError
 from app.application.user.ports.user_data_gateway import UserDataGateway
 from app.domain.user.value_objects import UserId, Username
+from app.infrastructure.exceptions import DataMapperError
 from app.infrastructure.persistence.user import User
 
 
@@ -15,20 +15,20 @@ class SqlaUserDataMapper(UserDataGateway):
 
     async def save(self, user: User) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         try:
             self._session.add(user)
             await self._session.flush()
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def read_by_id(self, user_id: UserId) -> User | None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         select_stmt: Select = select(User).where(eq(User.id_, user_id))  # type: ignore
 
@@ -40,15 +40,15 @@ class SqlaUserDataMapper(UserDataGateway):
             return user
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def read_by_username(
         self, username: Username, for_update: bool = False
     ) -> User | None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         select_stmt: Select[tuple[User]] = select(User).where(
             eq(User.username, username),  # type: ignore
@@ -65,13 +65,13 @@ class SqlaUserDataMapper(UserDataGateway):
             return user
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def is_username_unique(self, username: Username) -> bool:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         select_exists_stmt: Select[tuple[bool]] = select(
             exists().where(eq(User.username, username)),  # type: ignore
@@ -85,13 +85,13 @@ class SqlaUserDataMapper(UserDataGateway):
             return not username_exists
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error
 
     async def read_all(self, limit: int, offset: int) -> list[User]:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         select_stmt: Select[tuple[User]] = select(User).limit(limit).offset(offset)
 
@@ -101,6 +101,6 @@ class SqlaUserDataMapper(UserDataGateway):
             return users
 
         except OSError as error:
-            raise DataGatewayError("Connection failed.") from error
+            raise DataMapperError("Connection failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed.") from error
+            raise DataMapperError("Database query failed.") from error

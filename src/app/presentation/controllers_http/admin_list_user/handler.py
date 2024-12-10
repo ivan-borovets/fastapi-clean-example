@@ -43,7 +43,7 @@ async def list_users(
 ) -> ListUsersResponse:
     # :raises AuthenticationError 401:
     # :raises AuthorizationError 403:
-    # :raises DataGatewayError 500:
+    # :raises DataMapperError 500:
     request_data: ListUsersRequest = ListUsersRequest(
         limit=request_data_pydantic.limit,
         offset=request_data_pydantic.offset,

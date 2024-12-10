@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.committer import Committer
-from app.application.exceptions import DataGatewayError
+from app.infrastructure.exceptions import DataMapperError
 
 log = logging.getLogger(__name__)
 
@@ -15,13 +15,13 @@ class SqlaCommitter(Committer):
 
     async def commit(self) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
         try:
             await self._session.commit()
             log.debug("Commit was done by session with info: '%s'.", self._session.info)
 
         except OSError as error:
-            raise DataGatewayError("Connection failed, commit failed.") from error
+            raise DataMapperError("Connection failed, commit failed.") from error
         except SQLAlchemyError as error:
-            raise DataGatewayError("Database query failed, commit failed.") from error
+            raise DataMapperError("Database query failed, commit failed.") from error

@@ -31,5 +31,5 @@ async def logout(
     ],
 ) -> LogOutResponse:
     # :raises AuthenticationError 401:
-    # :raises DataGatewayError 500:
+    # :raises DataMapperError 500:
     return await interactor()

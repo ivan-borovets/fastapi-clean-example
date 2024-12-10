@@ -4,8 +4,8 @@ from dishka import FromComponent
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
-from app.application.user.scenarios.account_sign_up.interactor import SignUpInteractor
-from app.application.user.scenarios.account_sign_up.payload import (
+from app.infrastructure.session.scenarios.sign_up.interactor import SignUpInteractor
+from app.infrastructure.session.scenarios.sign_up.payload import (
     SignUpRequest,
     SignUpResponse,
 )
@@ -31,11 +31,11 @@ async def sign_up(
     request_data: SignUpRequest,
     interactor: Annotated[
         SignUpInteractor,
-        FromComponent(ComponentEnum.USER),
+        FromComponent(ComponentEnum.SESSION),
     ],
 ) -> SignUpResponse:
     # :raises AlreadyAuthenticatedError 401:
     # :raises DomainFieldError 400:
-    # :raises DataGatewayError 500:
+    # :raises DataMapperError 500:
     # :raises UsernameAlreadyExists 409:
     return await interactor(request_data)

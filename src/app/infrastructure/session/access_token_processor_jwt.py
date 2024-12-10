@@ -1,10 +1,12 @@
+import logging
 from typing import Any, cast
 
 import jwt
 
 from app.infrastructure.custom_types import JwtAlgorithm, JwtSecret
-from app.infrastructure.exceptions import AdapterError
 from app.infrastructure.session.session_timer_utc import UtcSessionTimer
+
+log = logging.getLogger(__name__)
 
 
 class JwtAccessTokenProcessor:
@@ -23,28 +25,29 @@ class JwtAccessTokenProcessor:
             "session_id": session_id,
             "exp": int(self._utc_session_timer.access_expiration.timestamp()),
         }
+
         return jwt.encode(
             payload=to_encode,
             key=self._secret,
             algorithm=self._algorithm,
         )
 
-    def extract_session_id(self, access_token: str) -> str:
-        """
-        :raises AdapterError:
-        """
-        payload: dict[str, Any] = self._decode_token(access_token)
+    def extract_session_id(self, access_token: str) -> str | None:
+        payload: dict[str, Any] | None = self._decode_token(access_token)
+
+        if payload is None:
+            log.debug("Empty payload in token.")
+            return None
 
         session_id: str | None = payload.get("session_id")
+
         if session_id is None:
-            raise AdapterError("Token has no Session id.")
+            log.debug("Token has no Session id.")
+            return None
 
         return session_id
 
-    def _decode_token(self, token: str) -> dict[str, Any]:
-        """
-        :raises AdapterError:
-        """
+    def _decode_token(self, token: str) -> dict[str, Any] | None:
         try:
             return cast(
                 dict[str, Any],
@@ -54,5 +57,7 @@ class JwtAccessTokenProcessor:
                     algorithms=[self._algorithm],
                 ),
             )
+
         except jwt.PyJWTError as error:
-            raise AdapterError("Token is invalid or expired.") from error
+            log.debug("Token is invalid or expired. Error: %s", error)
+            return None

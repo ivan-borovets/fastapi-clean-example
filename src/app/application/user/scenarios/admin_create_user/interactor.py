@@ -8,7 +8,7 @@ from app.application.user.scenarios.admin_create_user.payload import (
     CreateUserRequest,
     CreateUserResponse,
 )
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user.services.authorization import AuthorizationService
 from app.domain.user.entity import User
 from app.domain.user.enums import UserRoleEnum
 from app.domain.user.exceptions.existence import UsernameAlreadyExists
@@ -22,8 +22,8 @@ class CreateUserInteractor(InteractorStrict[CreateUserRequest, CreateUserRespons
     """
     :raises AuthenticationError:
     :raises AuthorizationError:
+    :raises DataMapperError:
     :raises DomainFieldError:
-    :raises DataGatewayError:
     :raises UsernameAlreadyExists:
     """
 

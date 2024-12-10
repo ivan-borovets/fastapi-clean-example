@@ -8,7 +8,7 @@ from app.application.user.scenarios.admin_grant_admin.payload import (
     GrantAdminRequest,
     GrantAdminResponse,
 )
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user.services.authorization import AuthorizationService
 from app.domain.user.entity import User
 from app.domain.user.enums import UserRoleEnum
 from app.domain.user.exceptions.non_existence import UserNotFoundByUsername
@@ -22,8 +22,8 @@ class GrantAdminInteractor(InteractorStrict[GrantAdminRequest, GrantAdminRespons
     """
     :raises AuthenticationError:
     :raises AuthorizationError:
+    :raises DataMapperError:
     :raises DomainFieldError:
-    :raises DataGatewayError:
     :raises UserNotFoundByUsername:
     """
 

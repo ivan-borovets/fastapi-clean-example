@@ -19,9 +19,8 @@ class SessionGlobalLogoutService(GlobalLogoutService):
 
     async def remove_all_user_access(self, user_id: UserId) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
-
         log.debug("Remove all user access: started. User id: '%s'.", user_id.value)
 
         await self._sqla_session_data_mapper.delete_all_for_user(user_id)

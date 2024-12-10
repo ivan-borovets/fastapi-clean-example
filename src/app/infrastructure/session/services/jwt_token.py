@@ -43,28 +43,30 @@ class JwtTokenService:
 
         log.debug("Delete access token from request: done.")
 
-    def get_access_token_from_request(self) -> str:
-        """
-        :raises AdapterError:
-        """
+    def get_access_token_from_request(self) -> str | None:
         log.debug("Get access token from request: started.")
 
-        access_token: str = (
+        access_token: str | None = (
             self._access_token_request_handler.get_access_token_from_request()
         )
+        if not access_token:
+            log.debug(
+                "Get access token from request: done. No access token in request."
+            )
+            return None
 
         log.debug("Get access token from request: done.")
         return access_token
 
-    def get_session_id_from_access_token(self, access_token: str) -> str:
-        """
-        :raises AdapterError:
-        """
+    def get_session_id_from_access_token(self, access_token: str) -> str | None:
         log.debug("Get session id from access token: started.")
 
-        session_id: str = self._jwt_access_token_processor.extract_session_id(
+        session_id: str | None = self._jwt_access_token_processor.extract_session_id(
             access_token
         )
+        if session_id is None:
+            log.debug("Get session id from access token: failed. No session id.")
+            return None
 
         log.debug("Get session id from access token: done.")
         return session_id

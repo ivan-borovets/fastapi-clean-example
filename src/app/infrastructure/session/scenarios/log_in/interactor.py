@@ -1,24 +1,24 @@
 import logging
 
-from app.application.user.exceptions import (
-    AlreadyAuthenticatedError,
-    AuthenticationError,
-)
 from app.domain.user.entity import User
 from app.domain.user.exceptions.non_existence import UserNotFoundByUsername
 from app.domain.user.service import UserService
 from app.domain.user.value_objects import RawPassword, Username
 from app.infrastructure.base.interactors import InteractorStrict
 from app.infrastructure.record_session import SessionRecord
+from app.infrastructure.session.adapters_application.identity_provider_session import (
+    SessionIdentityProvider,
+)
+from app.infrastructure.session.exceptions import (
+    AlreadyAuthenticatedError,
+    AuthenticationError,
+)
 from app.infrastructure.session.scenarios.log_in.payload import (
     LogInRequest,
     LogInResponse,
 )
 from app.infrastructure.session.services.jwt_token import JwtTokenService
 from app.infrastructure.session.services.session import SessionService
-from app.infrastructure.user.adapters_application.identity_provider_session import (
-    SessionIdentityProvider,
-)
 from app.infrastructure.user.adapters_application.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
@@ -30,7 +30,7 @@ class LogInInteractor(InteractorStrict[LogInRequest, LogInResponse]):
     """
     :raises AlreadyAuthenticatedError:
     :raises DomainFieldError:
-    :raises DataGatewayError:
+    :raises DataMapperError:
     :raises UserNotFoundByUsername:
     """
 
@@ -75,7 +75,10 @@ class LogInInteractor(InteractorStrict[LogInRequest, LogInResponse]):
             )
 
         session: SessionRecord = await self._session_service.create_session(user.id_)
-        await self._session_service.save_session(session)
+        if not await self._session_service.save_session(session):
+            raise AuthenticationError(
+                "Authentication is currently unavailable. Please try again later."
+            )
 
         access_token: str = self._jwt_token_service.issue_access_token(session.id_)
         self._jwt_token_service.add_access_token_to_request(access_token)

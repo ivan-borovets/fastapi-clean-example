@@ -8,7 +8,7 @@ from app.application.user.scenarios.admin_reactivate_user.payload import (
     ReactivateUserRequest,
     ReactivateUserResponse,
 )
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user.services.authorization import AuthorizationService
 from app.domain.user.entity import User
 from app.domain.user.enums import UserRoleEnum
 from app.domain.user.exceptions.non_existence import UserNotFoundByUsername
@@ -24,8 +24,8 @@ class ReactivateUserInteractor(
     """
     :raises AuthenticationError:
     :raises AuthorizationError:
+    :raises DataMapperError:
     :raises DomainFieldError:
-    :raises DataGatewayError:
     :raises UserNotFoundByUsername:
     """
 

@@ -7,7 +7,6 @@ from app.application.committer import Committer
 from app.application.user.ports.global_logout_service import GlobalLogoutService
 from app.application.user.ports.identity_provider import IdentityProvider
 from app.application.user.ports.user_data_gateway import UserDataGateway
-from app.application.user.scenarios.account_sign_up.interactor import SignUpInteractor
 from app.application.user.scenarios.admin_create_user.interactor import (
     CreateUserInteractor,
 )
@@ -26,17 +25,17 @@ from app.application.user.scenarios.admin_reactivate_user.interactor import (
 from app.application.user.scenarios.admin_revoke_admin.interactor import (
     RevokeAdminInteractor,
 )
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user.services.authorization import AuthorizationService
 from app.infrastructure.persistence.sqla.committer import SqlaCommitter
+from app.infrastructure.session.adapters_application.global_logout_service_session import (
+    SessionGlobalLogoutService,
+)
+from app.infrastructure.session.adapters_application.identity_provider_session import (
+    SessionIdentityProvider,
+)
 from app.infrastructure.session.services.jwt_token import JwtTokenService
 from app.infrastructure.session.services.session import SessionService
 from app.infrastructure.session.session_data_mapper_sqla import SqlaSessionDataMapper
-from app.infrastructure.user.adapters_application.global_logout_service_session import (
-    SessionGlobalLogoutService,
-)
-from app.infrastructure.user.adapters_application.identity_provider_session import (
-    SessionIdentityProvider,
-)
 from app.infrastructure.user.adapters_application.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
@@ -107,7 +106,6 @@ class UserApplicationInteractorsProvider(Provider):
     scope = Scope.REQUEST
 
     interactors = provide_all(
-        SignUpInteractor,
         CreateUserInteractor,
         GrantAdminInteractor,
         InactivateUserInteractor,

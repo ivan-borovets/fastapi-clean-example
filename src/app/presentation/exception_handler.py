@@ -10,18 +10,18 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
-from app.application.user.exceptions import (
-    AlreadyAuthenticatedError,
-    AuthenticationError,
-    AuthorizationError,
-)
+from app.application.user.exceptions import AuthorizationError
 from app.domain.base.exceptions import DomainError, DomainFieldError
 from app.domain.user.exceptions.existence import UsernameAlreadyExists
 from app.domain.user.exceptions.non_existence import (
     UserNotFoundById,
     UserNotFoundByUsername,
 )
-from app.infrastructure.session.exceptions import SessionExpired, SessionNotFoundById
+from app.infrastructure.base.exceptions import InfrastructureError
+from app.infrastructure.session.exceptions import (
+    AlreadyAuthenticatedError,
+    AuthenticationError,
+)
 
 log = logging.getLogger(__name__)
 
@@ -49,14 +49,13 @@ class ExceptionMapper:
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
             AlreadyAuthenticatedError: status.HTTP_401_UNAUTHORIZED,
-            SessionExpired: status.HTTP_401_UNAUTHORIZED,
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            SessionNotFoundById: status.HTTP_404_NOT_FOUND,
             UserNotFoundById: status.HTTP_404_NOT_FOUND,
             UserNotFoundByUsername: status.HTTP_404_NOT_FOUND,
             UsernameAlreadyExists: status.HTTP_409_CONFLICT,
             DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            InfrastructureError: status.HTTP_500_INTERNAL_SERVER_ERROR,
         }
 
     def get_status_code(self, exc: Exception) -> int:

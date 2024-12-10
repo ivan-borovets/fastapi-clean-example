@@ -1,5 +1,5 @@
 from app.infrastructure.base.exceptions import InfrastructureError
 
 
-class AdapterError(InfrastructureError):
+class DataMapperError(InfrastructureError):
     pass

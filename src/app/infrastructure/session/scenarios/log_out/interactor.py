@@ -1,19 +1,16 @@
 import logging
 
 from app.application.base.interactors import InteractorFlexible
-from app.application.exceptions import DataGatewayError
-from app.application.user.exceptions import AuthenticationError
 from app.domain.user.entity import User
 from app.domain.user.value_objects import UserId
-from app.infrastructure.exceptions import AdapterError
 from app.infrastructure.record_session import SessionRecord
-from app.infrastructure.session.exceptions import SessionNotFoundById
+from app.infrastructure.session.adapters_application.identity_provider_session import (
+    SessionIdentityProvider,
+)
+from app.infrastructure.session.exceptions import AuthenticationError
 from app.infrastructure.session.scenarios.log_out.payload import LogOutResponse
 from app.infrastructure.session.services.jwt_token import JwtTokenService
 from app.infrastructure.session.services.session import SessionService
-from app.infrastructure.user.adapters_application.identity_provider_session import (
-    SessionIdentityProvider,
-)
 from app.infrastructure.user.adapters_application.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
@@ -24,7 +21,7 @@ log = logging.getLogger(__name__)
 class LogOutInteractor(InteractorFlexible):
     """
     :raises AuthenticationError:
-    :raises DataGatewayError:
+    :raises DataMapperError:
     """
 
     def __init__(
@@ -50,22 +47,27 @@ class LogOutInteractor(InteractorFlexible):
 
         log.info("Log out: user identified. Username: '%s'.", user.username.value)
 
-        try:
-            current_session: SessionRecord = (
-                await self._session_service.get_current_session()
-            )
-        except (AdapterError, DataGatewayError, SessionNotFoundById) as error:
-            log.error("Session retrieving failed: '%s'", error)
-            raise AuthenticationError("Not authenticated.") from error
+        current_session: SessionRecord | None = (
+            await self._session_service.get_current_session()
+        )
+        if current_session is None:
+            raise AuthenticationError("Not authenticated.")
 
         self._jwt_token_service.delete_access_token_from_request()
         log.debug("Access token deleted. Session id: '%s'.", current_session.id_)
 
-        try:
-            await self._session_service.delete_session(current_session.id_)
-        except (DataGatewayError, SessionNotFoundById) as error:
-            log.error("Session deletion failed: '%s'", error)
-            raise DataGatewayError("Session deletion failed.") from error
+        if not await self._session_service.delete_session(current_session.id_):
+            log.debug(
+                (
+                    "Log out: failed. "
+                    "Session wasn't deleted. "
+                    "Username: '%s'. "
+                    "Session id: '%s'."
+                ),
+                user.username.value,
+                current_session.id_,
+            )
+            return LogOutResponse("Logged out: incomplete.")
 
         log.info("Log out: done. Username: '%s'.", user.username.value)
         return LogOutResponse("Logged out: successful.")

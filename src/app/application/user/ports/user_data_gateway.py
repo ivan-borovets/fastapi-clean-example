@@ -9,13 +9,13 @@ class UserDataGateway(Protocol):
     @abstractmethod
     async def save(self, user: User) -> None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
 
     @abstractmethod
     async def read_by_id(self, user_id: UserId) -> User | None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
 
     @abstractmethod
@@ -23,17 +23,17 @@ class UserDataGateway(Protocol):
         self, username: Username, for_update: bool = False
     ) -> User | None:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
 
     @abstractmethod
     async def is_username_unique(self, username: Username) -> bool:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """
 
     @abstractmethod
     async def read_all(self, limit: int, offset: int) -> list[User]:
         """
-        :raises DataGatewayError:
+        :raises DataMapperError:
         """

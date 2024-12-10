@@ -7,7 +7,7 @@ from app.application.user.scenarios.admin_list_users.payload import (
     ListUsersResponse,
     ListUsersResponseElement,
 )
-from app.application.user.service_authorization import AuthorizationService
+from app.application.user.services.authorization import AuthorizationService
 from app.domain.user.entity import User
 from app.domain.user.enums import UserRoleEnum
 
@@ -18,7 +18,7 @@ class ListUsersInteractor(InteractorStrict[ListUsersRequest, ListUsersResponse])
     """
     :raises AuthenticationError:
     :raises AuthorizationError:
-    :raises DataGatewayError:
+    :raises DataMapperError:
     """
 
     def __init__(
