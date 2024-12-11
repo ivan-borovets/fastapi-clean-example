@@ -49,5 +49,10 @@ class SessionIdentityProvider(IdentityProvider):
         if self._session_service.is_session_near_expiry(session):
             await self._session_service.prolong_session(session)
 
+            new_access_token: str = self._jwt_token_service.issue_access_token(
+                session.id_
+            )
+            self._jwt_token_service.add_access_token_to_request(new_access_token)
+
         log.debug("Get current user id: done.")
         return session.user_id

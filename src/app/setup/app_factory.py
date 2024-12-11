@@ -19,7 +19,7 @@ from app.presentation.exception_handler import (
     ExceptionMapper,
     ExceptionMessageProvider,
 )
-from app.presentation.middleware_auth import AuthMiddleware
+from app.presentation.middleware_auth import ASGIAuthMiddleware
 from app.setup.config.settings import Settings
 
 
@@ -40,7 +40,7 @@ def configure_app(
     exception_mapper: ExceptionMapper,
 ) -> None:
     app.include_router(root_router)
-    app.add_middleware(AuthMiddleware)  # noqa
+    app.add_middleware(ASGIAuthMiddleware)  # noqa
     exception_handler: ExceptionHandler = ExceptionHandler(
         app, exception_message_provider, exception_mapper
     )
