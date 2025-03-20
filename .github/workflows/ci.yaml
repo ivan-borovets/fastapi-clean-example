@@ -21,37 +21,28 @@ jobs:
 
       - name: Format code
         run: |
-          isort src/
-          black src/
+          isort config/ src/ tests/
+          black config/ src/ tests/
 
       - name: Lint code
         run: |
-          bandit -r src/ -c pyproject.toml
-          ruff check src/
-          pylint src/
-          mypy src/
+          bandit -r config/ src/ -c pyproject.toml
+          ruff check config/ src/ tests/
+          pylint config/ src/
+          mypy config/ src/
 
       - name: Test code
         run: |
           pytest -v
 
-  docker-build-and-run:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.0
-
-      - name: Generate Docker environment file
+      - name: Test Docker Compose setup
         run: |
-          make dotenv-docker
-
-      - name: Build and run Docker compose
-        run: |
+          export APP_ENV=local
+          python config/toml_config_manager.py
+          cd config/local
+          echo "Generated .env.local content:"
+          cat .env.local
+          export COMPOSE_ENV_FILES=.env.local
           docker compose up -d --build
 
       - name: Verify Application Health

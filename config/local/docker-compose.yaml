@@ -1,16 +1,12 @@
 services:
   web_app_db_pg:
-    env_file:
-      - .env
+    container_name: "app_db_pg_${APP_ENV}"
+    image: postgres:16-alpine
+    shm_size: 128mb
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-    container_name: web_app_db_pg
-    image: postgres:16-alpine
-    shm_size: 128mb
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
@@ -24,15 +20,14 @@ services:
 
   web_app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: config/${APP_ENV}/Dockerfile
     image: web_app:latest
-    env_file:
-      - .env
     environment:
-      PYTHONPATH: "/app/src"
+      APP_ENV: ${APP_ENV}
       UVICORN_HOST: ${UVICORN_HOST}
       UVICORN_PORT: ${UVICORN_PORT}
+      POSTGRES_HOST: web_app_db_pg
     ports:
       - "${UVICORN_PORT}:${UVICORN_PORT}"
     depends_on:

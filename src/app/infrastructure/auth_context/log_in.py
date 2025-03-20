@@ -74,8 +74,8 @@ class LogInHandler:
         except AuthenticationError:
             pass
 
-        username: Username = Username(request_data.username)
-        password: RawPassword = RawPassword(request_data.password)
+        username = Username(request_data.username)
+        password = RawPassword(request_data.password)
 
         user: User | None = await self._sqla_user_data_mapper.read_by_username(username)
         if user is None:

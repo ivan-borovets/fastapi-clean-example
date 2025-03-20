@@ -58,7 +58,7 @@ class InactivateUserInteractor:
 
         await self._authorization_service.authorize_action(PermissionEnum.MANAGE_USERS)
 
-        username: Username = Username(request_data.username)
+        username = Username(request_data.username)
 
         user: User | None = await self._user_command_gateway.read_by_username(
             username, for_update=True

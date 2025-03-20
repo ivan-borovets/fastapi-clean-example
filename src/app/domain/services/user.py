@@ -32,11 +32,8 @@ class UserService:
         """
         :raises DomainFieldError:
         """
-        user_id: UserId = UserId(self._user_id_generator())
-        password_hash: UserPasswordHash = UserPasswordHash(
-            self._password_hasher.hash(raw_password)
-        )
-
+        user_id = UserId(self._user_id_generator())
+        password_hash = UserPasswordHash(self._password_hasher.hash(raw_password))
         return User(
             id_=user_id,
             username=username,
@@ -52,9 +49,7 @@ class UserService:
         )
 
     def change_password(self, user: User, raw_password: RawPassword) -> None:
-        hashed_password: UserPasswordHash = UserPasswordHash(
-            self._password_hasher.hash(raw_password)
-        )
+        hashed_password = UserPasswordHash(self._password_hasher.hash(raw_password))
         user.password_hash = hashed_password
 
     def toggle_user_activation(self, user: User, is_active: bool) -> None:

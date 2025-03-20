@@ -1,18 +1,23 @@
 import logging
+import os
 from datetime import timedelta
-from pathlib import Path
 from typing import Any, Literal, Self
 
+import rtoml
 from pydantic import BaseModel, Field, PostgresDsn, field_validator
 
-from app.setup.config.constants import BASE_DIR
-from app.setup.config.toml_reader import TomlConfigReader
+from app.setup.config.constants import (
+    ENV_TO_DIR_PATHS,
+    ENV_VAR_NAME,
+    DirContents,
+    ValidEnvs,
+)
 
 log = logging.getLogger(__name__)
 
 
 class PasswordSettings(BaseModel):
-    pepper: str = Field(alias="PASSWORD_PEPPER")
+    pepper: str = Field(alias="PEPPER")
 
 
 class AuthSettings(BaseModel):
@@ -64,6 +69,50 @@ class SecuritySettings(BaseModel):
     cookies: CookiesSettings
 
 
+class PostgresSettings(BaseModel):
+    user: str = Field(alias="USER")
+    password: str = Field(alias="PASSWORD")
+    db: str = Field(alias="DB")
+    host: str = Field(alias="HOST")
+    port: int = Field(alias="PORT")
+    driver: str = Field(alias="DRIVER")
+
+    @field_validator("host")
+    @classmethod
+    def override_host_from_env(cls, v: str) -> str:
+        postgres_host_env = os.environ.get("POSTGRES_HOST")
+        if postgres_host_env:
+            return postgres_host_env
+        return v
+
+    @field_validator("port")
+    @classmethod
+    def validate_port_range(cls, v: int) -> int:
+        if not 1 <= v <= 65535:
+            raise ValueError("Port must be between 1 and 65535")
+        return v
+
+    @property
+    def dsn(self) -> str:
+        return str(
+            PostgresDsn.build(
+                scheme=f"postgresql+{self.driver}",
+                username=self.user,
+                password=self.password,
+                host=self.host,
+                port=self.port,
+                path=self.db,
+            )
+        )
+
+
+class SqlaEngineSettings(BaseModel):
+    echo: bool = Field(alias="ECHO")
+    echo_pool: bool = Field(alias="ECHO_POOL")
+    pool_size: int = Field(alias="POOL_SIZE")
+    max_overflow: int = Field(alias="MAX_OVERFLOW")
+
+
 class LoggingSettings(BaseModel):
     level: Literal[
         "DEBUG",
@@ -71,61 +120,76 @@ class LoggingSettings(BaseModel):
         "WARNING",
         "ERROR",
         "CRITICAL",
-    ] = Field(alias="LOG_LEVEL")
+    ] = Field(alias="LEVEL")
 
 
-class PostgresSettings(BaseModel):
-    username: str = Field(alias="POSTGRES_USER")
-    password: str = Field(alias="POSTGRES_PASSWORD")
-    host: str = Field(alias="POSTGRES_HOST")
-    port: int = Field(alias="POSTGRES_PORT")
-    path: str = Field(alias="POSTGRES_DB")
-
-    @property
-    def dsn(self) -> str:
-        return str(
-            PostgresDsn.build(
-                scheme="postgresql+psycopg",
-                username=self.username,
-                password=self.password,
-                host=self.host,
-                port=self.port,
-                path=self.path,
-            )
-        )
-
-
-class SqlaEngineSettings(BaseModel):
-    echo: bool = Field(alias="SQLA_ECHO")
-    echo_pool: bool = Field(alias="SQLA_ECHO_POOL")
-    pool_size: int = Field(alias="SQLA_POOL_SIZE")
-    max_overflow: int = Field(alias="SQLA_MAX_OVERFLOW")
-
-
-class DbSettings(BaseModel):
+class AppSettings(BaseModel):
     postgres: PostgresSettings
-    sqla_engine: SqlaEngineSettings
-
-
-class Settings(BaseModel):
+    sqla: SqlaEngineSettings
     security: SecuritySettings
-    logging: LoggingSettings
-    db: DbSettings
-
-    _cfg_toml_path: Path = BASE_DIR / "config.toml"
+    logs: LoggingSettings
 
     @classmethod
-    def from_file(
-        cls,
-        path: Path = _cfg_toml_path,
-        reader: TomlConfigReader = TomlConfigReader(),
-        strict: bool = False,
-    ) -> Self:
-        if not path.is_file():
-            raise FileNotFoundError(
-                f"The file does not exist at the specified path: {path}"
-            )
-        config_data = reader.read(path)
-        settings = cls.model_validate(config_data, strict=strict)
-        log.debug("Settings read from path: %s.", path)
-        return settings
+    def from_toml(cls, env: ValidEnvs | None = None) -> Self:
+        if env is None:
+            env = get_current_env()
+        raw_config = load_full_config(env=env)
+        log.info("Reading config for environment: '%s'", env)
+        return cls.model_validate(raw_config)
+
+
+def validate_env(*, env: str | None) -> ValidEnvs:
+    if env is None or env not in ValidEnvs:
+        valid_values = ", ".join(f"'{e}'" for e in ValidEnvs)
+        env_display = "not set" if env is None else f"'{env}'"
+        raise ValueError(
+            f"Environment variable {ENV_VAR_NAME} has invalid value: {env_display}. "
+            f"Must be one of: {valid_values}."
+        )
+    return ValidEnvs(env)
+
+
+def read_config(
+    *,
+    env: ValidEnvs,
+    config: DirContents = DirContents.CONFIG_NAME,
+) -> dict[str, Any]:
+    dir_path = ENV_TO_DIR_PATHS.get(env)
+    if dir_path is None:
+        raise FileNotFoundError(f"No directory path configured for environment: {env}")
+    file_path = dir_path / config
+    if not file_path.is_file():
+        raise FileNotFoundError(
+            f"The file does not exist at the specified path: {file_path}"
+        )
+    with open(file=file_path, mode="r", encoding="utf-8") as file:
+        return rtoml.load(file)
+
+
+def merge_dicts(*, dict1: dict[str, Any], dict2: dict[str, Any]) -> dict[str, Any]:
+    result = dict1.copy()
+    for key, value in dict2.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = merge_dicts(dict1=result[key], dict2=value)
+        else:
+            result[key] = value
+    return result
+
+
+def load_full_config(*, env: ValidEnvs) -> dict[str, Any]:
+    config = read_config(env=env)
+    try:
+        secrets = read_config(env=env, config=DirContents.SECRETS_NAME)
+        config = merge_dicts(dict1=config, dict2=secrets)
+    except FileNotFoundError:
+        log.warning("Secrets file not found. Full config will not contain secrets.")
+    return config
+
+
+def get_current_env() -> ValidEnvs:
+    env_value = os.environ.get(ENV_VAR_NAME)
+    return validate_env(env=env_value)
+
+
+def load_settings(env: ValidEnvs | None = None) -> AppSettings:
+    return AppSettings.from_toml(env=env)

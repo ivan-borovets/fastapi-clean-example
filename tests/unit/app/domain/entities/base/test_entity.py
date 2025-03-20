@@ -1,41 +1,34 @@
+from dataclasses import dataclass
+
 import pytest
 
+from app.domain.entities.base.entity import Entity
+from app.domain.entities.base.value_object import ValueObject
 from app.domain.exceptions.base import DomainError
-from tests.unit.app.domain.entities.base.conftest import (
-    SampleEntity,
-    SingleFieldValueObject,
-)
 
 
-def test_entity_id_invariance(sample_entity: SampleEntity) -> None:
+@dataclass(frozen=True, slots=True, repr=False)
+class SingleFieldValueObject(ValueObject):
+    value: int
+
+
+@dataclass(eq=False, slots=True)
+class SampleEntity(Entity[SingleFieldValueObject]):
+    name: str
+
+
+def test_setattr():
+    entity = SampleEntity(id_=SingleFieldValueObject(value=123), name="abc")
     with pytest.raises(DomainError):
-        sample_entity.id_ = SingleFieldValueObject(value=123)
+        entity.id_ = SingleFieldValueObject(value=456)
 
 
-def test_entity_equality(
-    sample_entity: SampleEntity,
-    single_field_value_object: SingleFieldValueObject,
-) -> None:
-    same_entity: SampleEntity = SampleEntity(
-        id_=single_field_value_object,
-        name="abcdef",
-    )
-    assert sample_entity == same_entity
+def test_eq_hash():
+    entity_1 = SampleEntity(id_=SingleFieldValueObject(value=123), name="abc")
+    entity_2 = SampleEntity(id_=SingleFieldValueObject(value=123), name="def")
+    assert entity_1 == entity_2
+    assert hash(entity_1) == hash(entity_2)
 
-
-def test_entity_hash(
-    sample_entity: SampleEntity,
-    single_field_value_object: SingleFieldValueObject,
-    other_single_field_value_object: SingleFieldValueObject,
-) -> None:
-    same_entity: SampleEntity = SampleEntity(
-        id_=single_field_value_object,
-        name="abcdef",
-    )
-    assert hash(sample_entity) == hash(same_entity)
-
-    different_entity: SampleEntity = SampleEntity(
-        id_=other_single_field_value_object,
-        name="abcdef",
-    )
-    assert hash(sample_entity) != hash(different_entity)
+    entity_3 = SampleEntity(id_=SingleFieldValueObject(value=456), name="abc")
+    assert entity_1 != entity_3
+    assert hash(entity_1) != hash(entity_3)

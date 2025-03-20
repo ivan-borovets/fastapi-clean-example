@@ -74,7 +74,7 @@ class ListUsersQueryService:
             )
             raise SortingError("Invalid sorting field.")
 
-        response: ListUsersResponse = ListUsersResponse(users=users)
+        response = ListUsersResponse(users=users)
 
         log.info("List users by admin: finished.")
         return response

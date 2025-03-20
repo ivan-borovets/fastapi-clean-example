@@ -67,7 +67,7 @@ class ExceptionHandler:
         status_code: int = self._ERROR_MAPPING.get(
             type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-        message: str = str(exc) if status_code < 500 else "Internal server error."
+        message = str(exc) if status_code < 500 else "Internal server error."
 
         if status_code >= 500:
             log.error(

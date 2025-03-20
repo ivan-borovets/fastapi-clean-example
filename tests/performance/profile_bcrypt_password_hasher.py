@@ -8,14 +8,14 @@ from app.infrastructure.new_types import PasswordPepper
 
 
 def run_operations(hasher: BcryptPasswordHasher) -> None:
-    raw_password: RawPassword = RawPassword("raw_password")
-    hashed: bytes = hasher.hash(raw_password)
+    raw_password = RawPassword("raw_password")
+    hashed = hasher.hash(raw_password)
     hasher.verify(raw_password=raw_password, hashed_password=hashed)
 
 
 def setup_profiler() -> tuple[LineProfiler, BcryptPasswordHasher]:
-    hasher: BcryptPasswordHasher = BcryptPasswordHasher(PasswordPepper("Cayenne!"))
-    profiler: LineProfiler = LineProfiler()
+    hasher = BcryptPasswordHasher(PasswordPepper("Cayenne!"))
+    profiler = LineProfiler()
 
     profiler.add_function(hasher.hash)
     profiler.add_function(hasher.verify)

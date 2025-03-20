@@ -27,7 +27,7 @@ class SqlaTransactionManager(TransactionManager):
         except IntegrityError as error:
             if "uq_users_username" in str(error):
                 params: Mapping[str, Any] = cast(Mapping[str, Any], error.params)
-                username: str = str(params.get("username", "unknown"))
+                username = str(params.get("username", "unknown"))
                 raise UsernameAlreadyExists(username) from error
 
             raise DataMapperError("Database constraint violation.") from error

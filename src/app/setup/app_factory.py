@@ -15,7 +15,7 @@ from fastapi.responses import ORJSONResponse
 from app.infrastructure.sqla_persistence.mappings.all import map_tables
 from app.presentation.common.asgi_auth_middleware import ASGIAuthMiddleware
 from app.presentation.common.exception_handler import ExceptionHandler
-from app.setup.config.settings import Settings
+from app.setup.config.settings import AppSettings
 
 
 def create_app() -> FastAPI:
@@ -42,9 +42,9 @@ def configure_app(
 
 def create_async_ioc_container(
     providers: Iterable[Provider],
-    settings: Settings,
+    settings: AppSettings,
 ) -> AsyncContainer:
     return make_async_container(
         *providers,
-        context={Settings: settings},
+        context={AppSettings: settings},
     )

@@ -1,25 +1,34 @@
 import logging
-from io import StringIO
-from logging import Logger
+from unittest.mock import MagicMock
 
-from app.setup.config.logs import configure_logging
+import pytest
+
+from app.setup.config.logs import configure_logging, validate_logging_level
 
 
-def test_configure_logging_debug() -> None:
-    log_stream: StringIO = StringIO()
+@pytest.mark.parametrize("level", ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+def test_validate_logging_level_valid(level):
+    assert validate_logging_level(level=level) == level
 
-    log: Logger = logging.getLogger()
-    log.handlers = []
 
-    configure_logging(level="DEBUG")
+@pytest.mark.parametrize("level", ["", "debug", "INVALID_LEVEL", "INFOO"])
+def test_validate_logging_level_invalid(level):
+    with pytest.raises(ValueError):
+        validate_logging_level(level=level)
 
-    for handler in log.handlers:
-        if isinstance(handler, logging.StreamHandler):
-            handler.stream = log_stream
 
-    test_log_msg: str = "Test log message."
-    log.debug(test_log_msg)
-
-    log_output: str = log_stream.getvalue()
-    assert log.level == logging.DEBUG
-    assert test_log_msg in log_output
+@pytest.mark.parametrize(
+    "level_str, expected_level",
+    [
+        ("DEBUG", logging.DEBUG),
+        ("INFO", logging.INFO),
+        ("WARNING", logging.WARNING),
+        ("ERROR", logging.ERROR),
+        ("CRITICAL", logging.CRITICAL),
+    ],
+)
+def test_configure_logging_levels(level_str, expected_level, monkeypatch):
+    mock = MagicMock()
+    monkeypatch.setattr(logging, "basicConfig", mock)
+    configure_logging(level=level_str)
+    assert mock.call_args[1]["level"] == expected_level
