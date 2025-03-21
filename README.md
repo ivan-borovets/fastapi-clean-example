@@ -257,7 +257,7 @@ receive them.
 From this definition, it's clear that one common way to implement DI is by passing dependencies as arguments to the
 `__init__` method or functions.
 
-But how exactly should these dependencies be passed?
+But how exactly should these dependencies be initialized?
 
 **DI frameworks** offer an elegant solution by automatically creating the necessary objects (while managing their
 **lifecycle**) and injecting them where needed.
@@ -691,7 +691,7 @@ the ASGI Community chat is extremely low. Therefore, joining it is at your own r
 
 - [x] set up CI
 - [x] simplify settings
-- [ ] simplify annotations
+- [x] simplify annotations
 - [ ] increase test coverage
 - [ ] explain code
 
