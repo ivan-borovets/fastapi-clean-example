@@ -109,9 +109,9 @@ class AuthInfrastructureProvider(Provider):
         scope=Scope.REQUEST,
     )
 
-    # Interactors
+    # "Interactors" (Infrastructure handlers)
     @provide(scope=Scope.REQUEST)
-    def provide_sign_up_interactor(
+    def provide_sign_up_handler(
         self,
         auth_session_identity_provider: AuthSessionIdentityProvider,
         sqla_user_data_mapper: Annotated[
@@ -135,7 +135,7 @@ class AuthInfrastructureProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    def provide_login_interactor(
+    def provide_login_handler(
         self,
         auth_session_identity_provider: AuthSessionIdentityProvider,
         sqla_user_data_mapper: Annotated[
@@ -160,7 +160,7 @@ class AuthInfrastructureProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    def provide_logout_interactor(
+    def provide_logout_handler(
         self,
         auth_session_identity_provider: AuthSessionIdentityProvider,
         sqla_user_data_mapper: Annotated[

@@ -25,19 +25,16 @@
         4. [Other Environments](#other-environments-devprod)
         5. [Adding New Environments](#adding-new-environments)
 4. [Useful Resources](#useful-resources)
-5. [Acknowledgements](#acknowledgements)
+5. [Support the Project](#-support-the-project)
+6. [Acknowledgements](#acknowledgements)
 
 # Overview
 
-📘 This FastAPI-based project and its documentation represent my interpretation of Clean Architecture and Command Query
-Responsibility Segregation (CQRS) principles with subtle notes of Domain-Driven Design (DDD).
-While not claiming originality or strict adherence to every aspect of these methodologies, the project demonstrates how
-their key ideas can be effectively implemented in Python.
+📘 This FastAPI-based project and its documentation represent a practical interpretation of Clean Architecture and
+Command Query Responsibility Segregation (CQRS) principles with elements of Domain-Driven Design (DDD).
+Although it's not meant to serve as a comprehensive reference or a strict application of these methodologies, the
+project demonstrates how their core ideas can be effectively put into practice in Python.
 If they're new to you, refer to the [Useful Resources](#useful-resources) section.
-
-💬 Feel free to open issues, ask questions, or submit pull requests.
-
-⭐ If you find this project useful, please give it a star or share it!
 
 # Architecture Principles
 
@@ -146,7 +143,7 @@ In other words, dependencies must never point outwards within the application's 
     Handling these exceptions in the Application layer ensures that any business logic implemented in adapters remains
     under control.
 >
-> - Beware of introducing elements in an inner layer tailored specifically to the needs of an outer layer.
+> - Avoid introducing elements in inner layers that specifically exist to support outer layers.
     For example, you might be tempted to place something in the Application layer that exists solely to support a
     specific piece of infrastructure.
     At first glance, based on imports, it might seem that the Dependency Rule isn't violated. However, in reality,
@@ -172,12 +169,12 @@ significant issue.
 Let's agree, for this project, that Dependency Rule **does not apply to adapters**.
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 10px; justify-items: center;">
-  <img src="docs/onion_1.svg" alt="My Interpretation of CAD" style="width: 400px; height: auto;" />
-  <img src="docs/onion_2.svg" alt="My Interpretation of CAD, alternative" style="width: 400px; height: auto;" />
+  <img src="docs/onion_1.svg" alt="My Interpretation of CA-D" style="width: 400px; height: auto;" />
+  <img src="docs/onion_2.svg" alt="My Interpretation of CA-D, alternative" style="width: 400px; height: auto;" />
 </div>
 <p align="center" style="font-size: 14px;">
-  <em>Figure 2: <b>My Pragmatic Interpretation</b> of Clean Architecture Diagram<br>
-  (original and alternative representation)
+  <em>Figure 2: <b>My Pragmatic Interpretation</b> of Clean Architecture<br>
+  (diagrammed — original and alternative representation)
   </em>
 </p>
 
@@ -203,9 +200,8 @@ Let's agree, for this project, that Dependency Rule **does not apply to adapters
     username, or checking if a user meets the required age) belongs to the Domain or Application layer.
 > - Business rule validation often involves relationships between fields, such as ensuring that a discount applies only
     within a specific date range or a promotion code is valid for orders above a certain total.
-> - Pydantic is unsuitable for business rule validation. Its parsing and serialization features are irrelevant in this
-    context, and while it might appear helpful for validation, it lacks the capabilities to handle complex relationships
-    that may arise in Domain or Application layers.
+> - **Carefully** consider using Pydantic for business rule validation. While convenient, Pydantic models are slower
+    than regular dataclasses and reduce application core stability by coupling business logic to an external library.
 
 ![#gray](https://placehold.co/15x15/gray/gray.svg) **External Layer**
 
@@ -257,7 +253,7 @@ receive them.
 From this definition, it's clear that one common way to implement DI is by passing dependencies as arguments to the
 `__init__` method or functions.
 
-But how exactly should these dependencies be passed?
+But how exactly should these dependencies be initialized?
 
 **DI frameworks** offer an elegant solution by automatically creating the necessary objects (while managing their
 **lifecycle**) and injecting them where needed.
@@ -530,6 +526,12 @@ natural.
 - **export.toml**: Lists fields to export to .env (`export.fields = ["postgres.USER", "postgres.PASSWORD", ...]`)
 - **.secrets.toml**: Optional sensitive data (same format as config.toml, merged with main config)
 
+> [!IMPORTANT]
+> - This project includes secret files for demonstration purposes only. In a real project, you **must** ensure that
+    `.secrets.toml` and all `.env` files are not tracked by version control system to prevent exposing sensitive
+    information. See this project's `.gitignore` for an example of how to properly exclude these sensitive files from
+    Git.
+
 ### Flow
 
 In this project I use my own configuration system based on TOML files as the single source of truth.
@@ -544,7 +546,7 @@ from the structured TOML files. More details are available at https://github.com
 
 ### Local Environment
 
-1. [Configure](#files) local environment
+1. Configure local environment
 
 * Create `.secrets.toml` in `config/local` following `.secrets.toml.example`
 * Edit TOML files in `config/local` according to your project requirements
@@ -606,8 +608,8 @@ uv pip install -e '.[test,dev]'
     alembic upgrade head
     ```
 
-- After applying the migrations, you can start the application locally as usual.
-  The database is now set up and ready to be used by your local instance.
+- After applying the migrations, the database is ready, and you can launch the application locally (e.g., through your
+  IDE). Remember to set the `APP_ENV` environment variable in your IDE's run configuration.
 
 - To run via Docker Compose:
 
@@ -615,6 +617,8 @@ uv pip install -e '.[test,dev]'
     make up
     # make up.echo
     ```
+
+  In this case, migrations will be applied automatically at startup.
 
 6. Shutdown
 
@@ -627,7 +631,7 @@ uv pip install -e '.[test,dev]'
 
 1. Use the instructions about [local environment](#local-environment) above
 
-* But make sure you've created similar structure in `config/dev` or `config/prod` with files:
+* But make sure you've created similar structure in `config/dev` or `config/prod` with [files](#files):
     * `config.toml`
     * `.secrets.toml`
     * `export.toml`
@@ -639,7 +643,7 @@ uv pip install -e '.[test,dev]'
 1. Add new value to `ValidEnvs` enum in `config/toml_config_manager.py` (and maybe in your app settings)
 2. Update `ENV_TO_DIR_PATHS` mapping in the same file (and maybe in your app settings)
 3. Create corresponding directory in `config/` folder
-4. Add required [configuration files](#files)
+4. Add required configuration [files](#files)
 
 Environment directories can also contain other env-specific files like `docker-compose.yaml`, which will be used by
 Makefile commands.
@@ -663,35 +667,36 @@ Makefile commands.
 
 - [Martin Fowler. Patterns of Enterprise Application Architecture. 2002](https://www.amazon.com/Patterns-Enterprise-Application-Architecture-Martin/dp/0321127420)
 
+# ⭐ Support the Project
+
+If you find this project useful, please give it a star or share it!
+Your support means a lot.
+
+💬 Feel free to open issues, ask questions, or submit pull requests.
+
 # Acknowledgements
 
 I would like to express my sincere gratitude to the following individuals for their valuable ideas and support in
 satisfying my curiosity throughout the development of this project:
+[igoryuha](https://github.com/igoryuha),
+[tishka17](https://github.com/tishka17),
+[chessenjoyer17](https://github.com/chessenjoyer17),
+[PlzTrustMe](https://github.com/PlzTrustMe),
+[Krak3nDev](https://github.com/Krak3nDev),
+[Ivankirpichnikov](https://github.com/Ivankirpichnikov),
+[nkhitrov](https://github.com/nkhitrov),
+[ApostolFet](https://github.com/ApostolFet),
+Lancetnik, Sehat1137, Maclovi.
 
-- [igoryuha](https://github.com/igoryuha)
-- [tishka17](https://github.com/tishka17)
-- [chessenjoyer17](https://github.com/chessenjoyer17)
-- [PlzTrustMe](https://github.com/PlzTrustMe)
-- [Krak3nDev](https://github.com/Krak3nDev)
-- [Ivankirpichnikov](https://github.com/Ivankirpichnikov)
-- [nkhitrov](https://github.com/nkhitrov)
-- [ApostolFet](https://github.com/ApostolFet)
-- Lancetnik
-- Sehat1137
-- Maclovi
-
-I would also like to thank all the other participants of the ASGI Community Telegram chat and
-⚗️ Reagento (adaptix/dishka) [Telegram chat](https://t.me/reagento_ru) for their insightful discussions and shared
-knowledge.
-
-However, I must warn that, despite the high professionalism of some participants, the overall communication culture in
-the ASGI Community chat is extremely low. Therefore, joining it is at your own risk.
+I also greatly appreciate the valuable insights shared by participants of the ASGI Community Telegram chat, despite
+frequent and lively communication challenges, as well as the ⚗️ Reagento (adaptix/dishka)
+[Telegram chat](https://t.me/reagento_ru) for their thoughtful discussions and generous knowledge exchange.
 
 # Todo
 
 - [x] set up CI
 - [x] simplify settings
-- [ ] simplify annotations
+- [x] simplify annotations
 - [ ] increase test coverage
 - [ ] explain code
 
