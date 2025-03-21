@@ -1,0 +1,23 @@
+# PostgreSQL
+[postgres]
+DB = "web_app_db_pg"
+HOST = "localhost"
+PORT = 5432
+DRIVER = "psycopg"
+
+# Uvicorn
+[uvicorn]
+HOST = "0.0.0.0"
+PORT = 9999
+
+# SQLAlchemy
+[sqla]
+ECHO = false
+ECHO_POOL = false
+POOL_SIZE = 50
+MAX_OVERFLOW = 10
+
+# Logs
+[logs]
+# Level can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+LEVEL = "DEBUG"

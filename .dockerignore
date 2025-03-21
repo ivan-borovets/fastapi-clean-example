@@ -1,46 +1,31 @@
 # Venv
 .venv/
 
-# Docker
-**/docker-compose.yml
-**/docker-compose.yaml
-**/Dockerfile
-**/.docker
-**/.dockerignore
-
 # Git
-**/.git/
-**/*.gitignore
-**/*.gitattributes
+.git/
+.gitignore
+.gitattributes
 
 # Python Cache
-**/__pycache__/
-**/.mypy_cache/
-**/.ruff_cache
+__pycache__/
+*.py[cod]
+*$py.class
+.mypy_cache/
+.ruff_cache/
 
 # IDE Specific
-**/.idea/
+.idea/
+.vscode/
 
-# CI/CD
-**/Makefile
+# Test artifacts
+.coverage
+htmlcov/
 
-# Tests
-**/tests/
-**/.coverage
+# Documentation and non-essential files
+docs/
+scripts/
+LICENSE
+logo.jpg
 
-# Telegram Sessions
-**/*.session
-**/*.session-journal
-
-# LICENSE, README, Logo
-**/LICENSE
-**/README.md
-**/logo.jpg
-
-# Misc
-**/custom/
-**/logs/
-**/media/
-
-# IgnoreToDo
-todo/
+# Local environment
+.env*

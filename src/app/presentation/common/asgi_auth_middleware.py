@@ -19,14 +19,14 @@ class ASGIAuthMiddleware:
             await self.app(scope, receive, send)
             return
 
-        request: Request = Request(scope)
+        request = Request(scope)
 
         async def modify_cookies(message: Message) -> None:
             if message["type"] != "http.response.start":
                 await send(message)
                 return
 
-            headers: MutableHeaders = MutableHeaders(scope=message)
+            headers = MutableHeaders(scope=message)
 
             self._set_access_token_cookie(request, headers)
             self._delete_access_token_cookie(request, headers)
@@ -47,7 +47,7 @@ class ASGIAuthMiddleware:
         is_cookie_secure: bool = cookie_params.get("secure", False)
         cookie_samesite: Literal["strict"] | None = cookie_params.get("samesite", None)
 
-        cookie: SimpleCookie = SimpleCookie()
+        cookie = SimpleCookie()
         cookie["access_token"] = new_access_token
         cookie["access_token"]["path"] = "/"
         cookie["access_token"]["httponly"] = True
@@ -73,7 +73,7 @@ class ASGIAuthMiddleware:
             current_access_token if current_access_token else "already deleted",
         )
 
-        cookie: SimpleCookie = SimpleCookie()
+        cookie = SimpleCookie()
         cookie["access_token"] = ""  # nosec
         cookie["access_token"]["path"] = "/"
         cookie["access_token"]["httponly"] = True

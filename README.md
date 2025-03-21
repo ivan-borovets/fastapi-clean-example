@@ -19,9 +19,11 @@
         2. [Account](#account-apiv1account)
         3. [Users](#users-apiv1users)
     5. [Configuration](#configuration)
-        1. [Flow](#flow)
-        2. [Local Development](#local-development)
-        3. [Docker Deployment](#docker-deployment)
+        1. [Files](#files)
+        2. [Flow](#flow)
+        3. [Local Environment](#local-environment)
+        4. [Other Environments](#other-environments-devprod)
+        5. [Adding New Environments](#adding-new-environments)
 4. [Useful Resources](#useful-resources)
 5. [Acknowledgements](#acknowledgements)
 
@@ -98,9 +100,10 @@ For now, we will focus on the purpose of the layers.
 - Interactors can be grouped into an **application service**, combining actions sharing a close context.
 
 > [!NOTE]
-> Domain and Application layers may import libraries that extend the language's capabilities or provide general-purpose
-> utilities (e.g., for numerical computations, timezone management, or object modeling). However, they should avoid any
-> ties to specific frameworks, databases, or external systems.
+> Domain and Application layers may import external tools and libraries to the extent necessary for describing business
+> logic — such as utilities for numerical computations, timezone management, or object modeling that extend the
+> language's capabilities.
+> However, they should avoid any ties to specific frameworks, databases, or external systems.
 
 ![#green](https://placehold.co/15x15/green/green.svg) **Infrastructure Layer**
 
@@ -400,12 +403,9 @@ natural.
 
 ```
 .
-├── config.toml                              # primary config file
-├── .env.example                             # example env vars for Docker/local dev
-│
+├── config/...                               # configuration files and scripts, includes Docker
 ├── Makefile                                 # shortcuts for setup and common tasks
 ├── scripts/...                              # helper scripts
-│
 ├── pyproject.toml                           # tooling and environment config (uv)
 ├── ...
 └── src/
@@ -520,44 +520,64 @@ natural.
 
 ## Configuration
 
-### Flow
-
 > [!WARNING]
 > - This part of documentation is **not** related to the architecture approach.
-    You are free to choose whether to use the proposed automatically generated configuration system or provide your own
-    settings manually, which will require changes to the Docker configuration.
-    However, **if settings are read from environment variables** instead of `config.toml`, **modifications** to the
-    application's settings code **will be necessary**.
+> - Use any configuration method you prefer.
 
-> [!WARNING]
-> - ⚠️ The current project settings are **overcomplicated** and should **not** be considered a reference implementation.
-> I acknowledge this issue and plan to simplify them as soon as I have time. Please keep this in mind while working with
-> the configuration.
+### Files
 
-> [!IMPORTANT]
-> - In the configuration flow diagram below,
-    the arrows represent **the flow of data, not dependencies.**
+- **config.toml**: Main application settings organized in sections
+- **export.toml**: Lists fields to export to .env (`export.fields = ["postgres.USER", "postgres.PASSWORD", ...]`)
+- **.secrets.toml**: Optional sensitive data (same format as config.toml, merged with main config)
 
-<p align="center">
-  <img src="docs/configuration_flow_toml_env.svg" alt="Configuration flow (toml to env)" />
-  <br><em>Figure 15: Configuration flow (.toml to .env)</em>
-</p>
+### Flow
 
-1. `config.toml`: primary config file
-2. `.env`: derivative config file which Docker needs
+In this project I use my own configuration system based on TOML files as the single source of truth.
+The system generates `.env` files for Docker and infrastructure components while the application reads settings directly
+from the structured TOML files. More details are available at https://github.com/ivan-borovets/toml-config-manager
 
 <p align="center">
-  <img src="docs/configuration_flow_app.svg" alt="Configuration flow (app)" />
-  <br><em>Figure 16: Configuration flow (app)</em>
+  <img src="docs/toml_config_manager.svg" alt="Configuration flow" />
+  <br><em>Figure 15: Configuration flow </em>
+  <br><small>Here, the arrows represent usage flow, <b>not dependencies.</b></small>
 </p>
 
-### Local Development
+### Local Environment
 
-> [!IMPORTANT]
-> The following `make` commands **require** `Python >= 3.11` installed on your system.
-> Feel free to take a look at [`Makefile`](Makefile), it contains many more useful commands.
+1. [Configure](#files) local environment
 
-1. **Set up development environment**
+* Create `.secrets.toml` in `config/local` following `.secrets.toml.example`
+* Edit TOML files in `config/local` according to your project requirements
+* When using Docker Compose, remember to pass `APP_ENV` to your service:
+
+```yaml
+services:
+  app:
+    # ...
+    environment:
+      APP_ENV: ${APP_ENV}
+```
+
+* `.env.local` will be generated later — **don't** create it manually
+
+2. Set environment variable
+
+```shell
+export APP_ENV=local
+# export APP_ENV=dev
+# export APP_ENV=prod
+```
+
+3. Check it and generate `.env`
+
+```shell
+# Probably you'll need Python 3.12 installed on your system to run these commands. 
+# The next code section provides commands for its fast installation.
+make env  # should print APP_ENV=local
+make dotenv  # should tell you where .env.local was generated
+```
+
+4. Set up virtual environment
 
 ```shell
 # sudo apt update
@@ -572,42 +592,13 @@ source .venv/bin/activate
 uv pip install -e '.[test,dev]'
 ```
 
-2. **Configure project**
-
-- Edit `config.toml` for primary configuration.
-
-> [!WARNING]
-> **Don't rename existing variables or remove comments** unless absolutely necessary.
-> This action may invalidate scripts associated with `Makefile`.
-> You can still fix them or not use `Makefile` at all.
-
-- Generate `.env` file **in one** of the ways:
-    1. **Safe** (as long as `config.toml` is correct)
-
-       Set `POSTGRES_HOST` variable in `config.toml` to `localhost`, then:
-        ```shell
-        make dotenv
-        ```
-    2. **Convenient**:
-
-        ```shell
-        make dotenv-local
-        ```
-       Automatically sets correct configuration
-
-       > Under the hood, the corresponding variable in `config.toml` becomes uncommented,
-       then the script associated with `make dotenv` is called.
-
-    3. **Manual** (use with caution):
-
-       Rename `.env.example` to `.env` and verify all variables.
-
-3. **Launch**
+5. Launch
 
 - To run only the database in Docker and use the app locally, use the following command:
 
     ```shell
-    make up-local-db
+    make up.db
+    # make up.db-echo
     ```
 
 - Then, apply the migrations:
@@ -618,93 +609,40 @@ uv pip install -e '.[test,dev]'
 - After applying the migrations, you can start the application locally as usual.
   The database is now set up and ready to be used by your local instance.
 
-4. **Shutdown**
+- To run via Docker Compose:
 
-- To stop the database container, use:
     ```shell
-    make down
-    # or
-    # docker compose down
+    make up
+    # make up.echo
     ```
 
-- To permanently delete the database along with the applied migrations, run:
-    ```shell
-    make down-total
-    # or
-    # docker compose down -v
-    ```
-
-### Docker Deployment
-
-> [!IMPORTANT]
-> The following `make` commands **require** `Python >= 3.11` installed on your system.
-> Feel free to take a look at [`Makefile`](Makefile), it contains many more useful commands.
-
-1. **Configure project**
-
-- Edit `config.toml` for primary configuration.
-
-> [!WARNING]
-> **Don't rename existing variables or remove comments** unless absolutely necessary.
-> This action may invalidate scripts associated with `Makefile`.
-> You can still fix them or not use `Makefile` at all.
-
-- Generate `.env` file **in one** of the ways:
-    1. **Safe** (as long as `config.toml` is correct)
-
-       Set `POSTGRES_HOST` variable in `config.toml` to
-       the name of the **Docker service** from `docker-compose.yaml`,
-       then:
-        ```shell
-        make dotenv
-        ```
-    2. **Convenient**:
-
-        ```shell
-        make dotenv-docker
-        ```
-       Automatically sets correct configuration
-
-       > Under the hood, the corresponding variable in `config.toml` becomes uncommented,
-       then the script associated with `make dotenv` is called.
-
-    3. **Manual** (use with caution):
-
-       Rename `.env.example` to `.env` and verify all variables.
-
-2. **Launch**
-
-- **Choose one** of the following commands:
-
-    - ```shell
-      make up
-      # to run in detached mode
-      # or
-      # docker compose up --build -d
-      ```
-
-    - ```shell
-      make up-echo
-      # to run in non-detached mode
-      # or
-      # docker compose up --build
-      ```
-
-3. **Shutdown**
+6. Shutdown
 
 - To stop the containers, use:
     ```shell
     make down
-    # or
-    # docker compose down
     ```
 
-- To completely remove the containers and permanently delete the database, run:
-    ```shell
-    make down-total
-    # or
-    # docker compose down -v
-    ```
+### Other Environments (dev/prod)
+
+1. Use the instructions about [local environment](#local-environment) above
+
+* But make sure you've created similar structure in `config/dev` or `config/prod` with files:
+    * `config.toml`
+    * `.secrets.toml`
+    * `export.toml`
+    * `docker-compose.yaml` if needed
+* `.env.dev` or `.env.prod` to be generated later — **don't** create them manually
+
+### Adding New Environments
+
+1. Add new value to `ValidEnvs` enum in `config/toml_config_manager.py` (and maybe in your app settings)
+2. Update `ENV_TO_DIR_PATHS` mapping in the same file (and maybe in your app settings)
+3. Create corresponding directory in `config/` folder
+4. Add required [configuration files](#files)
+
+Environment directories can also contain other env-specific files like `docker-compose.yaml`, which will be used by
+Makefile commands.
 
 # Useful Resources
 
@@ -752,8 +690,9 @@ the ASGI Community chat is extremely low. Therefore, joining it is at your own r
 # Todo
 
 - [x] set up CI
-- [ ] simplify settings
+- [x] simplify settings
+- [ ] simplify annotations
 - [ ] increase test coverage
-- [ ] explain the code
+- [ ] explain code
 
 [^1]: Session and token share the same expiry time, avoiding database reads if the token is expired.

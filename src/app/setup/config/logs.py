@@ -1,10 +1,26 @@
 import logging
-from typing import Literal
+from typing import Final, Literal, cast
 
 LoggingLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
+VALID_LOGGING_LEVELS: Final[set[LoggingLevel]] = {
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "CRITICAL",
+}
 
-def configure_logging(level: LoggingLevel = "INFO") -> None:
+
+def validate_logging_level(*, level: str) -> LoggingLevel:
+    if level not in VALID_LOGGING_LEVELS:
+        raise ValueError(f"Invalid log level: '{level}'.")
+    return cast(LoggingLevel, level)
+
+
+def configure_logging(*, level: LoggingLevel = "INFO") -> None:
+    validate_logging_level(level=level)
+
     level_map: dict[LoggingLevel, int] = {
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,

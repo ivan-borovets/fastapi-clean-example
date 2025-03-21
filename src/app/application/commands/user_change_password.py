@@ -54,8 +54,8 @@ class ChangePasswordInteractor:
 
         await self._authorization_service.authorize_action(PermissionEnum.EDIT_SELF)
 
-        username: Username = Username(request_data.username)
-        password: RawPassword = RawPassword(request_data.password)
+        username = Username(request_data.username)
+        password = RawPassword(request_data.password)
 
         user: User | None = await self._user_command_gateway.read_by_username(
             username, for_update=True

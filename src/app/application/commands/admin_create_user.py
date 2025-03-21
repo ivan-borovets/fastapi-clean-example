@@ -57,8 +57,8 @@ class CreateUserInteractor:
             request_data.role, for_subordinate_only=True
         )
 
-        username: Username = Username(request_data.username)
-        password: RawPassword = RawPassword(request_data.password)
+        username = Username(request_data.username)
+        password = RawPassword(request_data.password)
 
         user: User = self._user_service.create_user(username, password)
         user.role = request_data.role

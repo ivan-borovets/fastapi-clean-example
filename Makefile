@@ -1,34 +1,77 @@
-# Makefile variables
-SRC_DIR := $(shell grep 'SRC_DIR' config.toml | sed 's/.*= *//')/
-PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
-DOCKER_COMPOSE := $(shell grep 'COMPOSE_COMMAND' config.toml | sed 's/.*= *//;s/"//g')
-DOCKER_COMPOSE_FILE := $(shell grep 'COMPOSE_FILE' config.toml | sed 's/.*= *//')
-# Scripts
-DOTENV_FROM_TOML := scripts/makefile/dotenv_from_toml.py
-TOML_PG_HOST := scripts/makefile/toml_pg_host.py
-DOCKER_COMPOSE_LOGS := scripts/makefile/docker_logs.sh
-DOCKER_COMPOSE_SHELL := scripts/makefile/docker_shell.sh
-DOCKER_COMPOSE_PRUNE := scripts/makefile/docker_prune.sh
-DOCKER_COMPOSE_RMVOLUMES := scripts/makefile/docker_rmvolumes.sh
-PYCACHE_DEL := scripts/makefile/pycache_del.sh
-DISHKA_PLOT_DATA := scripts/dishka/plot_dependencies_data.py
+# Makefile variables, pt. 1
+PYTHON := python
+CONFIGS_DIG := config
+TOML_CONFIG_MANAGER := $(CONFIGS_DIG)/toml_config_manager.py
 
-# Source code formatting, linting and testing
-.PHONY: code.format \
-		code.lint \
-		code.test \
-		code.cov \
-		code.check
+# Setting environment
+.PHONY: env dotenv
+
+env:
+	@echo APP_ENV=$(APP_ENV)
+
+dotenv:
+	@$(PYTHON) $(TOML_CONFIG_MANAGER) ${APP_ENV}
+
+# Makefile variables, pt. 2
+DOCKER_COMPOSE := docker compose
+DOCKER_COMPOSE_FILE := docker-compose.yaml
+DOCKER_COMPOSE_PRUNE := scripts/makefile/docker_prune.sh
+
+# Docker Compose controls
+.PHONY: guard-APP_ENV up.db up.db-echo up up.echo down down.total logs.db shell.db prune
+
+guard-APP_ENV:
+ifndef APP_ENV
+	$(error "APP_ENV is not set. Set APP_ENV before running this command.")
+endif
+
+up.db: guard-APP_ENV
+	@echo "APP_ENV=$(APP_ENV)"
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up -d web_app_db_pg --build
+
+up.db-echo: guard-APP_ENV
+	@echo "APP_ENV=$(APP_ENV)"
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up web_app_db_pg --build
+
+up:
+	@echo "APP_ENV=$(APP_ENV)"
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up -d --build
+
+up.echo:
+	@echo "APP_ENV=$(APP_ENV)"
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up --build
+
+down: guard-APP_ENV
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) down
+
+down.total: guard-APP_ENV
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) down -v
+
+logs.db:
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) logs -f web_app_db_pg
+
+shell.db:
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) exec web_app_db_pg sh
+
+prune:
+	$(DOCKER_COMPOSE_PRUNE)
+
+# Makefile variables, pt. 3
+SRC_DIR := src
+TESTS_DIR := tests
+
+# Source code formatting
+.PHONY: code.format code.lint code.test code.cov code.cov.html code.check
 
 code.format:
-	isort $(SRC_DIR)
-	black $(SRC_DIR)
+	isort $(CONFIGS_DIG) $(SRC_DIR) $(TESTS_DIR)
+	black $(CONFIGS_DIG) $(SRC_DIR) $(TESTS_DIR)
 
 code.lint: code.format
-	bandit -r $(SRC_DIR) -c $(PYPROJECT_TOML)
-	ruff check $(SRC_DIR)
-	pylint $(SRC_DIR)
-	mypy $(SRC_DIR)
+	bandit -r $(CONFIGS_DIG) $(SRC_DIR) -c pyproject.toml
+	ruff check $(CONFIGS_DIG) $(SRC_DIR) $(TESTS_DIR)
+	pylint $(CONFIGS_DIG) $(SRC_DIR)
+	mypy $(CONFIGS_DIG) $(SRC_DIR)
 
 code.test:
 	pytest -v
@@ -43,80 +86,12 @@ code.cov.html:
 
 code.check: code.lint code.test
 
-# Dotenv generation
-.PHONY: dotenv \
-		dotenv-docker \
-		dotenv-local
-
-dotenv:
-	python $(DOTENV_FROM_TOML)
-
-dotenv-local:
-	python $(TOML_PG_HOST) local
-	python $(DOTENV_FROM_TOML)
-
-dotenv-docker:
-	python $(TOML_PG_HOST) docker
-	python $(DOTENV_FROM_TOML)
-
-# Docker Compose controls
-.PHONY: up \
-		up-echo \
-		up-local-db \
-		down \
-        logs \
-        shell \
-        prune \
-        ps \
-        rmvolumes
-
-
-up-local-db:
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d web_app_db_pg --build
-
-up-local-db-auto: dotenv-local
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d web_app_db_pg --build
-	sleep 0.5
-	alembic upgrade head
-
-up:
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d --build
-
-up-echo:
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build
-
-up-auto: dotenv-docker
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d --build
-
-up-echo-auto: dotenv-docker
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build
-
-
-down:
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
-
-down-total:
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down -v
-
-
-logs:
-	@$(DOCKER_COMPOSE_LOGS) "$(DOCKER_COMPOSE)" $(DOCKER_COMPOSE_FILE)
-
-shell:
-	@$(DOCKER_COMPOSE_SHELL)
-
-prune:
-	@$(DOCKER_COMPOSE_PRUNE)
-
-ps:
-	@docker ps
-
-rmvolumes:
-	@$(DOCKER_COMPOSE_RMVOLUMES)
+# Makefile variables, pt. 4
+PYCACHE_DEL := scripts/makefile/pycache_del.sh
+DISHKA_PLOT_DATA := scripts/dishka/plot_dependencies_data.py
 
 # Clean tree
-.PHONY: pycache-del \
- 		tree
+.PHONY: pycache-del tree
 
 pycache-del:
 	@$(PYCACHE_DEL)
@@ -129,13 +104,3 @@ tree: pycache-del
 
 plot-data:
 	python $(DISHKA_PLOT_DATA)
-
-# Dev hacks
-.PHONY: reset-db-migrate
-# Assuming there are no migration files (delete them)
-reset-db_migrate:
-	@docker compose down -v
-	@make up-local-db
-	@sleep 1
-	@alembic revision --autogenerate -m "Makefile"
-	@alembic upgrade head

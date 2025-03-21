@@ -9,5 +9,5 @@ naming_conventions: dict[str, str] = {
     "pk": "pk_%(table_name)s",
 }
 
-metadata: MetaData = MetaData(naming_convention=naming_conventions)
-mapping_registry: registry = registry(metadata=metadata)
+metadata = MetaData(naming_convention=naming_conventions)
+mapping_registry = registry(metadata=metadata)

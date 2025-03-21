@@ -159,12 +159,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Telegram Sessions
-**/*.session
-**/*.session-journal
-
-# Logs
-**/logs/
+# Config
+config/dev/*
+!config/dev/.gitkeep
+config/prod/*
+!config/prod/.gitkeep
+.secrets.*
 
 # IgnoreToDo
 todo/
