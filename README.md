@@ -1,3 +1,15 @@
+# Overview
+
+📘 This FastAPI-based project and its documentation represent a practical interpretation of Clean Architecture and
+Command Query Responsibility Segregation (CQRS) principles with elements of Domain-Driven Design (DDD).
+Although it's not meant to serve as a comprehensive reference or a strict application of these methodologies, the
+project demonstrates how their core ideas can be effectively put into practice in Python.
+If they're new to you, refer to the [Useful Resources](#useful-resources) section.
+
+If you find this project's structure useful but prefer starting with a clean state rather than deleting unnecessary
+code, I've created an interactive template for quickly generating a similar project
+setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
+
 # Table of contents
 
 1. [Overview](#overview)
@@ -27,18 +39,6 @@
 4. [Useful Resources](#useful-resources)
 5. [Support the Project](#-support-the-project)
 6. [Acknowledgements](#acknowledgements)
-
-# Overview
-
-📘 This FastAPI-based project and its documentation represent a practical interpretation of Clean Architecture and
-Command Query Responsibility Segregation (CQRS) principles with elements of Domain-Driven Design (DDD).
-Although it's not meant to serve as a comprehensive reference or a strict application of these methodologies, the
-project demonstrates how their core ideas can be effectively put into practice in Python.
-If they're new to you, refer to the [Useful Resources](#useful-resources) section.
-
-If you find this project's structure useful but prefer starting with a clean state rather than deleting unnecessary
-code, I've created an interactive template for quickly generating a similar project
-setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
 
 # Architecture Principles
 
