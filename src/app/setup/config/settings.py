@@ -180,9 +180,10 @@ def load_full_config(*, env: ValidEnvs) -> dict[str, Any]:
     config = read_config(env=env)
     try:
         secrets = read_config(env=env, config=DirContents.SECRETS_NAME)
-        config = merge_dicts(dict1=config, dict2=secrets)
     except FileNotFoundError:
         log.warning("Secrets file not found. Full config will not contain secrets.")
+    else:
+        config = merge_dicts(dict1=config, dict2=secrets)
     return config
 
 
