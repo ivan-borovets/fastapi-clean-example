@@ -12,8 +12,10 @@ from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.exceptions.base import ApplicationError
 from app.application.common.exceptions.sorting import SortingError
 from app.domain.exceptions.base import DomainError, DomainFieldError
-from app.domain.exceptions.user.existence import UsernameAlreadyExists
-from app.domain.exceptions.user.non_existence import (
+from app.domain.exceptions.user import (
+    ActivationChangeNotPermitted,
+    RoleChangeNotPermitted,
+    UsernameAlreadyExists,
     UserNotFoundById,
     UserNotFoundByUsername,
 )
@@ -47,6 +49,8 @@ class ExceptionHandler:
         AlreadyAuthenticatedError: status.HTTP_401_UNAUTHORIZED,
         # 403
         AuthorizationError: status.HTTP_403_FORBIDDEN,
+        ActivationChangeNotPermitted: status.HTTP_403_FORBIDDEN,
+        RoleChangeNotPermitted: status.HTTP_403_FORBIDDEN,
         # 404
         UserNotFoundById: status.HTTP_404_NOT_FOUND,
         UserNotFoundByUsername: status.HTTP_404_NOT_FOUND,

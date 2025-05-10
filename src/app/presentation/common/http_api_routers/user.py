@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from app.presentation.http_controllers.admin_create_user.controller import (
     create_user_router,
 )
-from app.presentation.http_controllers.admin_grant_admin import grant_admin_router
 from app.presentation.http_controllers.admin_inactivate_user import (
     inactivate_user_router,
 )
@@ -13,7 +12,10 @@ from app.presentation.http_controllers.admin_list_users.controller import (
 from app.presentation.http_controllers.admin_reactivate_user import (
     reactivate_user_router,
 )
-from app.presentation.http_controllers.admin_revoke_admin import revoke_admin_router
+from app.presentation.http_controllers.super_admin_grant_admin import grant_admin_router
+from app.presentation.http_controllers.super_admin_revoke_admin import (
+    revoke_admin_router,
+)
 from app.presentation.http_controllers.user_change_password import (
     change_password_router,
 )

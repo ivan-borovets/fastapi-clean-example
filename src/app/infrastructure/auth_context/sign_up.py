@@ -6,7 +6,7 @@ from typing import TypedDict
 from app.application.common.response_status_enum import ResponseStatusEnum
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import RawPassword, Username
-from app.domain.exceptions.user.existence import UsernameAlreadyExists
+from app.domain.exceptions.user import UsernameAlreadyExists
 from app.domain.services.user import UserService
 from app.infrastructure.adapters.application.sqla_transaction_manager import (
     SqlaTransactionManager,

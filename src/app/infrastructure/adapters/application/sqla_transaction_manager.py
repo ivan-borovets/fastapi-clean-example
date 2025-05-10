@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.common.ports.transaction_manager import TransactionManager
-from app.domain.exceptions.user.existence import UsernameAlreadyExists
+from app.domain.exceptions.user import UsernameAlreadyExists
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 
 log = logging.getLogger(__name__)

@@ -414,7 +414,7 @@ natural.
         │
         ├── application/...                  # application layer
         │   ├── common/                      # common layer objects
-        │   │   ├── authorization/...        # authorization logic
+        │   │   ├── services/...             # authorization, etc.
         │   │   └── ...                      # ports, exceptions, etc.
         │   │
         │   ├── commands/                    # write operations, business-critical reads
@@ -506,20 +506,24 @@ setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
     - Soft-deletes an existing user, making that user inactive.
     - Also deletes the user's sessions.
     - Only super admins can inactivate other admins.
+    - Super admins cannot be soft-deleted.
 - `/reactivate`: Open to **admins**.
     - Restores a previously soft-deleted user.
     - Only super admins can reactivate other admins.
+    - Super admins cannot be soft-deleted.
 - `/grant`: Open to super **admins**.
     - Grants admin rights to a specified user.
+    - Super admin rights can not be changed.
 - `/revoke`: Open to super **admins**.
     - Revokes admin rights from a specified user.
+    - Super admin rights can not be changed.
 - `/change_password`: Open to **authenticated users**.
     - Changes the user's password.
     - The current user can change their own password.
     - Admins can change passwords of subordinate users.
 
 > [!NOTE]
-> - The initial admin privileges must be granted manually (e.g., directly in the database), though the user
+> - Super admin privileges must be initially granted manually (e.g., directly in the database), though the user
     account itself can be created through the API.
 
 ## Configuration

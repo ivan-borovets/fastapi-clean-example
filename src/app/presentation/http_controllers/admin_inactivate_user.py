@@ -45,4 +45,5 @@ async def inactivate_user(
     # :raises AuthorizationError 403:
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
+    # :raises ActivationChangeNotPermitted 403:
     return await interactor(request_data)
