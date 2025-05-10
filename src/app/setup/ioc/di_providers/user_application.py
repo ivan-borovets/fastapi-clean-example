@@ -1,30 +1,22 @@
 # pylint: disable=C0301 (line-too-long)
-from typing import Annotated, Mapping
+from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide, provide_all
 
 from app.application.commands.admin_create_user import CreateUserInteractor
-from app.application.commands.admin_grant_admin import GrantAdminInteractor
 from app.application.commands.admin_inactivate_user import InactivateUserInteractor
 from app.application.commands.admin_reactivate_user import ReactivateUserInteractor
-from app.application.commands.admin_revoke_admin import RevokeAdminInteractor
+from app.application.commands.super_admin_grant_admin import GrantAdminInteractor
+from app.application.commands.super_admin_revoke_admin import RevokeAdminInteractor
 from app.application.commands.user_change_password import ChangePasswordInteractor
-from app.application.common.authorization.config import (
-    ROLE_HIERARCHY,
-    ROLE_PERMISSIONS,
-    PermissionEnum,
-)
-from app.application.common.authorization.role_permission_resolver import (
-    RolePermissionResolver,
-)
-from app.application.common.authorization.service import AuthorizationService
 from app.application.common.ports.access_revoker import AccessRevoker
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.application.common.ports.query_gateways.user import UserQueryGateway
 from app.application.common.ports.transaction_manager import TransactionManager
+from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.current_user import CurrentUserService
 from app.application.queries.admin_list_users import ListUsersQueryService
-from app.domain.entities.user.role_enum import UserRoleEnum
 from app.infrastructure.adapters.application.sqla_transaction_manager import (
     SqlaTransactionManager,
 )
@@ -53,20 +45,8 @@ class UserApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     # Services
-    @provide
-    def provide_role_hierarchy(
-        self,
-    ) -> Mapping[UserRoleEnum, set[UserRoleEnum]]:
-        return ROLE_HIERARCHY
-
-    @provide
-    def provide_role_permissions(
-        self,
-    ) -> Mapping[UserRoleEnum, set[PermissionEnum]]:
-        return ROLE_PERMISSIONS
-
-    role_permissions_resolver = provide(source=RolePermissionResolver)
     authorization_service = provide(source=AuthorizationService)
+    current_user_service = provide(source=CurrentUserService)
 
     # Ports
     transaction_manager = provide(

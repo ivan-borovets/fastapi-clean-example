@@ -2,6 +2,8 @@ from typing import cast
 from unittest.mock import Mock, create_autospec
 from uuid import UUID
 
+import pytest
+
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.role_enum import UserRoleEnum
 from app.domain.entities.user.value_objects import (
@@ -9,6 +11,10 @@ from app.domain.entities.user.value_objects import (
     UserId,
     Username,
     UserPasswordHash,
+)
+from app.domain.exceptions.user import (
+    ActivationChangeNotPermitted,
+    RoleChangeNotPermitted,
 )
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
@@ -19,22 +25,6 @@ def create_user_service() -> UserService:
     return UserService(
         user_id_generator=create_autospec(UserIdGenerator),
         password_hasher=create_autospec(PasswordHasher),
-    )
-
-
-def create_sample_user() -> User:
-    user_id = UUID("12345678-1234-5678-1234-567812345678")
-    username = "username"
-    password_hash: bytes = "123456789abcdef0".encode()
-    role = UserRoleEnum.USER
-    is_active = True
-
-    return User(
-        id_=UserId(user_id),
-        username=Username(username),
-        password_hash=UserPasswordHash(password_hash),
-        role=role,
-        is_active=is_active,
     )
 
 
@@ -56,9 +46,8 @@ def test_create_user() -> None:
     assert user.is_active
 
 
-def test_is_password_valid() -> None:
+def test_is_password_valid(sample_user: User) -> None:
     user_service: UserService = create_user_service()
-    sample_user: User = create_sample_user()
     password = RawPassword("test_password")
     verify_mock = cast(Mock, user_service._password_hasher.verify)
 
@@ -71,9 +60,8 @@ def test_is_password_valid() -> None:
     assert not incorrect_result
 
 
-def test_change_password() -> None:
+def test_change_password(sample_user: User) -> None:
     user_service: UserService = create_user_service()
-    sample_user: User = create_sample_user()
     raw_new_password = RawPassword("raw_new_password_to_be_hashed")
     hash_mock = cast(Mock, user_service._password_hasher.hash)
     original_password_hash: UserPasswordHash = sample_user.password_hash
@@ -85,24 +73,34 @@ def test_change_password() -> None:
     assert sample_user.password_hash == UserPasswordHash(new_password_hash_value)
 
 
-def test_toggle_activation() -> None:
+def test_toggle_activation(sample_user: User) -> None:
     user_service: UserService = create_user_service()
-    sample_user: User = create_sample_user()
     initial_state: bool = sample_user.is_active
 
-    user_service.toggle_user_activation(sample_user, not initial_state)
+    user_service.toggle_user_activation(sample_user, is_active=not initial_state)
     assert sample_user.is_active != initial_state
 
-    user_service.toggle_user_activation(sample_user, initial_state)
+    user_service.toggle_user_activation(sample_user, is_active=initial_state)
     assert sample_user.is_active == initial_state
 
+    sample_user.role = UserRoleEnum.SUPER_ADMIN
+    with pytest.raises(ActivationChangeNotPermitted):
+        user_service.toggle_user_activation(sample_user, is_active=True)
+    with pytest.raises(ActivationChangeNotPermitted):
+        user_service.toggle_user_activation(sample_user, is_active=False)
 
-def test_toggle_admin_role() -> None:
+
+def test_toggle_admin_role(sample_user: User) -> None:
     user_service: UserService = create_user_service()
-    sample_user: User = create_sample_user()
 
-    user_service.toggle_user_admin_role(sample_user, True)
+    user_service.toggle_user_admin_role(sample_user, is_admin=True)
     assert sample_user.role == UserRoleEnum.ADMIN
 
-    user_service.toggle_user_admin_role(sample_user, False)
+    user_service.toggle_user_admin_role(sample_user, is_admin=False)
     assert sample_user.role != UserRoleEnum.ADMIN
+
+    sample_user.role = UserRoleEnum.SUPER_ADMIN
+    with pytest.raises(RoleChangeNotPermitted):
+        user_service.toggle_user_admin_role(sample_user, is_admin=True)
+    with pytest.raises(RoleChangeNotPermitted):
+        user_service.toggle_user_admin_role(sample_user, is_admin=False)

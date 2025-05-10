@@ -5,7 +5,7 @@ from typing import TypedDict
 
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import RawPassword, Username
-from app.domain.exceptions.user.non_existence import UserNotFoundByUsername
+from app.domain.exceptions.user import UserNotFoundByUsername
 from app.domain.services.user import UserService
 from app.infrastructure.adapters.application.sqla_transaction_manager import (
     SqlaTransactionManager,

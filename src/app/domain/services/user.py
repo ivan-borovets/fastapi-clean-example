@@ -15,6 +15,10 @@ from app.domain.entities.user.value_objects import (
     Username,
     UserPasswordHash,
 )
+from app.domain.exceptions.user import (
+    ActivationChangeNotPermitted,
+    RoleChangeNotPermitted,
+)
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
 
@@ -52,8 +56,18 @@ class UserService:
         hashed_password = UserPasswordHash(self._password_hasher.hash(raw_password))
         user.password_hash = hashed_password
 
-    def toggle_user_activation(self, user: User, is_active: bool) -> None:
+    def toggle_user_activation(self, user: User, *, is_active: bool) -> None:
+        """
+        :raises ActivationChangeNotPermitted:
+        """
+        if user.role == UserRoleEnum.SUPER_ADMIN:
+            raise ActivationChangeNotPermitted(user.username, user.role)
         user.is_active = is_active
 
-    def toggle_user_admin_role(self, user: User, is_admin: bool) -> None:
+    def toggle_user_admin_role(self, user: User, *, is_admin: bool) -> None:
+        """
+        :raises RoleChangeNotPermitted:
+        """
+        if user.role == UserRoleEnum.SUPER_ADMIN:
+            raise RoleChangeNotPermitted(user.username, user.role)
         user.role = UserRoleEnum.ADMIN if is_admin else UserRoleEnum.USER

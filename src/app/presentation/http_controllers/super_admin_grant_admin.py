@@ -4,10 +4,10 @@ from dishka import FromComponent
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
-from app.application.commands.admin_revoke_admin import (
-    RevokeAdminInteractor,
-    RevokeAdminRequest,
-    RevokeAdminResponse,
+from app.application.commands.super_admin_grant_admin import (
+    GrantAdminInteractor,
+    GrantAdminRequest,
+    GrantAdminResponse,
 )
 from app.presentation.common.exception_handler import (
     ExceptionSchema,
@@ -16,11 +16,11 @@ from app.presentation.common.exception_handler import (
 from app.presentation.common.fastapi_dependencies import cookie_scheme
 from app.setup.ioc.di_component_enum import ComponentEnum
 
-revoke_admin_router = APIRouter()
+grant_admin_router = APIRouter()
 
 
-@revoke_admin_router.patch(
-    "/revoke",
+@grant_admin_router.patch(
+    "/grant",
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -33,16 +33,17 @@ revoke_admin_router = APIRouter()
     dependencies=[Security(cookie_scheme)],
 )
 @inject
-async def revoke_admin(
-    request_data: RevokeAdminRequest,
+async def grant_admin(
+    request_data: GrantAdminRequest,
     interactor: Annotated[
-        RevokeAdminInteractor,
+        GrantAdminInteractor,
         FromComponent(ComponentEnum.USER),
     ],
-) -> RevokeAdminResponse:
+) -> GrantAdminResponse:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:
     # :raises AuthorizationError 403:
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
+    # :raises RoleChangeNotPermitted 403:
     return await interactor(request_data)
