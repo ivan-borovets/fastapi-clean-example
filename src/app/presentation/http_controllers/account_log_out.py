@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
@@ -10,7 +8,6 @@ from app.presentation.common.exception_handler import (
     ExceptionSchemaRich,
 )
 from app.presentation.common.fastapi_dependencies import cookie_scheme
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 log_out_router = APIRouter()
 
@@ -27,10 +24,7 @@ log_out_router = APIRouter()
 )
 @inject
 async def logout(
-    interactor: Annotated[
-        LogOutHandler,
-        FromComponent(ComponentEnum.AUTH),
-    ],
+    interactor: FromDishka[LogOutHandler],
 ) -> LogOutResponse:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:

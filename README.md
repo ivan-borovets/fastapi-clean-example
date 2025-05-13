@@ -80,10 +80,13 @@ For now, we will focus on the purpose of the layers.
   value.
   In some cases, these rules can be seen as mechanisms that create the product's value independently of its
   software implementation.
-  Changing them often means changing the business itself.
+  Changing them often reflects a change in the business itself.
 - It establishes a **ubiquitous language** — a consistent terminology shared across the application and domain.
   This is the language you can speak with managers.
 - It's the most stable and independent part of the application.
+- Domain services originally represent operations that don't naturally belong to a specific entity.
+  In projects with anemic domain models — where entities hold data but no behavior — domain services may also include
+  logic that would otherwise reside inside those entities.
 
 > [!NOTE]
 > The Domain layer may also include **aggregates** (groups of entities that must change together as a single unit,
@@ -99,6 +102,12 @@ For now, we will focus on the purpose of the layers.
 - Its core component is the **interactor**, representing an individual step within a use case.
 - To access external systems, interactors use **interfaces (ports)**, which abstract infrastructure details.
 - Interactors can be grouped into an **application service**, combining actions sharing a close context.
+- Alternatively, **application services** provide a different way to organize interactors — placing them in a class per
+  business context.
+- Interactors are independent and should not call one another.
+- The application layer may also include classes with business logic unrelated to interactors — for example,
+  authorization.
+  These can also be considered services.
 
 > [!NOTE]
 > Domain and Application layers may import external tools and libraries to the extent necessary for describing business
@@ -112,7 +121,7 @@ For now, we will focus on the purpose of the layers.
 - It provides **implementations (adapters)** for the interfaces (ports) defined in the Application layer,
   allowing the application to interact with external systems like databases, APIs, and file systems while keeping the
   business logic decoupled from them.
-- Related adapter logic can also be grouped into an **infrastructure service**.
+- Related adapter logic can be grouped into an **infrastructure service**.
 
 > [!IMPORTANT]
 > - Clean Architecture doesn't prescribe any particular number of layers.
@@ -132,7 +141,7 @@ This rule states that **more abstract software components must not depend on mor
 In other words, dependencies must never point outwards within the application's boundaries.
 
 > [!IMPORTANT]
-> - Components within the same layer can depend **on each other.** For example, components in the Infrastructure layer
+> - Components within the same layer **can depend on each other.** For example, components in the Infrastructure layer
     can interact with one another without crossing into other layers.
 >
 > - Components in any outer layer can depend on components in **any** inner layer, not necessarily the one closest to
@@ -140,7 +149,8 @@ In other words, dependencies must never point outwards within the application's 
     Application and Infrastructure layers.
 >
 > - However, avoid letting business logic leak into peripheral details, such as raising business-specific exceptions in
-    the Infrastructure layer or declaring domain rules outside the Domain layer.
+    the Infrastructure layer without re-raising them in the business logic or declaring domain rules outside the Domain
+    layer.
 >
 > - In specific cases where database constraints enforce business rules, the Infrastructure layer may raise
     domain-specific exceptions, such as `UsernameAlreadyExists` for a `UNIQUE CONSTRAINT` violation.
@@ -156,9 +166,13 @@ In other words, dependencies must never point outwards within the application's 
 
 ### Note on Adapters
 
-In my opinion, the diagram by R. Martin in Figure 1 can, without significant loss, be replaced by a more concise and
-pragmatic one — where the adapter layer serves as a bridge, depending both on the internal layers of the application and
-external components.
+The **Infrastructure layer** in the Clean Architecture acts as the adapter layer — connecting the application to
+external systems.
+In this project, we treat both **Infrastructure** and **Presentation** as adapters, since both adapt the application to
+the outside world.
+Speaking of dependencies direction, the diagram by R. Martin in Figure 1 can, without significant loss, be replaced by a
+more concise and pragmatic one — where the adapter layer serves as a bridge, depending both on the internal layers of
+the application and external components.
 This adjustment implies **reversing** the arrow from the blue layer to the green layer in R. Martin's diagram.
 
 The proposed solution is a **trade-off**.
@@ -257,7 +271,7 @@ receive them.
 From this definition, it's clear that one common way to implement DI is by passing dependencies as arguments to the
 `__init__` method or functions.
 
-But how exactly should these dependencies be initialized?
+But how exactly should these dependencies be initialized (and finalized)?
 
 **DI frameworks** offer an elegant solution by automatically creating the necessary objects (while managing their
 **lifecycle**) and injecting them where needed.
@@ -713,3 +727,4 @@ frequent and lively communication challenges, as well as the ⚗️ Reagento (ad
 - [ ] explain code
 
 [^1]: Session and token share the same expiry time, avoiding database reads if the token is expired.
+This scheme of using JWT **is not** related to OAuth 2.0 and is a custom micro-optimization.

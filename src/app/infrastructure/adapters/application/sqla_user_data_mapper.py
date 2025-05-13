@@ -1,16 +1,16 @@
 from sqlalchemy import Select, select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.operators import eq
 
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import UserId, Username
+from app.infrastructure.adapters.application.new_types import UserAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 
 
 class SqlaUserDataMapper(UserCommandGateway):
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: UserAsyncSession):
         self._session = session
 
     async def add(self, user: User) -> None:

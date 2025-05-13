@@ -1,35 +1,27 @@
 import logging
-from typing import Any, Mapping, cast
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.common.ports.transaction_manager import TransactionManager
-from app.domain.exceptions.user import UsernameAlreadyExists
+from app.infrastructure.auth_context.common.new_types import AuthAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 
 log = logging.getLogger(__name__)
 
 
-class SqlaTransactionManager(TransactionManager):
-    def __init__(self, session: AsyncSession):
+class SqlaAuthTransactionManager(TransactionManager):
+    def __init__(self, session: AuthAsyncSession):
         self._session = session
 
     async def flush(self) -> None:
         """
         :raises DataMapperError:
-        :raises UsernameAlreadyExists:
         """
         try:
             await self._session.flush()
-            log.debug("Flush was done by session with info: '%s'.", self._session.info)
+            log.debug("Flush was done by Auth session.")
 
         except IntegrityError as error:
-            if "uq_users_username" in str(error):
-                params: Mapping[str, Any] = cast(Mapping[str, Any], error.params)
-                username = str(params.get("username", "unknown"))
-                raise UsernameAlreadyExists(username) from error
-
             raise DataMapperError("Database constraint violation.") from error
 
         except SQLAlchemyError as error:
@@ -41,7 +33,7 @@ class SqlaTransactionManager(TransactionManager):
         """
         try:
             await self._session.commit()
-            log.debug("Commit was done by session with info: '%s'.", self._session.info)
+            log.debug("Commit was done by Auth session.")
 
         except SQLAlchemyError as error:
             raise DataMapperError("Database query failed, commit failed.") from error

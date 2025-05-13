@@ -1,5 +1,4 @@
 # pylint: disable=C0301 (line-too-long)
-
 from dishka import Provider, Scope, provide
 
 from app.domain.ports.password_hasher import PasswordHasher
@@ -11,11 +10,9 @@ from app.infrastructure.adapters.domain.bcrypt_password_hasher import (
 from app.infrastructure.adapters.domain.uuid_user_id_generator import (
     UuidUserIdGenerator,
 )
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 
 class UserDomainProvider(Provider):
-    component = ComponentEnum.USER
     scope = Scope.REQUEST
 
     # Services

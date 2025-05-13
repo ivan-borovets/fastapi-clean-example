@@ -4,13 +4,13 @@ from uuid import UUID
 
 from sqlalchemy import ColumnElement, Result, Row, Select, select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.common.ports.query_gateways.user import UserQueryGateway
 from app.application.common.query_filters.sorting_order_enum import SortingOrderEnum
 from app.application.common.query_filters.user.read_all import UserReadAllParams
 from app.application.common.query_models.user import UserQueryModel
 from app.domain.entities.user.role_enum import UserRoleEnum
+from app.infrastructure.adapters.application.new_types import UserAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import ReaderError
 from app.infrastructure.sqla_persistence.mappings.user import users_table
 
@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 
 class SqlaUserReader(UserQueryGateway):
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: UserAsyncSession):
         self._session = session
 
     async def read_all(

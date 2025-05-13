@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
@@ -13,7 +11,6 @@ from app.presentation.common.exception_handler import (
     ExceptionSchema,
     ExceptionSchemaRich,
 )
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 log_in_router = APIRouter()
 
@@ -32,10 +29,7 @@ log_in_router = APIRouter()
 @inject
 async def login(
     request_data: LogInRequest,
-    interactor: Annotated[
-        LogInHandler,
-        FromComponent(ComponentEnum.AUTH),
-    ],
+    interactor: FromDishka[LogInHandler],
 ) -> LogInResponse:
     # :raises AlreadyAuthenticatedError 401:
     # :raises DataMapperError 500:

@@ -2,7 +2,7 @@ from app.domain.entities.user.value_objects import RawPassword
 from app.infrastructure.adapters.domain.bcrypt_password_hasher import (
     BcryptPasswordHasher,
 )
-from app.infrastructure.new_types import PasswordPepper
+from app.infrastructure.adapters.domain.new_types import PasswordPepper
 
 
 def get_bcrypt_password_hasher() -> BcryptPasswordHasher:
