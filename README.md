@@ -101,12 +101,10 @@ For now, we will focus on the purpose of the layers.
   layer with its practical implementation, orchestrating business logic to achieve specific goals.
 - Its core component is the **interactor**, representing an individual step within a use case.
 - To access external systems, interactors use **interfaces (ports)**, which abstract infrastructure details.
-- Interactors can be grouped into an **application service**, combining actions sharing a close context.
 - Alternatively, **application services** provide a different way to organize interactors — placing them in a class per
   business context.
 - Interactors are independent and should not call one another.
-- The application layer may also include classes with business logic unrelated to interactors — for example,
-  authorization.
+- The application layer may also include classes with non-orchestration business logic — e.g., authorization.
   These can also be considered services.
 
 > [!NOTE]
