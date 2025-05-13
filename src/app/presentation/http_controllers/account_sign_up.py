@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
@@ -13,7 +11,6 @@ from app.presentation.common.exception_handler import (
     ExceptionSchema,
     ExceptionSchemaRich,
 )
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 sign_up_router = APIRouter()
 
@@ -32,10 +29,7 @@ sign_up_router = APIRouter()
 @inject
 async def sign_up(
     request_data: SignUpRequest,
-    interactor: Annotated[
-        SignUpHandler,
-        FromComponent(ComponentEnum.AUTH),
-    ],
+    interactor: FromDishka[SignUpHandler],
 ) -> SignUpResponse:
     # :raises AlreadyAuthenticatedError 401:
     # :raises DomainFieldError 400:

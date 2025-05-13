@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
@@ -14,7 +12,6 @@ from app.presentation.common.exception_handler import (
     ExceptionSchemaRich,
 )
 from app.presentation.common.fastapi_dependencies import cookie_scheme
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 inactivate_user_router = APIRouter()
 
@@ -35,10 +32,7 @@ inactivate_user_router = APIRouter()
 @inject
 async def inactivate_user(
     request_data: InactivateUserRequest,
-    interactor: Annotated[
-        InactivateUserInteractor,
-        FromComponent(ComponentEnum.USER),
-    ],
+    interactor: FromDishka[InactivateUserInteractor],
 ) -> InactivateUserResponse:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:

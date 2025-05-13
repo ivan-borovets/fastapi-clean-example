@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
@@ -14,7 +12,6 @@ from app.presentation.common.exception_handler import (
     ExceptionSchemaRich,
 )
 from app.presentation.common.fastapi_dependencies import cookie_scheme
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 revoke_admin_router = APIRouter()
 
@@ -35,10 +32,7 @@ revoke_admin_router = APIRouter()
 @inject
 async def revoke_admin(
     request_data: RevokeAdminRequest,
-    interactor: Annotated[
-        RevokeAdminInteractor,
-        FromComponent(ComponentEnum.USER),
-    ],
+    interactor: FromDishka[RevokeAdminInteractor],
 ) -> RevokeAdminResponse:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:

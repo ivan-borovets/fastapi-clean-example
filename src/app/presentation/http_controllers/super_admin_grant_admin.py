@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
@@ -14,7 +12,6 @@ from app.presentation.common.exception_handler import (
     ExceptionSchemaRich,
 )
 from app.presentation.common.fastapi_dependencies import cookie_scheme
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 grant_admin_router = APIRouter()
 
@@ -35,10 +32,7 @@ grant_admin_router = APIRouter()
 @inject
 async def grant_admin(
     request_data: GrantAdminRequest,
-    interactor: Annotated[
-        GrantAdminInteractor,
-        FromComponent(ComponentEnum.USER),
-    ],
+    interactor: FromDishka[GrantAdminInteractor],
 ) -> GrantAdminResponse:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:

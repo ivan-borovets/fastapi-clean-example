@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from dishka import FromComponent
+from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, Security, status
 
@@ -17,7 +17,6 @@ from app.presentation.common.fastapi_dependencies import cookie_scheme
 from app.presentation.http_controllers.admin_list_users.pydantic_schema import (
     ListUsersRequestPydantic,
 )
-from app.setup.ioc.di_component_enum import ComponentEnum
 
 list_users_router = APIRouter()
 
@@ -37,10 +36,7 @@ list_users_router = APIRouter()
 @inject
 async def list_users(
     request_data_pydantic: Annotated[ListUsersRequestPydantic, Depends()],
-    interactor: Annotated[
-        ListUsersQueryService,
-        FromComponent(ComponentEnum.USER),
-    ],
+    interactor: FromDishka[ListUsersQueryService],
 ) -> ListUsersResponse:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:

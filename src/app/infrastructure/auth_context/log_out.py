@@ -4,9 +4,6 @@ from typing import TypedDict
 
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import UserId
-from app.infrastructure.adapters.application.sqla_transaction_manager import (
-    SqlaTransactionManager,
-)
 from app.infrastructure.adapters.application.sqla_user_data_mapper import (
     SqlaUserDataMapper,
 )
@@ -19,6 +16,9 @@ from app.infrastructure.auth_context.common.managers.auth_session import (
     AuthSessionManager,
 )
 from app.infrastructure.auth_context.common.managers.jwt_token import JwtTokenManager
+from app.infrastructure.auth_context.common.sqla_auth_transaction_manager import (
+    SqlaAuthTransactionManager,
+)
 
 log = logging.getLogger(__name__)
 
@@ -39,13 +39,13 @@ class LogOutHandler:
         sqla_user_data_mapper: SqlaUserDataMapper,
         auth_session_manager: AuthSessionManager,
         jtw_token_manager: JwtTokenManager,
-        sqla_transaction_manager: SqlaTransactionManager,
+        sqla_auth_transaction_manager: SqlaAuthTransactionManager,
     ):
         self._auth_session_identity_provider = auth_session_identity_provider
         self._sqla_user_data_mapper = sqla_user_data_mapper
         self._auth_session_manager = auth_session_manager
         self._jwt_token_manager = jtw_token_manager
-        self._sqla_transaction_manager = sqla_transaction_manager
+        self._sqla_auth_transaction_manager = sqla_auth_transaction_manager
 
     async def __call__(self) -> LogOutResponse:
         log.info("Log out: started for unknown user.")
@@ -86,7 +86,7 @@ class LogOutHandler:
             )
             return LogOutResponse(message="Logged out: incomplete.")
 
-        await self._sqla_transaction_manager.commit()
+        await self._sqla_auth_transaction_manager.commit()
 
         log.info("Log out: done. Username: '%s'.", user.username.value)
         return LogOutResponse(message="Logged out: successful.")

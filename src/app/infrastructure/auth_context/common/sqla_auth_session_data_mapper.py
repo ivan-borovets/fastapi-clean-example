@@ -1,16 +1,16 @@
 from sqlalchemy import Delete, delete
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.dml import ReturningDelete
 from sqlalchemy.sql.operators import eq
 
 from app.domain.entities.user.value_objects import UserId
 from app.infrastructure.auth_context.common.auth_session import AuthSession
+from app.infrastructure.auth_context.common.new_types import AuthAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 
 
 class SqlaAuthSessionDataMapper:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AuthAsyncSession):
         self._session = session
 
     async def add(self, auth_session: AuthSession) -> None:

@@ -7,9 +7,6 @@ from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import RawPassword, Username
 from app.domain.exceptions.user import UserNotFoundByUsername
 from app.domain.services.user import UserService
-from app.infrastructure.adapters.application.sqla_transaction_manager import (
-    SqlaTransactionManager,
-)
 from app.infrastructure.adapters.application.sqla_user_data_mapper import (
     SqlaUserDataMapper,
 )
@@ -25,6 +22,9 @@ from app.infrastructure.auth_context.common.managers.auth_session import (
     AuthSessionManager,
 )
 from app.infrastructure.auth_context.common.managers.jwt_token import JwtTokenManager
+from app.infrastructure.auth_context.common.sqla_auth_transaction_manager import (
+    SqlaAuthTransactionManager,
+)
 
 log = logging.getLogger(__name__)
 
@@ -54,14 +54,14 @@ class LogInHandler:
         auth_session_manager: AuthSessionManager,
         jtw_token_manager: JwtTokenManager,
         user_service: UserService,
-        sqla_transaction_manager: SqlaTransactionManager,
+        sqla_auth_transaction_manager: SqlaAuthTransactionManager,
     ):
         self._auth_session_identity_provider = auth_session_identity_provider
         self._sqla_user_data_mapper = sqla_user_data_mapper
         self._auth_session_manager = auth_session_manager
         self._jwt_token_manager = jtw_token_manager
         self._user_service = user_service
-        self._sqla_transaction_manager = sqla_transaction_manager
+        self._sqla_auth_transaction_manager = sqla_auth_transaction_manager
 
     async def __call__(self, request_data: LogInRequest) -> LogInResponse:
         log.info("Log in: started. Username: '%s'.", request_data.username)
@@ -100,7 +100,7 @@ class LogInHandler:
         access_token: str = self._jwt_token_manager.issue_access_token(auth_session.id_)
         self._jwt_token_manager.add_access_token_to_request(access_token)
 
-        await self._sqla_transaction_manager.commit()
+        await self._sqla_auth_transaction_manager.commit()
 
         log.info(
             "Log in: done. User, id: '%s', username '%s', role '%s'.",

@@ -1,10 +1,12 @@
 import logging
 import os
 from datetime import timedelta
-from typing import Any, Literal, Self
+from typing import Any, Literal, NewType, Self, cast
 
 import rtoml
-from pydantic import BaseModel, Field, PostgresDsn, field_validator
+from pydantic import BaseModel, Field
+from pydantic import PostgresDsn as PydanticPostgresDsn
+from pydantic import field_validator
 
 from app.setup.config.constants import (
     ENV_TO_DIR_PATHS,
@@ -14,6 +16,8 @@ from app.setup.config.constants import (
 )
 
 log = logging.getLogger(__name__)
+
+PostgresDsn = NewType("PostgresDsn", str)
 
 
 class PasswordSettings(BaseModel):
@@ -93,16 +97,19 @@ class PostgresSettings(BaseModel):
         return v
 
     @property
-    def dsn(self) -> str:
-        return str(
-            PostgresDsn.build(
-                scheme=f"postgresql+{self.driver}",
-                username=self.user,
-                password=self.password,
-                host=self.host,
-                port=self.port,
-                path=self.db,
-            )
+    def dsn(self) -> PostgresDsn:
+        return cast(
+            PostgresDsn,
+            str(
+                PydanticPostgresDsn.build(
+                    scheme=f"postgresql+{self.driver}",
+                    username=self.user,
+                    password=self.password,
+                    host=self.host,
+                    port=self.port,
+                    path=self.db,
+                )
+            ),
         )
 
 

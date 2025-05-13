@@ -2,15 +2,15 @@ import logging
 
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.domain.entities.user.value_objects import UserId
-from app.infrastructure.adapters.application.sqla_transaction_manager import (
-    SqlaTransactionManager,
-)
 from app.infrastructure.auth_context.common.auth_exceptions import AuthenticationError
 from app.infrastructure.auth_context.common.auth_session import AuthSession
 from app.infrastructure.auth_context.common.managers.auth_session import (
     AuthSessionManager,
 )
 from app.infrastructure.auth_context.common.managers.jwt_token import JwtTokenManager
+from app.infrastructure.auth_context.common.sqla_auth_transaction_manager import (
+    SqlaAuthTransactionManager,
+)
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 
 log = logging.getLogger(__name__)
@@ -21,11 +21,11 @@ class AuthSessionIdentityProvider(IdentityProvider):
         self,
         jwt_token_manager: JwtTokenManager,
         auth_session_manager: AuthSessionManager,
-        sqla_transaction_manager: SqlaTransactionManager,
+        sqla_auth_transaction_manager: SqlaAuthTransactionManager,
     ):
         self._jwt_token_manager = jwt_token_manager
         self._auth_session_manager = auth_session_manager
-        self._sqla_transaction_manager = sqla_transaction_manager
+        self._sqla_auth_transaction_manager = sqla_auth_transaction_manager
 
     async def get_current_user_id(self) -> UserId:
         """
@@ -65,7 +65,7 @@ class AuthSessionIdentityProvider(IdentityProvider):
             self._jwt_token_manager.add_access_token_to_request(new_access_token)
 
             try:
-                await self._sqla_transaction_manager.commit()
+                await self._sqla_auth_transaction_manager.commit()
 
             except DataMapperError as error:
                 log.error("Auto prolongation of auth session failed: '%s'", error)

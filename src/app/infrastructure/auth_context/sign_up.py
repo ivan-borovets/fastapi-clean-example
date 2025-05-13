@@ -8,11 +8,11 @@ from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import RawPassword, Username
 from app.domain.exceptions.user import UsernameAlreadyExists
 from app.domain.services.user import UserService
-from app.infrastructure.adapters.application.sqla_transaction_manager import (
-    SqlaTransactionManager,
-)
 from app.infrastructure.adapters.application.sqla_user_data_mapper import (
     SqlaUserDataMapper,
+)
+from app.infrastructure.adapters.application.sqla_user_transaction_manager import (
+    SqlaUserTransactionManager,
 )
 from app.infrastructure.auth_context.common.application_adapters.auth_session_identity_provider import (
     AuthSessionIdentityProvider,
@@ -49,12 +49,12 @@ class SignUpHandler:
         auth_session_identity_provider: AuthSessionIdentityProvider,
         sqla_user_data_mapper: SqlaUserDataMapper,
         user_service: UserService,
-        sqla_transaction_manager: SqlaTransactionManager,
+        sqla_user_transaction_manager: SqlaUserTransactionManager,
     ):
         self._auth_session_identity_provider = auth_session_identity_provider
         self._sqla_user_data_mapper = sqla_user_data_mapper
         self._user_service = user_service
-        self._sqla_transaction_manager = sqla_transaction_manager
+        self._sqla_user_transaction_manager = sqla_user_transaction_manager
 
     async def __call__(self, request_data: SignUpRequest) -> SignUpResponse:
         log.info("Sign up: started. Username: '%s'.", request_data.username)
@@ -75,11 +75,11 @@ class SignUpHandler:
         await self._sqla_user_data_mapper.add(user)
 
         try:
-            await self._sqla_transaction_manager.flush()
+            await self._sqla_user_transaction_manager.flush()
         except UsernameAlreadyExists:
             raise
 
-        await self._sqla_transaction_manager.commit()
+        await self._sqla_user_transaction_manager.commit()
 
         log.info("Sign up: done. Username: '%s'.", user.username.value)
         return SignUpResponse(

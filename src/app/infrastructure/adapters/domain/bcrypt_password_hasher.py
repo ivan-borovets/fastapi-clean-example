@@ -8,7 +8,7 @@ import bcrypt
 
 from app.domain.entities.user.value_objects import RawPassword
 from app.domain.ports.password_hasher import PasswordHasher
-from app.infrastructure.new_types import PasswordPepper
+from app.infrastructure.adapters.domain.new_types import PasswordPepper
 
 
 class BcryptPasswordHasher(PasswordHasher):
