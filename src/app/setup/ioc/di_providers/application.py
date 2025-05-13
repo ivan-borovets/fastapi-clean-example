@@ -34,7 +34,10 @@ class UserApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     # Services
-    services = provide_all(AuthorizationService, CurrentUserService)
+    services = provide_all(
+        AuthorizationService,
+        CurrentUserService,
+    )
 
     # Ports
     user_transaction_manager = provide(

@@ -1,4 +1,4 @@
-from dishka import AsyncContainer, Provider
+from dishka import Provider
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
@@ -21,7 +21,7 @@ def make_app(
     app: FastAPI = create_app()
     configure_app(app=app, root_router=root_router)
 
-    async_ioc_container: AsyncContainer = create_async_ioc_container(
+    async_ioc_container = create_async_ioc_container(
         providers=(*get_providers(), *di_providers),
         settings=settings,
     )

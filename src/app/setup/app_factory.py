@@ -19,7 +19,10 @@ from app.setup.config.settings import AppSettings
 
 
 def create_app() -> FastAPI:
-    return FastAPI(lifespan=lifespan, default_response_class=ORJSONResponse)
+    return FastAPI(
+        lifespan=lifespan,
+        default_response_class=ORJSONResponse,
+    )
 
 
 @asynccontextmanager
@@ -36,7 +39,7 @@ def configure_app(
 ) -> None:
     app.include_router(root_router)
     app.add_middleware(ASGIAuthMiddleware)  # noqa
-    exception_handler: ExceptionHandler = ExceptionHandler(app)
+    exception_handler = ExceptionHandler(app)
     exception_handler.setup_handlers()
 
 
