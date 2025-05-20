@@ -1,6 +1,5 @@
 # pylint: disable=C0301 (line-too-long)
 import logging
-from typing import TypedDict
 
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import UserId
@@ -23,10 +22,6 @@ from app.infrastructure.auth_context.common.sqla_auth_transaction_manager import
 log = logging.getLogger(__name__)
 
 
-class LogOutResponse(TypedDict):
-    message: str
-
-
 class LogOutHandler:
     """
     :raises AuthenticationError:
@@ -38,16 +33,16 @@ class LogOutHandler:
         auth_session_identity_provider: AuthSessionIdentityProvider,
         sqla_user_data_mapper: SqlaUserDataMapper,
         auth_session_manager: AuthSessionManager,
-        jtw_token_manager: JwtTokenManager,
+        jwt_token_manager: JwtTokenManager,
         sqla_auth_transaction_manager: SqlaAuthTransactionManager,
     ):
         self._auth_session_identity_provider = auth_session_identity_provider
         self._sqla_user_data_mapper = sqla_user_data_mapper
         self._auth_session_manager = auth_session_manager
-        self._jwt_token_manager = jtw_token_manager
+        self._jwt_token_manager = jwt_token_manager
         self._sqla_auth_transaction_manager = sqla_auth_transaction_manager
 
-    async def __call__(self) -> LogOutResponse:
+    async def __call__(self) -> None:
         log.info("Log out: started for unknown user.")
 
         user_id: UserId = (
@@ -74,19 +69,16 @@ class LogOutHandler:
         if not await self._auth_session_manager.delete_auth_session(
             current_auth_session.id_
         ):
-            log.debug(
+            log.warning(
                 (
-                    "Log out: failed. "
-                    "Auth session wasn't deleted. "
-                    "Username: '%s'. "
-                    "Auth session id: '%s'."
+                    "Log out failed: partially completed. "
+                    "Access token was deleted, but auth session was not. "
+                    "Username: '%s'. Auth session ID: '%s'."
                 ),
                 user.username.value,
                 current_auth_session.id_,
             )
-            return LogOutResponse(message="Logged out: incomplete.")
 
         await self._sqla_auth_transaction_manager.commit()
 
         log.info("Log out: done. Username: '%s'.", user.username.value)
-        return LogOutResponse(message="Logged out: successful.")

@@ -1,10 +1,8 @@
 import logging
 from dataclasses import dataclass
-from typing import TypedDict
 
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.application.common.ports.transaction_manager import TransactionManager
-from app.application.common.response_status_enum import ResponseStatusEnum
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user.entity import User
@@ -19,11 +17,6 @@ log = logging.getLogger(__name__)
 @dataclass(frozen=True, slots=True)
 class GrantAdminRequest:
     username: str
-
-
-class GrantAdminResponse(TypedDict):
-    username: str
-    status: ResponseStatusEnum
 
 
 class GrantAdminInteractor:
@@ -50,7 +43,7 @@ class GrantAdminInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: GrantAdminRequest) -> GrantAdminResponse:
+    async def __call__(self, request_data: GrantAdminRequest) -> None:
         log.info(
             "Grant admin by admin: started. Username: '%s'.", request_data.username
         )
@@ -71,7 +64,3 @@ class GrantAdminInteractor:
         await self._transaction_manager.commit()
 
         log.info("Grant admin by admin: finished. Username: '%s'.", user.username.value)
-        return GrantAdminResponse(
-            username=user.username.value,
-            status=ResponseStatusEnum.UPDATED,
-        )

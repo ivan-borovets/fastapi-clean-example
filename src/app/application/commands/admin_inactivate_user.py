@@ -1,11 +1,9 @@
 import logging
 from dataclasses import dataclass
-from typing import TypedDict
 
 from app.application.common.ports.access_revoker import AccessRevoker
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.application.common.ports.transaction_manager import TransactionManager
-from app.application.common.response_status_enum import ResponseStatusEnum
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user.entity import User
@@ -20,11 +18,6 @@ log = logging.getLogger(__name__)
 @dataclass(frozen=True, slots=True)
 class InactivateUserRequest:
     username: str
-
-
-class InactivateUserResponse(TypedDict):
-    username: str
-    status: ResponseStatusEnum
 
 
 class InactivateUserInteractor:
@@ -53,9 +46,7 @@ class InactivateUserInteractor:
         self._transaction_manager = transaction_manager
         self._access_revoker = access_revoker
 
-    async def __call__(
-        self, request_data: InactivateUserRequest
-    ) -> InactivateUserResponse:
+    async def __call__(self, request_data: InactivateUserRequest) -> None:
         log.info(
             "Inactivate user by admin: started. Username: '%s'.", request_data.username
         )
@@ -82,8 +73,4 @@ class InactivateUserInteractor:
 
         log.info(
             "Inactivate user by admin: finished. Username: '%s'.", user.username.value
-        )
-        return InactivateUserResponse(
-            username=user.username.value,
-            status=ResponseStatusEnum.UPDATED,
         )

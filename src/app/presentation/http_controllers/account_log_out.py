@@ -2,7 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
-from app.infrastructure.auth_context.log_out import LogOutHandler, LogOutResponse
+from app.infrastructure.auth_context.log_out import LogOutHandler
 from app.presentation.common.exception_handler import (
     ExceptionSchema,
     ExceptionSchemaRich,
@@ -19,13 +19,13 @@ log_out_router = APIRouter()
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
     },
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[Security(cookie_scheme)],
 )
 @inject
 async def logout(
     interactor: FromDishka[LogOutHandler],
-) -> LogOutResponse:
+) -> None:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:
-    return await interactor()
+    await interactor()

@@ -1,11 +1,9 @@
 import logging
 from dataclasses import dataclass
-from typing import TypedDict
 
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.application.common.ports.transaction_manager import TransactionManager
-from app.application.common.response_status_enum import ResponseStatusEnum
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user.entity import User
@@ -20,11 +18,6 @@ log = logging.getLogger(__name__)
 class ChangePasswordRequest:
     username: str
     password: str
-
-
-class ChangePasswordResponse(TypedDict):
-    username: str
-    status: ResponseStatusEnum
 
 
 class ChangePasswordInteractor:
@@ -50,9 +43,7 @@ class ChangePasswordInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def __call__(
-        self, request_data: ChangePasswordRequest
-    ) -> ChangePasswordResponse:
+    async def __call__(self, request_data: ChangePasswordRequest) -> None:
         log.info("Change password: started.")
 
         current_user = await self._current_user_service.get_current_user()
@@ -78,7 +69,3 @@ class ChangePasswordInteractor:
         await self._transaction_manager.commit()
 
         log.info("Change password: finished.")
-        return ChangePasswordResponse(
-            username=user.username.value,
-            status=ResponseStatusEnum.UPDATED,
-        )

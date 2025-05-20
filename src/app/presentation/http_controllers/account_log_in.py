@@ -2,11 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
-from app.infrastructure.auth_context.log_in import (
-    LogInHandler,
-    LogInRequest,
-    LogInResponse,
-)
+from app.infrastructure.auth_context.log_in import LogInHandler, LogInRequest
 from app.presentation.common.exception_handler import (
     ExceptionSchema,
     ExceptionSchemaRich,
@@ -24,15 +20,15 @@ log_in_router = APIRouter()
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
     },
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 @inject
 async def login(
     request_data: LogInRequest,
     interactor: FromDishka[LogInHandler],
-) -> LogInResponse:
+) -> None:
     # :raises AlreadyAuthenticatedError 401:
     # :raises DataMapperError 500:
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
-    return await interactor(request_data)
+    await interactor(request_data)
