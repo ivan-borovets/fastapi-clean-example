@@ -5,7 +5,6 @@ from fastapi import APIRouter, Security, status
 from app.application.commands.admin_inactivate_user import (
     InactivateUserInteractor,
     InactivateUserRequest,
-    InactivateUserResponse,
 )
 from app.presentation.common.exception_handler import (
     ExceptionSchema,
@@ -26,18 +25,18 @@ inactivate_user_router = APIRouter()
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
     },
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[Security(cookie_scheme)],
 )
 @inject
 async def inactivate_user(
     request_data: InactivateUserRequest,
     interactor: FromDishka[InactivateUserInteractor],
-) -> InactivateUserResponse:
+) -> None:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 500:
     # :raises AuthorizationError 403:
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
     # :raises ActivationChangeNotPermitted 403:
-    return await interactor(request_data)
+    await interactor(request_data)

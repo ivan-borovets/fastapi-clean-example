@@ -2,8 +2,8 @@
 import logging
 from dataclasses import dataclass
 from typing import TypedDict
+from uuid import UUID
 
-from app.application.common.response_status_enum import ResponseStatusEnum
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import RawPassword, Username
 from app.domain.exceptions.user import UsernameAlreadyExists
@@ -32,8 +32,7 @@ class SignUpRequest:
 
 
 class SignUpResponse(TypedDict):
-    username: str
-    status: ResponseStatusEnum
+    id: UUID
 
 
 class SignUpHandler:
@@ -82,7 +81,4 @@ class SignUpHandler:
         await self._sqla_user_transaction_manager.commit()
 
         log.info("Sign up: done. Username: '%s'.", user.username.value)
-        return SignUpResponse(
-            username=user.username.value,
-            status=ResponseStatusEnum.CREATED,
-        )
+        return SignUpResponse(id=user.id_.value)

@@ -1,7 +1,6 @@
 # pylint: disable=C0301 (line-too-long)
 import logging
 from dataclasses import dataclass
-from typing import TypedDict
 
 from app.domain.entities.user.entity import User
 from app.domain.entities.user.value_objects import RawPassword, Username
@@ -35,10 +34,6 @@ class LogInRequest:
     password: str
 
 
-class LogInResponse(TypedDict):
-    message: str
-
-
 class LogInHandler:
     """
     :raises AlreadyAuthenticatedError:
@@ -52,18 +47,18 @@ class LogInHandler:
         auth_session_identity_provider: AuthSessionIdentityProvider,
         sqla_user_data_mapper: SqlaUserDataMapper,
         auth_session_manager: AuthSessionManager,
-        jtw_token_manager: JwtTokenManager,
+        jwt_token_manager: JwtTokenManager,
         user_service: UserService,
         sqla_auth_transaction_manager: SqlaAuthTransactionManager,
     ):
         self._auth_session_identity_provider = auth_session_identity_provider
         self._sqla_user_data_mapper = sqla_user_data_mapper
         self._auth_session_manager = auth_session_manager
-        self._jwt_token_manager = jtw_token_manager
+        self._jwt_token_manager = jwt_token_manager
         self._user_service = user_service
         self._sqla_auth_transaction_manager = sqla_auth_transaction_manager
 
-    async def __call__(self, request_data: LogInRequest) -> LogInResponse:
+    async def __call__(self, request_data: LogInRequest) -> None:
         log.info("Log in: started. Username: '%s'.", request_data.username)
 
         try:
@@ -108,4 +103,3 @@ class LogInHandler:
             user.username.value,
             user.role.value,
         )
-        return LogInResponse(message="Logged in: successful.")
