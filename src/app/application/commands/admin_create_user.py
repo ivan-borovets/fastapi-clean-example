@@ -63,7 +63,7 @@ class CreateUserInteractor:
         password = RawPassword(request_data.password)
         user = self._user_service.create_user(username, password)
         user.role = request_data.role
-        await self._user_command_gateway.add(user)
+        self._user_command_gateway.add(user)
 
         try:
             await self._transaction_manager.flush()

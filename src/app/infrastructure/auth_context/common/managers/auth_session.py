@@ -31,7 +31,7 @@ class AuthSessionManager:
         self._sqla_auth_session_data_mapper = sqla_auth_session_data_mapper
         self._jwt_token_manager = jwt_token_manager
 
-    async def create_auth_session(self, user_id: UserId) -> AuthSession:
+    def create_auth_session(self, user_id: UserId) -> AuthSession:
         log.debug("Create auth session: started. User id: '%s'.", user_id.value)
 
         auth_session_id: str = self._str_auth_session_id_generator()
@@ -49,11 +49,11 @@ class AuthSessionManager:
         )
         return auth_session
 
-    async def add_auth_session(self, auth_session: AuthSession) -> bool:
+    def add_auth_session(self, auth_session: AuthSession) -> bool:
         log.debug("Add auth session: started. Auth session id: '%s'.", auth_session.id_)
 
         try:
-            await self._sqla_auth_session_data_mapper.add(auth_session)
+            self._sqla_auth_session_data_mapper.add(auth_session)
 
         except DataMapperError as error:
             log.error(
@@ -154,7 +154,7 @@ class AuthSessionManager:
         )
         return is_near_expiry
 
-    async def prolong_auth_session(self, auth_session: AuthSession) -> None:
+    def prolong_auth_session(self, auth_session: AuthSession) -> None:
         log.debug(
             "Prolong auth session: started. Auth session id: %s.", auth_session.id_
         )
@@ -163,7 +163,7 @@ class AuthSessionManager:
         auth_session.expiration = new_expiration
 
         try:
-            await self._sqla_auth_session_data_mapper.add(auth_session)
+            self._sqla_auth_session_data_mapper.add(auth_session)
 
         except DataMapperError as error:
             log.error(
@@ -171,7 +171,6 @@ class AuthSessionManager:
                 auth_session.id_,
                 error,
             )
-            return None
 
         log.debug("Prolong auth session: done. Auth session id: %s.", auth_session.id_)
 

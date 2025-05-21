@@ -13,7 +13,7 @@ class SqlaUserDataMapper(UserCommandGateway):
     def __init__(self, session: UserAsyncSession):
         self._session = session
 
-    async def add(self, user: User) -> None:
+    def add(self, user: User) -> None:
         """
         :raises DataMapperError:
         """

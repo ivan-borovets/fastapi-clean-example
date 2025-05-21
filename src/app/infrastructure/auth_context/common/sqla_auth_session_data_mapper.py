@@ -13,7 +13,7 @@ class SqlaAuthSessionDataMapper:
     def __init__(self, session: AuthAsyncSession):
         self._session = session
 
-    async def add(self, auth_session: AuthSession) -> None:
+    def add(self, auth_session: AuthSession) -> None:
         """
         :raises DataMapperError:
         """

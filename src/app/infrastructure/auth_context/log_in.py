@@ -84,10 +84,10 @@ class LogInHandler:
                 "Your account is inactive. Please contact support."
             )
 
-        auth_session: AuthSession = (
-            await self._auth_session_manager.create_auth_session(user.id_)
+        auth_session: AuthSession = self._auth_session_manager.create_auth_session(
+            user.id_
         )
-        if not await self._auth_session_manager.add_auth_session(auth_session):
+        if not self._auth_session_manager.add_auth_session(auth_session):
             raise AuthenticationError(
                 "Authentication is currently unavailable. Please try again later."
             )
