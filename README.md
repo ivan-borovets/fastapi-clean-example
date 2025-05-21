@@ -610,11 +610,11 @@ make dotenv  # should tell you where .env.local was generated
 # sudo apt install pipx
 # pipx ensurepath
 # pipx install uv
+# uv python install 3.12
 uv venv
 source .venv/bin/activate
 # .venv\Scripts\activate  # Windows
 # https://docs.astral.sh/uv/getting-started/installation/#shell-autocompletion
-# uv python install 3.12
 uv pip install -e '.[test,dev]'
 ```
 
