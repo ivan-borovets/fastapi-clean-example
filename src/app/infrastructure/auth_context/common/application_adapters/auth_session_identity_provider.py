@@ -57,7 +57,7 @@ class AuthSessionIdentityProvider(IdentityProvider):
             raise AuthenticationError("Not authenticated.")
 
         if self._auth_session_manager.is_auth_session_near_expiry(auth_session):
-            await self._auth_session_manager.prolong_auth_session(auth_session)
+            self._auth_session_manager.prolong_auth_session(auth_session)
 
             new_access_token: str = self._jwt_token_manager.issue_access_token(
                 auth_session.id_

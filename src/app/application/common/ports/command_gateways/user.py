@@ -7,7 +7,7 @@ from app.domain.entities.user.value_objects import UserId, Username
 
 class UserCommandGateway(Protocol):
     @abstractmethod
-    async def add(self, user: User) -> None:
+    def add(self, user: User) -> None:
         """
         :raises DataMapperError:
         """

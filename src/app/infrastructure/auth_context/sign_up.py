@@ -71,7 +71,7 @@ class SignUpHandler:
 
         user: User = self._user_service.create_user(username, password)
 
-        await self._sqla_user_data_mapper.add(user)
+        self._sqla_user_data_mapper.add(user)
 
         try:
             await self._sqla_user_transaction_manager.flush()

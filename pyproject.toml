@@ -98,9 +98,23 @@ max-line-length = 88
 
 [tool.ruff]
 line-length = 88
+preview = true # experimental
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle-error
+    "F", # pyflakes
+    "ASYNC", # flake8-async
+    "RUF029", # unused-async
+]
+ignore = [
+    "E501", # line-too-long
+]
 
 [tool.ruff.lint.per-file-ignores]
-"src/app/infrastructure/persistence/alembic/*.py" = ["F401"]  # Unused imports
+"src/app/infrastructure/sqla_persistence/alembic/*.py" = [
+    "ERA001", # Found commented-out code
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
