@@ -69,20 +69,25 @@ class ExceptionHandler:
 
     async def _handle(self, _: Request, exc: Exception) -> ORJSONResponse:
         status_code: int = self._ERROR_MAPPING.get(
-            type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR
+            type(exc),
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
         message = str(exc) if status_code < 500 else "Internal server error."
 
         if status_code >= 500:
             log.error(
-                "Exception '%s' occurred: '%s'.", type(exc).__name__, exc, exc_info=True
+                "Exception '%s' occurred: '%s'.",
+                type(exc).__name__,
+                exc,
+                exc_info=exc,
             )
         else:
             log.warning("Exception '%s' occurred: '%s'.", type(exc).__name__, exc)
 
         if isinstance(exc, pydantic.ValidationError):
             response: ExceptionSchema | ExceptionSchemaRich = ExceptionSchemaRich(
-                message, jsonable_encoder(exc.errors())
+                message,
+                jsonable_encoder(exc.errors()),
             )
         else:
             response = ExceptionSchema(message)

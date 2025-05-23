@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 import logging
 from dataclasses import dataclass
 
@@ -64,7 +63,7 @@ class LogInHandler:
         try:
             await self._auth_session_identity_provider.get_current_user_id()
             raise AlreadyAuthenticatedError(
-                "You are already authenticated. Consider logging out."
+                "You are already authenticated. Consider logging out.",
             )
         except AuthenticationError:
             pass
@@ -81,15 +80,15 @@ class LogInHandler:
 
         if not user.is_active:
             raise AuthenticationError(
-                "Your account is inactive. Please contact support."
+                "Your account is inactive. Please contact support.",
             )
 
         auth_session: AuthSession = self._auth_session_manager.create_auth_session(
-            user.id_
+            user.id_,
         )
         if not self._auth_session_manager.add_auth_session(auth_session):
             raise AuthenticationError(
-                "Authentication is currently unavailable. Please try again later."
+                "Authentication is currently unavailable. Please try again later.",
             )
 
         access_token: str = self._jwt_token_manager.issue_access_token(auth_session.id_)

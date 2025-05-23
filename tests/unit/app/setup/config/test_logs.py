@@ -18,7 +18,7 @@ def test_validate_logging_level_invalid(level):
 
 
 @pytest.mark.parametrize(
-    "level_str, expected_level",
+    ("level_str", "expected_level"),
     [
         ("DEBUG", logging.DEBUG),
         ("INFO", logging.INFO),

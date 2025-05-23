@@ -74,10 +74,11 @@ class AuthSessionManager:
         log.debug("Get auth session: started. Auth session id: '%s'.", auth_session_id)
 
         try:
-            auth_session: AuthSession | None = (
-                await self._sqla_auth_session_data_mapper.read(
-                    auth_session_id, for_update=for_update
-                )
+            auth_session: (
+                AuthSession | None
+            ) = await self._sqla_auth_session_data_mapper.read(
+                auth_session_id,
+                for_update=for_update,
             )
 
         except DataMapperError as error:
@@ -118,13 +119,15 @@ class AuthSessionManager:
             return None
 
         log.debug(
-            "Get current auth session: done. Auth session id: '%s'.", auth_session.id_
+            "Get current auth session: done. Auth session id: '%s'.",
+            auth_session.id_,
         )
         return auth_session
 
     def is_auth_session_expired(self, auth_session: AuthSession) -> bool:
         log.debug(
-            "Is auth session expired: started. Auth session id: %s.", auth_session.id_
+            "Is auth session expired: started. Auth session id: %s.",
+            auth_session.id_,
         )
 
         is_expired: bool = (
@@ -132,7 +135,8 @@ class AuthSessionManager:
         )
 
         log.debug(
-            "Is auth session expired: done. Auth session id: %s.", auth_session.id_
+            "Is auth session expired: done. Auth session id: %s.",
+            auth_session.id_,
         )
         return is_expired
 
@@ -150,13 +154,15 @@ class AuthSessionManager:
         )
 
         log.debug(
-            "Is auth session near expiry: done. Auth session id: %s.", auth_session.id_
+            "Is auth session near expiry: done. Auth session id: %s.",
+            auth_session.id_,
         )
         return is_near_expiry
 
     def prolong_auth_session(self, auth_session: AuthSession) -> None:
         log.debug(
-            "Prolong auth session: started. Auth session id: %s.", auth_session.id_
+            "Prolong auth session: started. Auth session id: %s.",
+            auth_session.id_,
         )
 
         new_expiration: datetime = self._utc_auth_session_timer.access_expiration
@@ -176,12 +182,13 @@ class AuthSessionManager:
 
     async def delete_auth_session(self, auth_session_id: str) -> bool:
         log.debug(
-            "Delete auth session: started. Auth session id: '%s'.", auth_session_id
+            "Delete auth session: started. Auth session id: '%s'.",
+            auth_session_id,
         )
 
         try:
             is_deleted: bool = await self._sqla_auth_session_data_mapper.delete(
-                auth_session_id
+                auth_session_id,
             )
 
         except DataMapperError as error:

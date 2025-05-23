@@ -4,9 +4,12 @@ from datetime import timedelta
 from typing import Any, Literal, NewType, Self, cast
 
 import rtoml
-from pydantic import BaseModel, Field
-from pydantic import PostgresDsn as PydanticPostgresDsn
-from pydantic import field_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    PostgresDsn as PydanticPostgresDsn,
+    field_validator,
+)
 
 from app.setup.config.constants import (
     ENV_TO_DIR_PATHS,
@@ -40,27 +43,25 @@ class AuthSettings(BaseModel):
     @field_validator("session_ttl_min", mode="before")
     @classmethod
     def convert_session_ttl_min(cls, v: Any) -> timedelta:
-        if isinstance(v, (int, float)):
-            if v < 1:
-                raise ValueError("SESSION_TTL_MIN must be at least 1 (n of minutes).")
-            return timedelta(minutes=v)
-        else:
+        if not isinstance(v, (int, float)):
             raise ValueError("SESSION_TTL_MIN must be a number (n of minutes, n >= 1).")
+        if v < 1:
+            raise ValueError("SESSION_TTL_MIN must be at least 1 (n of minutes).")
+        return timedelta(minutes=v)
 
     @field_validator("session_refresh_threshold", mode="before")
     @classmethod
     def validate_session_refresh_threshold(cls, v: Any) -> float:
-        if isinstance(v, (int, float)):
-            if not 0 < v < 1:
-                raise ValueError(
-                    "SESSION_REFRESH_THRESHOLD must be between 0 and 1, exclusive."
-                )
-            return v
-        else:
+        if not isinstance(v, (int, float)):
             raise ValueError(
                 "SESSION_REFRESH_THRESHOLD must be a number "
-                "(fraction, 0 < fraction < 1)."
+                "(fraction, 0 < fraction < 1).",
             )
+        if not 0 < v < 1:
+            raise ValueError(
+                "SESSION_REFRESH_THRESHOLD must be between 0 and 1, exclusive.",
+            )
+        return v
 
 
 class CookiesSettings(BaseModel):
@@ -99,7 +100,7 @@ class PostgresSettings(BaseModel):
     @property
     def dsn(self) -> PostgresDsn:
         return cast(
-            PostgresDsn,
+            "PostgresDsn",
             str(
                 PydanticPostgresDsn.build(
                     scheme=f"postgresql+{self.driver}",
@@ -108,7 +109,7 @@ class PostgresSettings(BaseModel):
                     host=self.host,
                     port=self.port,
                     path=self.db,
-                )
+                ),
             ),
         )
 
@@ -151,7 +152,7 @@ def validate_env(*, env: str | None) -> ValidEnvs:
         env_display = "not set" if env is None else f"'{env}'"
         raise ValueError(
             f"Environment variable {ENV_VAR_NAME} has invalid value: {env_display}. "
-            f"Must be one of: {valid_values}."
+            f"Must be one of: {valid_values}.",
         )
     return ValidEnvs(env)
 
@@ -167,7 +168,7 @@ def read_config(
     file_path = dir_path / config
     if not file_path.is_file():
         raise FileNotFoundError(
-            f"The file does not exist at the specified path: {file_path}"
+            f"The file does not exist at the specified path: {file_path}",
         )
     with open(file=file_path, mode="r", encoding="utf-8") as file:
         return rtoml.load(file)

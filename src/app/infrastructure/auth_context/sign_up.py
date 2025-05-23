@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 import logging
 from dataclasses import dataclass
 from typing import TypedDict
@@ -61,7 +60,7 @@ class SignUpHandler:
         try:
             await self._auth_session_identity_provider.get_current_user_id()
             raise AlreadyAuthenticatedError(
-                "You are already authenticated. Consider logging out."
+                "You are already authenticated. Consider logging out.",
             )
         except AuthenticationError:
             pass

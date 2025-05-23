@@ -45,10 +45,11 @@ class AuthSessionIdentityProvider(IdentityProvider):
         if auth_session_id is None:
             raise AuthenticationError("Not authenticated.")
 
-        auth_session: AuthSession | None = (
-            await self._auth_session_manager.get_auth_session(
-                auth_session_id, for_update=True
-            )
+        auth_session: (
+            AuthSession | None
+        ) = await self._auth_session_manager.get_auth_session(
+            auth_session_id,
+            for_update=True,
         )
         if auth_session is None:
             raise AuthenticationError("Not authenticated.")
@@ -60,7 +61,7 @@ class AuthSessionIdentityProvider(IdentityProvider):
             self._auth_session_manager.prolong_auth_session(auth_session)
 
             new_access_token: str = self._jwt_token_manager.issue_access_token(
-                auth_session.id_
+                auth_session.id_,
             )
             self._jwt_token_manager.add_access_token_to_request(new_access_token)
 

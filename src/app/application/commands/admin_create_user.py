@@ -51,12 +51,14 @@ class CreateUserInteractor:
 
     async def __call__(self, request_data: CreateUserRequest) -> CreateUserResponse:
         log.info(
-            "Create user by admin: started. Username: '%s'.", request_data.username
+            "Create user by admin: started. Username: '%s'.",
+            request_data.username,
         )
 
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=request_data.role
+            current_user,
+            target_role=request_data.role,
         )
 
         username = Username(request_data.username)

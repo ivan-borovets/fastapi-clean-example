@@ -1,6 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 from app.domain.entities.base.value_object import ValueObject
 from app.domain.exceptions.base import DomainError
@@ -9,7 +9,7 @@ T = TypeVar("T", bound=ValueObject)
 
 
 @dataclass(eq=False)
-class Entity(ABC, Generic[T]):
+class Entity[T: ValueObject](ABC):
     """
     Base class for domain entities, defined by a unique identity (`id`).
     - `id`: Identity that remains constant throughout the entity's lifecycle.

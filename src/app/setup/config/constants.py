@@ -17,13 +17,11 @@ class ValidEnvs(StrEnum):
     PROD = "prod"
 
 
-ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType(
-    {
-        ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
-        ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
-        ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
-    }
-)
+ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
+    ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
+    ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
+    ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
+})
 
 
 class DirContents(StrEnum):

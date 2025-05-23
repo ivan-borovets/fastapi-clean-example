@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 import logging
 
 from app.domain.entities.user.entity import User
@@ -55,19 +54,20 @@ class LogOutHandler:
 
         log.info("Log out: user identified. Username: '%s'.", user.username.value)
 
-        current_auth_session: AuthSession | None = (
-            await self._auth_session_manager.get_current_auth_session()
-        )
+        current_auth_session: (
+            AuthSession | None
+        ) = await self._auth_session_manager.get_current_auth_session()
         if current_auth_session is None:
             raise AuthenticationError("Not authenticated.")
 
         self._jwt_token_manager.delete_access_token_from_request()
         log.debug(
-            "Access token deleted. Auth session id: '%s'.", current_auth_session.id_
+            "Access token deleted. Auth session id: '%s'.",
+            current_auth_session.id_,
         )
 
         if not await self._auth_session_manager.delete_auth_session(
-            current_auth_session.id_
+            current_auth_session.id_,
         ):
             log.warning(
                 (

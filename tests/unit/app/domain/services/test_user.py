@@ -33,9 +33,9 @@ def test_create_user() -> None:
     username = Username("username")
     raw_password = RawPassword("securepassword")
     user_uuid = UUID("12345678-1234-5678-1234-567812345678")
-    cast(Mock, user_service._user_id_generator).return_value = user_uuid
+    cast("Mock", user_service._user_id_generator).return_value = user_uuid
     password_hash_value = "mocked_password_hash".encode()
-    cast(Mock, user_service._password_hasher.hash).return_value = password_hash_value
+    cast("Mock", user_service._password_hasher.hash).return_value = password_hash_value
 
     user: User = user_service.create_user(username, raw_password)
     assert isinstance(user, User)
@@ -49,7 +49,7 @@ def test_create_user() -> None:
 def test_is_password_valid(sample_user: User) -> None:
     user_service: UserService = create_user_service()
     password = RawPassword("test_password")
-    verify_mock = cast(Mock, user_service._password_hasher.verify)
+    verify_mock = cast("Mock", user_service._password_hasher.verify)
 
     verify_mock.return_value = True
     correct_result: bool = user_service.is_password_valid(sample_user, password)
@@ -63,7 +63,7 @@ def test_is_password_valid(sample_user: User) -> None:
 def test_change_password(sample_user: User) -> None:
     user_service: UserService = create_user_service()
     raw_new_password = RawPassword("raw_new_password_to_be_hashed")
-    hash_mock = cast(Mock, user_service._password_hasher.hash)
+    hash_mock = cast("Mock", user_service._password_hasher.hash)
     original_password_hash: UserPasswordHash = sample_user.password_hash
     new_password_hash_value: bytes = "new_password_hash".encode()
     hash_mock.return_value = new_password_hash_value

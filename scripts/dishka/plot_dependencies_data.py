@@ -18,7 +18,7 @@ def generate_dependency_graph_d2(container: AsyncContainer) -> str:
     return dishka.plotter.render_d2(container)
 
 
-async def main():
+async def main() -> None:
     settings: AppSettings = load_settings()
     async with make_plot_data_container(settings)() as container:
         print(generate_dependency_graph_d2(container))

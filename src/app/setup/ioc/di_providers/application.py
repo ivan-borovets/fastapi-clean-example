@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 from dishka import Provider, Scope, provide, provide_all
 
 from app.application.commands.admin_create_user import CreateUserInteractor

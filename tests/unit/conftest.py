@@ -7,7 +7,7 @@ from app.domain.entities.user.role_enum import UserRoleEnum
 from app.domain.entities.user.value_objects import UserId, Username, UserPasswordHash
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_user() -> User:
     user_id = UUID("12345678-1234-5678-1234-567812345678")
     username = "username"
@@ -24,7 +24,7 @@ def sample_user() -> User:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def other_sample_user() -> User:
     user_id = UUID("00000000-0000-0000-0000-000000000000")
     username = "username"

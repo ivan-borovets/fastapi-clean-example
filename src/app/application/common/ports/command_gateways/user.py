@@ -20,7 +20,9 @@ class UserCommandGateway(Protocol):
 
     @abstractmethod
     async def read_by_username(
-        self, username: Username, for_update: bool = False
+        self,
+        username: Username,
+        for_update: bool = False,
     ) -> User | None:
         """
         :raises DataMapperError:

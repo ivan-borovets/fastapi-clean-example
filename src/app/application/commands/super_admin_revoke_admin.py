@@ -45,17 +45,20 @@ class RevokeAdminInteractor:
 
     async def __call__(self, request_data: RevokeAdminRequest) -> None:
         log.info(
-            "Revoke admin by admin: started. Username: '%s'.", request_data.username
+            "Revoke admin by admin: started. Username: '%s'.",
+            request_data.username,
         )
 
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=UserRoleEnum.ADMIN
+            current_user,
+            target_role=UserRoleEnum.ADMIN,
         )
 
         username = Username(request_data.username)
         user: User | None = await self._user_command_gateway.read_by_username(
-            username, for_update=True
+            username,
+            for_update=True,
         )
         if user is None:
             raise UserNotFoundByUsername(username)
@@ -64,5 +67,6 @@ class RevokeAdminInteractor:
         await self._transaction_manager.commit()
 
         log.info(
-            "Revoke admin by admin: finished. Username: '%s'.", user.username.value
+            "Revoke admin by admin: finished. Username: '%s'.",
+            user.username.value,
         )
