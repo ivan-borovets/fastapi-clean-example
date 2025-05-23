@@ -17,7 +17,7 @@ def test_authorize_for_self(sample_user: User, other_sample_user: User) -> None:
 
 
 @pytest.mark.parametrize(
-    "current_role, target_role, should_pass",
+    ("current_role", "target_role", "should_pass"),
     [
         (UserRoleEnum.USER, UserRoleEnum.USER, False),
         (UserRoleEnum.USER, UserRoleEnum.ADMIN, False),
@@ -43,11 +43,13 @@ def test_authorize_by_subordinate_role(
 
     if should_pass:
         authz_service.authorize_for_subordinate_role(
-            current_user, target_role=target_role
+            current_user,
+            target_role=target_role,
         )
 
     else:
         with pytest.raises(AuthorizationError):
             authz_service.authorize_for_subordinate_role(
-                current_user, target_role=target_role
+                current_user,
+                target_role=target_role,
             )

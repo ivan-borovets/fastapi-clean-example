@@ -54,7 +54,8 @@ class ListUsersQueryService:
         log.info("List users by admin: started.")
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=UserRoleEnum.USER
+            current_user,
+            target_role=UserRoleEnum.USER,
         )
 
         log.debug("Retrieving list of users.")
@@ -70,7 +71,7 @@ class ListUsersQueryService:
         )
 
         users: list[UserQueryModel] | None = await self._user_query_gateway.read_all(
-            user_read_all_params
+            user_read_all_params,
         )
         if users is None:
             log.error(

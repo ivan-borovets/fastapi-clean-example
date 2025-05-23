@@ -22,7 +22,7 @@ VALID_LOGGING_LEVELS: Final[set[LoggingLevel]] = {
 def validate_logging_level(*, level: str) -> LoggingLevel:
     if level not in VALID_LOGGING_LEVELS:
         raise ValueError(f"Invalid log level: '{level}'.")
-    return cast(LoggingLevel, level)
+    return cast("LoggingLevel", level)
 
 
 def configure_logging(*, level: LoggingLevel = "INFO") -> None:
@@ -65,13 +65,11 @@ class ValidEnvs(StrEnum):
     PROD = "prod"
 
 
-ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType(
-    {
-        ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
-        ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
-        ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
-    }
-)
+ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
+    ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
+    ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
+    ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
+})
 
 
 class DirContents(StrEnum):
@@ -94,7 +92,7 @@ def validate_env(*, env: str | None) -> ValidEnvs:
         env_display = "not set" if env is None else f"'{env}'"
         raise ValueError(
             f"Environment variable {ENV_VAR_NAME} has invalid value: {env_display}. "
-            f"Must be one of: {valid_values}."
+            f"Must be one of: {valid_values}.",
         )
     return ValidEnvs(env)
 
@@ -110,7 +108,7 @@ def read_config(
     file_path = dir_path / config
     if not file_path.is_file():
         raise FileNotFoundError(
-            f"The file does not exist at the specified path: {file_path}"
+            f"The file does not exist at the specified path: {file_path}",
         )
     with open(file=file_path, mode="r", encoding="utf-8") as file:
         return rtoml.load(file)
@@ -147,14 +145,12 @@ def get_env_value_by_export_field(*, config: dict[str, Any], field: str) -> Any:
     if isinstance(current, (dict, list)):
         raise ValueError(
             f"Field '{field}' cannot be converted to string: "
-            f"got {type(current).__name__}"
+            f"got {type(current).__name__}",
         )
     try:
         return str(current)
     except (TypeError, ValueError) as e:
-        raise ValueError(
-            f"Field '{field}' cannot be converted to string: {str(e)}"
-        ) from e
+        raise ValueError(f"Field '{field}' cannot be converted to string: {e!s}") from e
 
 
 def extract_exported(
@@ -223,4 +219,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()  # pragma: no cover
+    main()

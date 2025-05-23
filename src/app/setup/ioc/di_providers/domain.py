@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 from dishka import Provider, Scope, provide
 
 from app.domain.ports.password_hasher import PasswordHasher

@@ -1,25 +1,21 @@
-# Makefile variables, pt. 1
+# Environment
 PYTHON := python
 CONFIGS_DIG := config
 TOML_CONFIG_MANAGER := $(CONFIGS_DIG)/toml_config_manager.py
 
-# Setting environment
 .PHONY: env dotenv
-
 env:
 	@echo APP_ENV=$(APP_ENV)
 
 dotenv:
 	@$(PYTHON) $(TOML_CONFIG_MANAGER) ${APP_ENV}
 
-# Makefile variables, pt. 2
+# Docker compose
 DOCKER_COMPOSE := docker compose
 DOCKER_COMPOSE_FILE := docker-compose.yaml
 DOCKER_COMPOSE_PRUNE := scripts/makefile/docker_prune.sh
 
-# Docker Compose controls
 .PHONY: guard-APP_ENV up.db up.db-echo up up.echo down down.total logs.db shell.db prune
-
 guard-APP_ENV:
 ifndef APP_ENV
 	$(error "APP_ENV is not set. Set APP_ENV before running this command.")
@@ -56,51 +52,42 @@ shell.db:
 prune:
 	$(DOCKER_COMPOSE_PRUNE)
 
-# Makefile variables, pt. 3
-SRC_DIR := src
-TESTS_DIR := tests
-
-# Source code formatting
+# Code quality
 .PHONY: code.format code.lint code.test code.cov code.cov.html code.check
-
 code.format:
-	isort $(CONFIGS_DIG) $(SRC_DIR) $(TESTS_DIR)
-	black $(CONFIGS_DIG) $(SRC_DIR) $(TESTS_DIR)
+	ruff format
 
 code.lint: code.format
-	bandit -r $(CONFIGS_DIG) $(SRC_DIR) -c pyproject.toml
-	ruff check $(CONFIGS_DIG) $(SRC_DIR) $(TESTS_DIR)
-	pylint $(CONFIGS_DIG) $(SRC_DIR)
-	mypy $(CONFIGS_DIG) $(SRC_DIR)
+	ruff check --exit-non-zero-on-fix
+	mypy
 
 code.test:
 	pytest -v
 
 code.cov:
 	coverage run -m pytest
+	coverage combine
 	coverage report
 
 code.cov.html:
 	coverage run -m pytest
+	coverage combine
 	coverage html
 
 code.check: code.lint code.test
 
-# Makefile variables, pt. 4
+# Project structure visualization
 PYCACHE_DEL := scripts/makefile/pycache_del.sh
 DISHKA_PLOT_DATA := scripts/dishka/plot_dependencies_data.py
 
-# Clean tree
-.PHONY: pycache-del tree
-
+.PHONY: pycache-del tree plot-data
 pycache-del:
 	@$(PYCACHE_DEL)
 
+# Clean tree
 tree: pycache-del
 	@tree
 
 # Dishka
-.PHONY: plot-data
-
 plot-data:
 	python $(DISHKA_PLOT_DATA)

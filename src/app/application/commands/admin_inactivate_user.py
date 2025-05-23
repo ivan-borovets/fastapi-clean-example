@@ -48,23 +48,27 @@ class InactivateUserInteractor:
 
     async def __call__(self, request_data: InactivateUserRequest) -> None:
         log.info(
-            "Inactivate user by admin: started. Username: '%s'.", request_data.username
+            "Inactivate user by admin: started. Username: '%s'.",
+            request_data.username,
         )
 
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=UserRoleEnum.USER
+            current_user,
+            target_role=UserRoleEnum.USER,
         )
 
         username = Username(request_data.username)
         user: User | None = await self._user_command_gateway.read_by_username(
-            username, for_update=True
+            username,
+            for_update=True,
         )
         if user is None:
             raise UserNotFoundByUsername(username)
 
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=user.role
+            current_user,
+            target_role=user.role,
         )
 
         self._user_service.toggle_user_activation(user, is_active=False)
@@ -72,5 +76,6 @@ class InactivateUserInteractor:
         await self._access_revoker.remove_all_user_access(user.id_)
 
         log.info(
-            "Inactivate user by admin: finished. Username: '%s'.", user.username.value
+            "Inactivate user by admin: finished. Username: '%s'.",
+            user.username.value,
         )

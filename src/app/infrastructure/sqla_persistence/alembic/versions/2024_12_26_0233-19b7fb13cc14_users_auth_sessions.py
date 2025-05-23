@@ -1,7 +1,7 @@
 """users, auth_sessions
 
 Revision ID: 19b7fb13cc14
-Revises: 
+Revises:
 Create Date: 2024-12-26 02:33:52.694074
 
 """

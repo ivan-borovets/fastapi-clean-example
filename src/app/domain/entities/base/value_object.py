@@ -27,7 +27,7 @@ class ValueObject(ABC):
         """
         if not fields(self):
             raise DomainFieldError(
-                f"{type(self).__name__} must have at least one field!"
+                f"{type(self).__name__} must have at least one field!",
             )
 
     def __repr__(self) -> str:

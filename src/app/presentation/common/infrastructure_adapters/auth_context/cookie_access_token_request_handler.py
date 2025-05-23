@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 from fastapi.requests import Request
 
 from app.infrastructure.auth_context.common.ports.access_token_request_handler import (

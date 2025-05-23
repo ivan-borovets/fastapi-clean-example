@@ -476,8 +476,8 @@ setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
 - **Python**: `3.12`
 - **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi`, `orjson`, `psycopg3[binary]`,
   `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
-- **Testing**: `coverage`, `pytest`, `pytest-asyncio`
-- **Development**: `bandit`, `black`, `isort`, `line-profiler`, `mypy`, `pre-commit`, `pylint`, `ruff`
+- **Development**: `mypy`, `pre-commit`, `ruff`
+- **Testing**: `coverage`, `line-profiler`, `pytest`, `pytest-asyncio`
 
 ## API
 
@@ -611,11 +611,11 @@ make dotenv  # should tell you where .env.local was generated
 # pipx ensurepath
 # pipx install uv
 # uv python install 3.12
-uv venv
+uv v
 source .venv/bin/activate
 # .venv\Scripts\activate  # Windows
 # https://docs.astral.sh/uv/getting-started/installation/#shell-autocompletion
-uv pip install -e '.[test,dev]'
+uv pip install -e '.[dev,test]'
 ```
 
 5. Launch

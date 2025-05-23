@@ -51,18 +51,21 @@ class ChangePasswordInteractor:
         username = Username(request_data.username)
         password = RawPassword(request_data.password)
         user: User | None = await self._user_command_gateway.read_by_username(
-            username, for_update=True
+            username,
+            for_update=True,
         )
         if user is None:
             raise UserNotFoundByUsername(username)
 
         try:
             self._authorization_service.authorize_for_self(
-                current_user, target_user=user
+                current_user,
+                target_user=user,
             )
         except AuthorizationError:
             self._authorization_service.authorize_for_subordinate_role(
-                current_user, target_role=user.role
+                current_user,
+                target_role=user.role,
             )
 
         self._user_service.change_password(user, password)

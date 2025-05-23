@@ -1,12 +1,11 @@
-# pylint: disable=C0301 (line-too-long)
 __all__ = (
-    "create_app",
     "configure_app",
+    "create_app",
     "create_async_ioc_container",
 )
 
+from collections.abc import AsyncIterator, Iterable
 from contextlib import asynccontextmanager
-from typing import AsyncIterator, Iterable
 
 from dishka import AsyncContainer, Provider, make_async_container
 from fastapi import APIRouter, FastAPI
@@ -30,7 +29,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     map_tables()
     yield None
     await app.state.dishka_container.close()  # noqa
-    # app.state is the place where dishka_container lives
+    # https://dishka.readthedocs.io/en/stable/integrations/fastapi.html
 
 
 def configure_app(
@@ -39,6 +38,7 @@ def configure_app(
 ) -> None:
     app.include_router(root_router)
     app.add_middleware(ASGIAuthMiddleware)  # noqa
+    # https://github.com/encode/starlette/discussions/2451
     exception_handler = ExceptionHandler(app)
     exception_handler.setup_handlers()
 

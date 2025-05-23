@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Mapping, cast
+from collections.abc import Mapping
+from typing import Any, cast
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -26,7 +27,7 @@ class SqlaUserTransactionManager(TransactionManager):
 
         except IntegrityError as error:
             if "uq_users_username" in str(error):
-                params: Mapping[str, Any] = cast(Mapping[str, Any], error.params)
+                params: Mapping[str, Any] = cast("Mapping[str, Any]", error.params)
                 username = str(params.get("username", "unknown"))
                 raise UsernameAlreadyExists(username) from error
 

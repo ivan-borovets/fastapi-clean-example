@@ -52,7 +52,7 @@ class JwtAccessTokenProcessor:
     def _decode_token(self, token: str) -> dict[str, Any] | None:
         try:
             return cast(
-                dict[str, Any],
+                "dict[str, Any]",
                 jwt.decode(
                     jwt=token,
                     key=self._secret,

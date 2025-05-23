@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 from dishka import Provider, Scope, from_context, provide
 
 from app.infrastructure.adapters.domain.new_types import PasswordPepper
@@ -51,10 +50,11 @@ class AuthSettingsProvider(Provider):
 
     @provide
     def provide_auth_session_refresh_threshold(
-        self, settings: AppSettings
+        self,
+        settings: AppSettings,
     ) -> AuthSessionRefreshThreshold:
         return AuthSessionRefreshThreshold(
-            settings.security.auth.session_refresh_threshold
+            settings.security.auth.session_refresh_threshold,
         )
 
     @provide

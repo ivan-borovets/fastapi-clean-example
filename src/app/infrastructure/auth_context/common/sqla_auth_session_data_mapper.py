@@ -24,7 +24,9 @@ class SqlaAuthSessionDataMapper:
             raise DataMapperError("Database query failed.") from error
 
     async def read(
-        self, auth_session_id: str, for_update: bool = False
+        self,
+        auth_session_id: str,
+        for_update: bool = False,
     ) -> AuthSession | None:
         """
         :raises DataMapperError:
@@ -66,7 +68,7 @@ class SqlaAuthSessionDataMapper:
         :raises DataMapperError:
         """
         delete_stmt: Delete = delete(AuthSession).where(
-            eq(AuthSession.user_id, user_id)  # type: ignore
+            eq(AuthSession.user_id, user_id),  # type: ignore
         )
 
         try:

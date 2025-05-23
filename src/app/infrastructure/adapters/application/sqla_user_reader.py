@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 from uuid import UUID
 
 from sqlalchemy import ColumnElement, Result, Row, Select, select
@@ -22,7 +22,8 @@ class SqlaUserReader(UserQueryGateway):
         self._session = session
 
     async def read_all(
-        self, user_read_all_params: UserReadAllParams
+        self,
+        user_read_all_params: UserReadAllParams,
     ) -> list[UserQueryModel] | None:
         """
         :raises ReaderError:
@@ -56,9 +57,9 @@ class SqlaUserReader(UserQueryGateway):
         )
 
         try:
-            result: Result[tuple[UUID, str, UserRoleEnum, bool]] = (
-                await self._session.execute(select_stmt)
-            )
+            result: Result[
+                tuple[UUID, str, UserRoleEnum, bool]
+            ] = await self._session.execute(select_stmt)
             rows: Sequence[Row[tuple[UUID, str, UserRoleEnum, bool]]] = result.all()
 
             users: list[UserQueryModel] = [

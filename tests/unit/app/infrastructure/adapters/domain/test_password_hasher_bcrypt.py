@@ -1,3 +1,5 @@
+import pytest
+
 from app.domain.entities.user.value_objects import RawPassword
 from app.infrastructure.adapters.domain.bcrypt_password_hasher import (
     BcryptPasswordHasher,
@@ -9,14 +11,17 @@ def get_bcrypt_password_hasher() -> BcryptPasswordHasher:
     return BcryptPasswordHasher(PasswordPepper("Habanero!"))
 
 
+@pytest.mark.slow
 def test_bcrypt_password_hasher_hash() -> None:
     bcrypt_password_hasher: BcryptPasswordHasher = get_bcrypt_password_hasher()
     test_password = RawPassword("test_password")
     peppered1: bytes = bcrypt_password_hasher._add_pepper(
-        test_password, bcrypt_password_hasher._pepper
+        test_password,
+        bcrypt_password_hasher._pepper,
     )
     peppered2: bytes = bcrypt_password_hasher._add_pepper(
-        test_password, bcrypt_password_hasher._pepper
+        test_password,
+        bcrypt_password_hasher._pepper,
     )
 
     assert isinstance(peppered1, bytes)
@@ -31,6 +36,7 @@ def test_bcrypt_password_hasher_hash() -> None:
     assert hash1 != hash2  # hashes should be unique due to different salts
 
 
+@pytest.mark.slow
 def test_bcrypt_password_hasher_verify() -> None:
     bcrypt_password_hasher: BcryptPasswordHasher = get_bcrypt_password_hasher()
     correct_password = RawPassword("test_password")
@@ -38,33 +44,40 @@ def test_bcrypt_password_hasher_verify() -> None:
     hashed: bytes = bcrypt_password_hasher.hash(correct_password)
 
     assert bcrypt_password_hasher.verify(
-        raw_password=correct_password, hashed_password=hashed
+        raw_password=correct_password,
+        hashed_password=hashed,
     )
     assert not bcrypt_password_hasher.verify(
-        raw_password=wrong_password, hashed_password=hashed
+        raw_password=wrong_password,
+        hashed_password=hashed,
     )
 
 
+@pytest.mark.slow
 def test_bcrypt_password_hasher_with_long_password() -> None:
     bcrypt_password_hasher: BcryptPasswordHasher = get_bcrypt_password_hasher()
     long_password = RawPassword("a" * 100)  # Exceeds bcrypt's 72-char limit
     hashed: bytes = bcrypt_password_hasher.hash(long_password)
 
     assert bcrypt_password_hasher.verify(
-        raw_password=long_password, hashed_password=hashed
+        raw_password=long_password,
+        hashed_password=hashed,
     )
 
 
+@pytest.mark.slow
 def test_bcrypt_password_hasher_with_special_characters() -> None:
     bcrypt_password_hasher: BcryptPasswordHasher = get_bcrypt_password_hasher()
     special_password = RawPassword("!@#$%^&*()_+{}|:<>?~`-=[]\\;',./№")
     hashed: bytes = bcrypt_password_hasher.hash(special_password)
 
     assert bcrypt_password_hasher.verify(
-        raw_password=special_password, hashed_password=hashed
+        raw_password=special_password,
+        hashed_password=hashed,
     )
 
 
+@pytest.mark.slow
 def test_bcrypt_password_hasher_with_different_pepper() -> None:
     hasher1 = BcryptPasswordHasher(PasswordPepper("Pepper1"))
     hasher2 = BcryptPasswordHasher(PasswordPepper("Pepper2"))

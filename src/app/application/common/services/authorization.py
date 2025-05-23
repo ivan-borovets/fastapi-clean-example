@@ -1,4 +1,5 @@
-from typing import Final, Mapping
+from collections.abc import Mapping
+from typing import Final
 
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.entities.user.entity import User

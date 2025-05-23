@@ -45,28 +45,33 @@ class ReactivateUserInteractor:
 
     async def __call__(self, request_data: ReactivateUserRequest) -> None:
         log.info(
-            "Reactivate user by admin: started. Username: '%s'.", request_data.username
+            "Reactivate user by admin: started. Username: '%s'.",
+            request_data.username,
         )
 
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=UserRoleEnum.USER
+            current_user,
+            target_role=UserRoleEnum.USER,
         )
 
         username = Username(request_data.username)
         user: User | None = await self._user_command_gateway.read_by_username(
-            username, for_update=True
+            username,
+            for_update=True,
         )
         if user is None:
             raise UserNotFoundByUsername(username)
 
         self._authorization_service.authorize_for_subordinate_role(
-            current_user, target_role=user.role
+            current_user,
+            target_role=user.role,
         )
 
         self._user_service.toggle_user_activation(user, is_active=True)
         await self._transaction_manager.commit()
 
         log.info(
-            "Reactivate user by admin: finished. Username: '%s'.", user.username.value
+            "Reactivate user by admin: finished. Username: '%s'.",
+            user.username.value,
         )

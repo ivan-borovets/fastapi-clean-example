@@ -1,5 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
-
 import logging
 
 from app.infrastructure.auth_context.common.jwt_access_token_processor import (
@@ -23,11 +21,12 @@ class JwtTokenManager:
 
     def issue_access_token(self, auth_session_id: str) -> str:
         log.debug(
-            "Issue access token: started. Auth session id: '%s'.", auth_session_id
+            "Issue access token: started. Auth session id: '%s'.",
+            auth_session_id,
         )
 
         access_token: str = self._jwt_access_token_processor.issue_access_token(
-            auth_session_id
+            auth_session_id,
         )
 
         log.debug("Issue access token: done. Auth session id: '%s'.", auth_session_id)
@@ -55,7 +54,7 @@ class JwtTokenManager:
         )
         if not access_token:
             log.debug(
-                "Get access token from request: done. No access token in request."
+                "Get access token from request: done. No access token in request.",
             )
             return None
 
@@ -70,7 +69,7 @@ class JwtTokenManager:
         )
         if auth_session_id is None:
             log.debug(
-                "Get auth session id from access token: failed. No auth session id."
+                "Get auth session id from access token: failed. No auth session id.",
             )
             return None
 
