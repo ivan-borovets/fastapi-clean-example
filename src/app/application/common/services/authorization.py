@@ -2,13 +2,13 @@ from collections.abc import Mapping
 from typing import Final
 
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.role_enum import UserRoleEnum
+from app.domain.entities.user import User
+from app.domain.enums.user_role import UserRole
 
-SUBORDINATE_ROLES: Final[Mapping[UserRoleEnum, set[UserRoleEnum]]] = {
-    UserRoleEnum.SUPER_ADMIN: {UserRoleEnum.ADMIN, UserRoleEnum.USER},
-    UserRoleEnum.ADMIN: {UserRoleEnum.USER},
-    UserRoleEnum.USER: set(),
+SUBORDINATE_ROLES: Final[Mapping[UserRole, set[UserRole]]] = {
+    UserRole.SUPER_ADMIN: {UserRole.ADMIN, UserRole.USER},
+    UserRole.ADMIN: {UserRole.USER},
+    UserRole.USER: set(),
 }
 
 
@@ -25,7 +25,7 @@ class AuthorizationService:
         current_user: User,
         /,
         *,
-        target_role: UserRoleEnum,
+        target_role: UserRole,
     ) -> None:
         """
         :raises AuthorizationError:

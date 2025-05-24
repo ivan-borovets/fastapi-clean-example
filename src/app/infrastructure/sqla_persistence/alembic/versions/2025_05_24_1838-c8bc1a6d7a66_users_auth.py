@@ -1,26 +1,26 @@
-"""users, auth_sessions
+"""users,auth
 
-Revision ID: 19b7fb13cc14
+Revision ID: c8bc1a6d7a66
 Revises:
-Create Date: 2024-12-26 02:33:52.694074
+Create Date: 2025-05-24 18:38:56.832267
 
 """
 
 from typing import Sequence, Union
 
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "19b7fb13cc14"
+revision: str = "c8bc1a6d7a66"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    sa.Enum("SUPER_ADMIN", "ADMIN", "USER", name="userroleenum").create(op.get_bind())
+    sa.Enum("SUPER_ADMIN", "ADMIN", "USER", name="userrole").create(op.get_bind())
     op.create_table(
         "auth_sessions",
         sa.Column("id", sa.String(), nullable=False),
@@ -36,11 +36,7 @@ def upgrade() -> None:
         sa.Column(
             "role",
             postgresql.ENUM(
-                "SUPER_ADMIN",
-                "ADMIN",
-                "USER",
-                name="userroleenum",
-                create_type=False,
+                "SUPER_ADMIN", "ADMIN", "USER", name="userrole", create_type=False
             ),
             nullable=False,
         ),
@@ -48,9 +44,11 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_users")),
         sa.UniqueConstraint("username", name=op.f("uq_users_username")),
     )
+    # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     op.drop_table("users")
     op.drop_table("auth_sessions")
-    sa.Enum("SUPER_ADMIN", "ADMIN", "USER", name="userroleenum").drop(op.get_bind())
+    sa.Enum("SUPER_ADMIN", "ADMIN", "USER", name="userrole").drop(op.get_bind())
+    # ### end Alembic commands ###

@@ -1,7 +1,7 @@
 import re
 
-from app.domain.entities.user.validation.constants import (
-    PASSWORD_MIN_LEN,
+from app.domain.exceptions.base import DomainFieldError
+from app.domain.value_objects.username.constants import (
     PATTERN_ALLOWED_CHARS,
     PATTERN_END,
     PATTERN_NO_CONSECUTIVE_SPECIALS,
@@ -9,7 +9,6 @@ from app.domain.entities.user.validation.constants import (
     USERNAME_MAX_LEN,
     USERNAME_MIN_LEN,
 )
-from app.domain.exceptions.base import DomainFieldError
 
 
 def validate_username_length(username_value: str) -> None:
@@ -42,11 +41,4 @@ def validate_username_pattern(username_value: str) -> None:
     if not re.match(PATTERN_END, username_value):
         raise DomainFieldError(
             "Username must end with a letter (A-Z, a-z) or a digit (0-9).",
-        )
-
-
-def validate_password_length(password_value: str) -> None:
-    if len(password_value) < PASSWORD_MIN_LEN:
-        raise DomainFieldError(
-            f"Password must be at least {PASSWORD_MIN_LEN} characters long.",
         )

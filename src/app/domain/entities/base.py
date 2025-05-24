@@ -2,8 +2,8 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Any, TypeVar
 
-from app.domain.entities.base.value_object import ValueObject
 from app.domain.exceptions.base import DomainError
+from app.domain.value_objects.base import ValueObject
 
 T = TypeVar("T", bound=ValueObject)
 

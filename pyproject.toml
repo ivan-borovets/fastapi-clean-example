@@ -109,7 +109,7 @@ ignore = [
     "SLF001", # private-member-access
     "UP012", # unnecessary-encode-utf8
 ]
-"src/app/domain/entities/base/value_object.py" = ["B024", ]                    # abstract-base-class-without-abstract-method
+"src/app/domain/value_objects/base.py" = ["B024", ]                    # abstract-base-class-without-abstract-method
 "src/app/infrastructure/adapters/domain/bcrypt_password_hasher.py" = ["E501"]  # line-too-long
 "src/app/infrastructure/auth_context/log_in.py" = ["E501", ]                   # line-too-long
 "src/app/infrastructure/auth_context/log_out.py" = ["E501", ]                  # line-too-long

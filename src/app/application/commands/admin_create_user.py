@@ -7,10 +7,11 @@ from app.application.common.ports.command_gateways.user import UserCommandGatewa
 from app.application.common.ports.transaction_manager import TransactionManager
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
-from app.domain.entities.user.role_enum import UserRoleEnum
-from app.domain.entities.user.value_objects import RawPassword, Username
+from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import UsernameAlreadyExists
 from app.domain.services.user import UserService
+from app.domain.value_objects.raw_password.raw_password import RawPassword
+from app.domain.value_objects.username.username import Username
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ log = logging.getLogger(__name__)
 class CreateUserRequest:
     username: str
     password: str
-    role: UserRoleEnum
+    role: UserRole
 
 
 class CreateUserResponse(TypedDict):

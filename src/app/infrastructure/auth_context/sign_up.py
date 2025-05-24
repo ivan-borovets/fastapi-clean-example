@@ -3,10 +3,11 @@ from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID
 
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.value_objects import RawPassword, Username
+from app.domain.entities.user import User
 from app.domain.exceptions.user import UsernameAlreadyExists
 from app.domain.services.user import UserService
+from app.domain.value_objects.raw_password.raw_password import RawPassword
+from app.domain.value_objects.username.username import Username
 from app.infrastructure.adapters.application.sqla_user_data_mapper import (
     SqlaUserDataMapper,
 )

@@ -1,6 +1,6 @@
 from enum import StrEnum
 
 
-class SortingOrderEnum(StrEnum):
+class SortingOrder(StrEnum):
     ASC = "ASC"
     DESC = "DESC"

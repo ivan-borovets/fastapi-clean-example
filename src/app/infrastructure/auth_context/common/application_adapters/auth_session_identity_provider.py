@@ -1,7 +1,7 @@
 import logging
 
 from app.application.common.ports.identity_provider import IdentityProvider
-from app.domain.entities.user.value_objects import UserId
+from app.domain.value_objects.user_id import UserId
 from app.infrastructure.auth_context.common.auth_exceptions import AuthenticationError
 from app.infrastructure.auth_context.common.auth_session import AuthSession
 from app.infrastructure.auth_context.common.managers.auth_session import (

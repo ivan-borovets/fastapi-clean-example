@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from app.domain.entities.user.value_objects import RawPassword
+from app.domain.value_objects.raw_password.raw_password import RawPassword
 
 
 class PasswordHasher(Protocol):

@@ -3,8 +3,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.operators import eq
 
 from app.application.common.ports.command_gateways.user import UserCommandGateway
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.value_objects import UserId, Username
+from app.domain.entities.user import User
+from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.username.username import Username
 from app.infrastructure.adapters.application.new_types import UserAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 

@@ -6,7 +6,7 @@ from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.application.common.services.current_user import CurrentUserService
-from app.domain.entities.user.entity import User
+from app.domain.entities.user import User
 
 
 @pytest.mark.asyncio
