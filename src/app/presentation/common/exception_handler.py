@@ -14,10 +14,10 @@ from app.application.common.exceptions.base import ApplicationError
 from app.application.common.exceptions.sorting import SortingError
 from app.domain.exceptions.base import DomainError, DomainFieldError
 from app.domain.exceptions.user import (
-    ActivationChangeNotPermitted,
-    RoleChangeNotPermitted,
-    UsernameAlreadyExists,
-    UserNotFoundByUsername,
+    ActivationChangeNotPermittedError,
+    RoleChangeNotPermittedError,
+    UsernameAlreadyExistsError,
+    UserNotFoundByUsernameError,
 )
 from app.infrastructure.auth_context.common.auth_exceptions import (
     AlreadyAuthenticatedError,
@@ -49,12 +49,12 @@ class ExceptionHandler:
         AlreadyAuthenticatedError: status.HTTP_401_UNAUTHORIZED,
         # 403
         AuthorizationError: status.HTTP_403_FORBIDDEN,
-        ActivationChangeNotPermitted: status.HTTP_403_FORBIDDEN,
-        RoleChangeNotPermitted: status.HTTP_403_FORBIDDEN,
+        ActivationChangeNotPermittedError: status.HTTP_403_FORBIDDEN,
+        RoleChangeNotPermittedError: status.HTTP_403_FORBIDDEN,
         # 404
-        UserNotFoundByUsername: status.HTTP_404_NOT_FOUND,
+        UserNotFoundByUsernameError: status.HTTP_404_NOT_FOUND,
         # 409
-        UsernameAlreadyExists: status.HTTP_409_CONFLICT,
+        UsernameAlreadyExistsError: status.HTTP_409_CONFLICT,
         # 422
         pydantic.ValidationError: status.HTTP_422_UNPROCESSABLE_ENTITY,
         # 500

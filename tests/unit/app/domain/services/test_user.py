@@ -7,8 +7,8 @@ import pytest
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import (
-    ActivationChangeNotPermitted,
-    RoleChangeNotPermitted,
+    ActivationChangeNotPermittedError,
+    RoleChangeNotPermittedError,
 )
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
@@ -82,9 +82,9 @@ def test_toggle_activation(sample_user: User) -> None:
     assert sample_user.is_active == initial_state
 
     sample_user.role = UserRole.SUPER_ADMIN
-    with pytest.raises(ActivationChangeNotPermitted):
+    with pytest.raises(ActivationChangeNotPermittedError):
         user_service.toggle_user_activation(sample_user, is_active=True)
-    with pytest.raises(ActivationChangeNotPermitted):
+    with pytest.raises(ActivationChangeNotPermittedError):
         user_service.toggle_user_activation(sample_user, is_active=False)
 
 
@@ -98,7 +98,7 @@ def test_toggle_admin_role(sample_user: User) -> None:
     assert sample_user.role != UserRole.ADMIN
 
     sample_user.role = UserRole.SUPER_ADMIN
-    with pytest.raises(RoleChangeNotPermitted):
+    with pytest.raises(RoleChangeNotPermittedError):
         user_service.toggle_user_admin_role(sample_user, is_admin=True)
-    with pytest.raises(RoleChangeNotPermitted):
+    with pytest.raises(RoleChangeNotPermittedError):
         user_service.toggle_user_admin_role(sample_user, is_admin=False)

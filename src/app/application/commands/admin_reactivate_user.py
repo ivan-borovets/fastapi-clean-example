@@ -7,7 +7,7 @@ from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
-from app.domain.exceptions.user import UserNotFoundByUsername
+from app.domain.exceptions.user import UserNotFoundByUsernameError
 from app.domain.services.user import UserService
 from app.domain.value_objects.username.username import Username
 
@@ -61,7 +61,7 @@ class ReactivateUserInteractor:
             for_update=True,
         )
         if user is None:
-            raise UserNotFoundByUsername(username)
+            raise UserNotFoundByUsernameError(username)
 
         self._authorization_service.authorize_for_subordinate_role(
             current_user,

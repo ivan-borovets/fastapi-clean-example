@@ -4,7 +4,7 @@ from typing import TypedDict
 from uuid import UUID
 
 from app.domain.entities.user import User
-from app.domain.exceptions.user import UsernameAlreadyExists
+from app.domain.exceptions.user import UsernameAlreadyExistsError
 from app.domain.services.user import UserService
 from app.domain.value_objects.raw_password.raw_password import RawPassword
 from app.domain.value_objects.username.username import Username
@@ -75,7 +75,7 @@ class SignUpHandler:
 
         try:
             await self._sqla_user_transaction_manager.flush()
-        except UsernameAlreadyExists:
+        except UsernameAlreadyExistsError:
             raise
 
         await self._sqla_user_transaction_manager.commit()

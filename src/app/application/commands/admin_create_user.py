@@ -8,7 +8,7 @@ from app.application.common.ports.transaction_manager import TransactionManager
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.enums.user_role import UserRole
-from app.domain.exceptions.user import UsernameAlreadyExists
+from app.domain.exceptions.user import UsernameAlreadyExistsError
 from app.domain.services.user import UserService
 from app.domain.value_objects.raw_password.raw_password import RawPassword
 from app.domain.value_objects.username.username import Username
@@ -70,7 +70,7 @@ class CreateUserInteractor:
 
         try:
             await self._transaction_manager.flush()
-        except UsernameAlreadyExists:
+        except UsernameAlreadyExistsError:
             raise
 
         await self._transaction_manager.commit()
