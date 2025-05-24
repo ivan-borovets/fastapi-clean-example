@@ -623,6 +623,15 @@ source .venv/bin/activate
 uv pip install -e '.[dev,test]'
 ```
 
+Don't forget to tell your IDE where the interpreter is located.
+
+Install pre-commit hooks:
+
+```shell
+# https://pre-commit.com/
+pre-commit install
+```
+
 5. Launch
 
 - To run only the database in Docker and use the app locally, use the following command:
