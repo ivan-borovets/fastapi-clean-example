@@ -6,11 +6,11 @@ from app.application.common.ports.command_gateways.user import UserCommandGatewa
 from app.application.common.ports.transaction_manager import TransactionManager
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.role_enum import UserRoleEnum
-from app.domain.entities.user.value_objects import Username
+from app.domain.entities.user import User
+from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import UserNotFoundByUsername
 from app.domain.services.user import UserService
+from app.domain.value_objects.username.username import Username
 
 log = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class InactivateUserInteractor:
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
             current_user,
-            target_role=UserRoleEnum.USER,
+            target_role=UserRole.USER,
         )
 
         username = Username(request_data.username)

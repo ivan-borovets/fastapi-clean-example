@@ -3,7 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.dml import ReturningDelete
 from sqlalchemy.sql.operators import eq
 
-from app.domain.entities.user.value_objects import UserId
+from app.domain.value_objects.user_id import UserId
 from app.infrastructure.auth_context.common.auth_session import AuthSession
 from app.infrastructure.auth_context.common.new_types import AuthAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError

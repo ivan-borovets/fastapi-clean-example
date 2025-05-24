@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 import pytest
 
-from app.domain.entities.base.entity import Entity
-from app.domain.entities.base.value_object import ValueObject
+from app.domain.entities.base import Entity
 from app.domain.exceptions.base import DomainError
+from app.domain.value_objects.base import ValueObject
 
 
 @dataclass(frozen=True, slots=True, repr=False)

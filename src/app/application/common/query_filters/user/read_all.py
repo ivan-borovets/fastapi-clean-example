@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.application.common.exceptions.pagination import PaginationError
-from app.application.common.query_filters.sorting_order_enum import SortingOrderEnum
+from app.application.common.query_filters.sorting_order_enum import SortingOrder
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -23,7 +23,7 @@ class UserReadAllPagination:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class UserReadAllSorting:
     sorting_field: str
-    sorting_order: SortingOrderEnum
+    sorting_order: SortingOrder
 
 
 @dataclass(frozen=True, slots=True)

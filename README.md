@@ -438,12 +438,17 @@ natural.
         │       └── ...                      # other query services
         │
         ├── domain/                          # domain layer
-        │   ├── entities/...                 # key business logic actors
-        │   │   ├── base/...                 # base declarations
-        │   │   └── user/...                 # user entities and value objects
+        │   ├── entities/...                 # entities (have identity)
+        │   │   ├── base.py                  # base declarations
+        │   │   └── ...                      # concrete entities
         │   │
         │   ├── services/...                 # domain layer services
-        │   └── ...                          # ports, exceptions, etc.
+        │   │
+        │   ├── value_objects/...            # value objects (no identity)
+        │   │   ├── base.py                  # base declarations
+        │   │   └── ...                      # concrete value objects
+        │   │
+        │   └── ...                          # ports, enums, exceptions, etc.
         │
         ├── infrastructure/...               # infrastructure layer
         │   ├── auth_context/...             # auth context (session-based)

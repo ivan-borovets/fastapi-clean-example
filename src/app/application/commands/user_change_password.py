@@ -6,10 +6,11 @@ from app.application.common.ports.command_gateways.user import UserCommandGatewa
 from app.application.common.ports.transaction_manager import TransactionManager
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.value_objects import RawPassword, Username
+from app.domain.entities.user import User
 from app.domain.exceptions.user import UserNotFoundByUsername
 from app.domain.services.user import UserService
+from app.domain.value_objects.raw_password.raw_password import RawPassword
+from app.domain.value_objects.username.username import Username
 
 log = logging.getLogger(__name__)
 

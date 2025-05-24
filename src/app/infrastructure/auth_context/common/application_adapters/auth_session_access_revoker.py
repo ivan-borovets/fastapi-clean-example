@@ -1,7 +1,7 @@
 import logging
 
 from app.application.common.ports.access_revoker import AccessRevoker
-from app.domain.entities.user.value_objects import UserId
+from app.domain.value_objects.user_id import UserId
 from app.infrastructure.auth_context.common.sqla_auth_session_data_mapper import (
     SqlaAuthSessionDataMapper,
 )

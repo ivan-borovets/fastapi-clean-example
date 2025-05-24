@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.domain.entities.user.role_enum import UserRoleEnum
+from app.domain.enums.user_role import UserRole
 
 
 class CreateUserRequestPydantic(BaseModel):
@@ -13,4 +13,4 @@ class CreateUserRequestPydantic(BaseModel):
 
     username: str
     password: str
-    role: UserRoleEnum = Field(default=UserRoleEnum.USER)
+    role: UserRole = Field(default=UserRole.USER)

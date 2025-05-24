@@ -2,9 +2,11 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.role_enum import UserRoleEnum
-from app.domain.entities.user.value_objects import UserId, Username, UserPasswordHash
+from app.domain.entities.user import User
+from app.domain.enums.user_role import UserRole
+from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.user_password_hash import UserPasswordHash
+from app.domain.value_objects.username.username import Username
 
 
 @pytest.fixture
@@ -12,7 +14,7 @@ def sample_user() -> User:
     user_id = UUID("12345678-1234-5678-1234-567812345678")
     username = "username"
     password_hash: bytes = "123456789abcdef0".encode()
-    role = UserRoleEnum.USER
+    role = UserRole.USER
     is_active = True
 
     return User(
@@ -29,7 +31,7 @@ def other_sample_user() -> User:
     user_id = UUID("00000000-0000-0000-0000-000000000000")
     username = "username"
     password_hash: bytes = "123456789abcdef0".encode()
-    role = UserRoleEnum.USER
+    role = UserRole.USER
     is_active = True
 
     return User(

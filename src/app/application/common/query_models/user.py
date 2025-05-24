@@ -1,11 +1,11 @@
 from typing import TypedDict
 from uuid import UUID
 
-from app.domain.entities.user.role_enum import UserRoleEnum
+from app.domain.enums.user_role import UserRole
 
 
 class UserQueryModel(TypedDict):
     id_: UUID
     username: str
-    role: UserRoleEnum
+    role: UserRole
     is_active: bool

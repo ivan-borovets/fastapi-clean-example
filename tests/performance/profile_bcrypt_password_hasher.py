@@ -1,6 +1,6 @@
 from line_profiler import LineProfiler
 
-from app.domain.entities.user.value_objects import RawPassword
+from app.domain.value_objects.raw_password.raw_password import RawPassword
 from app.infrastructure.adapters.domain.bcrypt_password_hasher import (
     BcryptPasswordHasher,
 )

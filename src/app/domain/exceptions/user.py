@@ -1,8 +1,9 @@
 from typing import Any
 
-from app.domain.entities.user.role_enum import UserRoleEnum
-from app.domain.entities.user.value_objects import UserId, Username
+from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.base import DomainError
+from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.username.username import Username
 
 
 class UsernameAlreadyExists(DomainError):
@@ -24,7 +25,7 @@ class UserNotFoundByUsername(DomainError):
 
 
 class ActivationChangeNotPermitted(DomainError):
-    def __init__(self, username: Username, role: UserRoleEnum):
+    def __init__(self, username: Username, role: UserRole):
         message = (
             f"Changing activation of user '{username.value}' ({role}) is not permitted."
         )
@@ -32,6 +33,6 @@ class ActivationChangeNotPermitted(DomainError):
 
 
 class RoleChangeNotPermitted(DomainError):
-    def __init__(self, username: Username, role: UserRoleEnum):
+    def __init__(self, username: Username, role: UserRole):
         message = f"Changing role of user '{username.value}' ({role}) is not permitted."
         super().__init__(message)

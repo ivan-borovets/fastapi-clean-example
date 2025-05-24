@@ -1,7 +1,7 @@
 import pytest
 
-from app.domain.entities.user.validation.constants import (
-    PASSWORD_MIN_LEN,
+from app.domain.exceptions.base import DomainFieldError
+from app.domain.value_objects.username.constants import (
     PATTERN_ALLOWED_CHARS,
     PATTERN_END,
     PATTERN_NO_CONSECUTIVE_SPECIALS,
@@ -9,27 +9,16 @@ from app.domain.entities.user.validation.constants import (
     USERNAME_MAX_LEN,
     USERNAME_MIN_LEN,
 )
-from app.domain.entities.user.value_objects import RawPassword, Username
-from app.domain.exceptions.base import DomainFieldError
+from app.domain.value_objects.username.username import Username
 
 valid_usernames_with_length: list[str] = [
     "a" * USERNAME_MIN_LEN,
     "a" * USERNAME_MAX_LEN,
 ]
-
 invalid_usernames_with_length: list[str] = [
     "a" * (USERNAME_MIN_LEN - 1),
     "a" * (USERNAME_MAX_LEN + 1),
 ]
-
-valid_raw_password_with_length: list[str] = [
-    "a" * PASSWORD_MIN_LEN,
-]
-invalid_raw_password_with_length: list[str] = [
-    "a" * (PASSWORD_MIN_LEN - 1),
-]
-
-
 valid_usernames: list[str] = [
     "username",
     "user.name",
@@ -41,8 +30,6 @@ valid_usernames: list[str] = [
     "u-ser_name",
     "u-ser.name",
 ]
-
-
 invalid_usernames: list[str] = [
     ".username",
     "-username",
@@ -107,14 +94,3 @@ def test_vo_username_valid_pattern(username: str) -> None:
 def test_vo_username_invalid_pattern(username: str) -> None:
     with pytest.raises(DomainFieldError):
         Username(username)
-
-
-@pytest.mark.parametrize("password", valid_raw_password_with_length)
-def test_vo_raw_password_valid_length(password: str) -> None:
-    RawPassword(password)
-
-
-@pytest.mark.parametrize("password", invalid_raw_password_with_length)
-def test_vo_raw_password_invalid_length(password: str) -> None:
-    with pytest.raises(DomainFieldError):
-        RawPassword(password)

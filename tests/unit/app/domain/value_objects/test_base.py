@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from app.domain.entities.base.value_object import ValueObject
 from app.domain.exceptions.base import DomainFieldError
+from app.domain.value_objects.base import ValueObject
 
 
 @dataclass(frozen=True, slots=True, repr=False)

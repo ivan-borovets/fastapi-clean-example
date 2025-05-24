@@ -1,10 +1,12 @@
 from sqlalchemy import UUID, Boolean, Column, Enum, LargeBinary, String, Table
 from sqlalchemy.orm import composite
 
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.role_enum import UserRoleEnum
-from app.domain.entities.user.validation.constants import USERNAME_MAX_LEN
-from app.domain.entities.user.value_objects import UserId, Username, UserPasswordHash
+from app.domain.entities.user import User
+from app.domain.enums.user_role import UserRole
+from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.user_password_hash import UserPasswordHash
+from app.domain.value_objects.username.constants import USERNAME_MAX_LEN
+from app.domain.value_objects.username.username import Username
 from app.infrastructure.sqla_persistence.orm_registry import mapping_registry
 
 users_table = Table(
@@ -15,8 +17,8 @@ users_table = Table(
     Column("password_hash", LargeBinary, nullable=False),
     Column(
         "role",
-        Enum(UserRoleEnum),
-        default=UserRoleEnum.USER,
+        Enum(UserRole),
+        default=UserRole.USER,
         nullable=False,
     ),
     Column("is_active", Boolean, default=True, nullable=False),

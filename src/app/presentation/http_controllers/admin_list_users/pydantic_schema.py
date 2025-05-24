@@ -2,7 +2,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.application.common.query_filters.sorting_order_enum import SortingOrderEnum
+from app.application.common.query_filters.sorting_order_enum import SortingOrder
 
 
 class ListUsersRequestPydantic(BaseModel):
@@ -16,4 +16,4 @@ class ListUsersRequestPydantic(BaseModel):
     limit: Annotated[int, Field(ge=1)] = 20
     offset: Annotated[int, Field(ge=0)] = 0
     sorting_field: Annotated[str | None, Field()] = None
-    sorting_order: Annotated[SortingOrderEnum | None, Field()] = None
+    sorting_order: Annotated[SortingOrder | None, Field()] = None

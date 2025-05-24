@@ -1,8 +1,6 @@
 import re
 from typing import Final
 
-PASSWORD_MIN_LEN: Final[int] = 6
-
 USERNAME_MIN_LEN: Final[int] = 5
 USERNAME_MAX_LEN: Final[int] = 20
 

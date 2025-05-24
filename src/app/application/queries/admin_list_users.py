@@ -4,7 +4,7 @@ from typing import TypedDict
 
 from app.application.common.exceptions.sorting import SortingError
 from app.application.common.ports.query_gateways.user import UserQueryGateway
-from app.application.common.query_filters.sorting_order_enum import SortingOrderEnum
+from app.application.common.query_filters.sorting_order_enum import SortingOrder
 from app.application.common.query_filters.user.read_all import (
     UserReadAllPagination,
     UserReadAllParams,
@@ -13,7 +13,7 @@ from app.application.common.query_filters.user.read_all import (
 from app.application.common.query_models.user import UserQueryModel
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
-from app.domain.entities.user.role_enum import UserRoleEnum
+from app.domain.enums.user_role import UserRole
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class ListUsersRequest:
     limit: int
     offset: int
     sorting_field: str | None
-    sorting_order: SortingOrderEnum | None
+    sorting_order: SortingOrder | None
 
 
 class ListUsersResponse(TypedDict):
@@ -55,7 +55,7 @@ class ListUsersQueryService:
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
             current_user,
-            target_role=UserRoleEnum.USER,
+            target_role=UserRole.USER,
         )
 
         log.debug("Retrieving list of users.")
@@ -66,7 +66,7 @@ class ListUsersQueryService:
             ),
             sorting=UserReadAllSorting(
                 sorting_field=request_data.sorting_field or "username",
-                sorting_order=request_data.sorting_order or SortingOrderEnum.ASC,
+                sorting_order=request_data.sorting_order or SortingOrder.ASC,
             ),
         )
 

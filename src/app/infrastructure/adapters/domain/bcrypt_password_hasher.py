@@ -4,8 +4,8 @@ import hmac
 
 import bcrypt
 
-from app.domain.entities.user.value_objects import RawPassword
 from app.domain.ports.password_hasher import PasswordHasher
+from app.domain.value_objects.raw_password.raw_password import RawPassword
 from app.infrastructure.adapters.domain.new_types import PasswordPepper
 
 

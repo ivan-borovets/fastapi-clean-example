@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
-from app.domain.entities.user.value_objects import UserId
+from app.domain.value_objects.user_id import UserId
 from app.infrastructure.auth_context.common.auth_session import AuthSession
 from app.infrastructure.auth_context.common.managers.jwt_token import JwtTokenManager
 from app.infrastructure.auth_context.common.sqla_auth_session_data_mapper import (

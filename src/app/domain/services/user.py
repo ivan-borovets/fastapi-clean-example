@@ -7,20 +7,18 @@
   described within the models themselves.
 """
 
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.role_enum import UserRoleEnum
-from app.domain.entities.user.value_objects import (
-    RawPassword,
-    UserId,
-    Username,
-    UserPasswordHash,
-)
+from app.domain.entities.user import User
+from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import (
     ActivationChangeNotPermitted,
     RoleChangeNotPermitted,
 )
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
+from app.domain.value_objects.raw_password.raw_password import RawPassword
+from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.user_password_hash import UserPasswordHash
+from app.domain.value_objects.username.username import Username
 
 
 class UserService:
@@ -42,7 +40,7 @@ class UserService:
             id_=user_id,
             username=username,
             password_hash=password_hash,
-            role=UserRoleEnum.USER,
+            role=UserRole.USER,
             is_active=True,
         )
 
@@ -60,7 +58,7 @@ class UserService:
         """
         :raises ActivationChangeNotPermitted:
         """
-        if user.role == UserRoleEnum.SUPER_ADMIN:
+        if user.role == UserRole.SUPER_ADMIN:
             raise ActivationChangeNotPermitted(user.username, user.role)
         user.is_active = is_active
 
@@ -68,6 +66,6 @@ class UserService:
         """
         :raises RoleChangeNotPermitted:
         """
-        if user.role == UserRoleEnum.SUPER_ADMIN:
+        if user.role == UserRole.SUPER_ADMIN:
             raise RoleChangeNotPermitted(user.username, user.role)
-        user.role = UserRoleEnum.ADMIN if is_admin else UserRoleEnum.USER
+        user.role = UserRole.ADMIN if is_admin else UserRole.USER

@@ -6,10 +6,10 @@ from sqlalchemy import ColumnElement, Result, Row, Select, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.application.common.ports.query_gateways.user import UserQueryGateway
-from app.application.common.query_filters.sorting_order_enum import SortingOrderEnum
+from app.application.common.query_filters.sorting_order_enum import SortingOrder
 from app.application.common.query_filters.user.read_all import UserReadAllParams
 from app.application.common.query_models.user import UserQueryModel
-from app.domain.entities.user.role_enum import UserRoleEnum
+from app.domain.enums.user_role import UserRole
 from app.infrastructure.adapters.application.new_types import UserAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import ReaderError
 from app.infrastructure.sqla_persistence.mappings.user import users_table
@@ -28,7 +28,7 @@ class SqlaUserReader(UserQueryGateway):
         """
         :raises ReaderError:
         """
-        table_sorting_field: ColumnElement[UUID | str | UserRoleEnum | bool] | None = (
+        table_sorting_field: ColumnElement[UUID | str | UserRole | bool] | None = (
             users_table.c.get(user_read_all_params.sorting.sorting_field)
         )
         if table_sorting_field is None:
@@ -38,13 +38,13 @@ class SqlaUserReader(UserQueryGateway):
             )
             return None
 
-        order_by: ColumnElement[UUID | str | UserRoleEnum | bool] = (
+        order_by: ColumnElement[UUID | str | UserRole | bool] = (
             table_sorting_field.asc()
-            if user_read_all_params.sorting.sorting_order == SortingOrderEnum.ASC
+            if user_read_all_params.sorting.sorting_order == SortingOrder.ASC
             else table_sorting_field.desc()
         )
 
-        select_stmt: Select[tuple[UUID, str, UserRoleEnum, bool]] = (
+        select_stmt: Select[tuple[UUID, str, UserRole, bool]] = (
             select(
                 users_table.c.id,
                 users_table.c.username,
@@ -58,9 +58,9 @@ class SqlaUserReader(UserQueryGateway):
 
         try:
             result: Result[
-                tuple[UUID, str, UserRoleEnum, bool]
+                tuple[UUID, str, UserRole, bool]
             ] = await self._session.execute(select_stmt)
-            rows: Sequence[Row[tuple[UUID, str, UserRoleEnum, bool]]] = result.all()
+            rows: Sequence[Row[tuple[UUID, str, UserRole, bool]]] = result.all()
 
             users: list[UserQueryModel] = [
                 UserQueryModel(

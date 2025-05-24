@@ -1,8 +1,9 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.value_objects import UserId, Username
+from app.domain.entities.user import User
+from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.username.username import Username
 
 
 class UserCommandGateway(Protocol):

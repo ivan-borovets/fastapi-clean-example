@@ -1,7 +1,7 @@
 import logging
 
-from app.domain.entities.user.entity import User
-from app.domain.entities.user.value_objects import UserId
+from app.domain.entities.user import User
+from app.domain.value_objects.user_id import UserId
 from app.infrastructure.adapters.application.sqla_user_data_mapper import (
     SqlaUserDataMapper,
 )
