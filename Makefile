@@ -12,7 +12,6 @@ dotenv:
 
 # Docker compose
 DOCKER_COMPOSE := docker compose
-DOCKER_COMPOSE_FILE := docker-compose.yaml
 DOCKER_COMPOSE_PRUNE := scripts/makefile/docker_prune.sh
 
 .PHONY: guard-APP_ENV up.db up.db-echo up up.echo down down.total logs.db shell.db prune
