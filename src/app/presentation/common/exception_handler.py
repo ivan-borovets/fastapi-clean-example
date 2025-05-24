@@ -17,7 +17,6 @@ from app.domain.exceptions.user import (
     ActivationChangeNotPermitted,
     RoleChangeNotPermitted,
     UsernameAlreadyExists,
-    UserNotFoundById,
     UserNotFoundByUsername,
 )
 from app.infrastructure.auth_context.common.auth_exceptions import (
@@ -53,7 +52,6 @@ class ExceptionHandler:
         ActivationChangeNotPermitted: status.HTTP_403_FORBIDDEN,
         RoleChangeNotPermitted: status.HTTP_403_FORBIDDEN,
         # 404
-        UserNotFoundById: status.HTTP_404_NOT_FOUND,
         UserNotFoundByUsername: status.HTTP_404_NOT_FOUND,
         # 409
         UsernameAlreadyExists: status.HTTP_409_CONFLICT,
