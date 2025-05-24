@@ -44,7 +44,7 @@ async def list_users(
     # :raises PaginationError 500:
     # :raises ReaderError 500:
     # :raises SortingError 400:
-    request_data: ListUsersRequest = ListUsersRequest(
+    request_data = ListUsersRequest(
         limit=request_data_pydantic.limit,
         offset=request_data_pydantic.offset,
         sorting_field=request_data_pydantic.sorting_field,

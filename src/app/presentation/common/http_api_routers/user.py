@@ -25,7 +25,7 @@ users_router = APIRouter(
     tags=["Users"],
 )
 
-users_sub_routers = (
+users_sub_routers: tuple[APIRouter, ...] = (
     create_user_router,
     list_users_router,
     inactivate_user_router,

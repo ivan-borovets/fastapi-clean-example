@@ -62,7 +62,7 @@ class SqlaUserReader(UserQueryGateway):
             ] = await self._session.execute(select_stmt)
             rows: Sequence[Row[tuple[UUID, str, UserRole, bool]]] = result.all()
 
-            users: list[UserQueryModel] = [
+            return [
                 UserQueryModel(
                     id_=row.id,
                     username=row.username,
@@ -71,8 +71,6 @@ class SqlaUserReader(UserQueryGateway):
                 )
                 for row in rows
             ]
-
-            return users
 
         except SQLAlchemyError as error:
             raise ReaderError("Database query failed.") from error

@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Any, Final
 
 import pydantic
@@ -16,7 +17,6 @@ from app.domain.exceptions.user import (
     ActivationChangeNotPermitted,
     RoleChangeNotPermitted,
     UsernameAlreadyExists,
-    UserNotFoundById,
     UserNotFoundByUsername,
 )
 from app.infrastructure.auth_context.common.auth_exceptions import (
@@ -40,7 +40,7 @@ class ExceptionSchemaRich:
 
 
 class ExceptionHandler:
-    _ERROR_MAPPING: Final[dict[type[Exception], int]] = {
+    _ERROR_MAPPING: Final[MappingProxyType[type[Exception], int]] = MappingProxyType({
         # 400
         DomainFieldError: status.HTTP_400_BAD_REQUEST,
         SortingError: status.HTTP_400_BAD_REQUEST,
@@ -52,7 +52,6 @@ class ExceptionHandler:
         ActivationChangeNotPermitted: status.HTTP_403_FORBIDDEN,
         RoleChangeNotPermitted: status.HTTP_403_FORBIDDEN,
         # 404
-        UserNotFoundById: status.HTTP_404_NOT_FOUND,
         UserNotFoundByUsername: status.HTTP_404_NOT_FOUND,
         # 409
         UsernameAlreadyExists: status.HTTP_409_CONFLICT,
@@ -62,7 +61,7 @@ class ExceptionHandler:
         DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
         ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
         InfrastructureError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-    }
+    })
 
     def __init__(self, app: FastAPI):
         self._app = app
