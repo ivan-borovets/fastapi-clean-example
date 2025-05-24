@@ -5,7 +5,7 @@ from typing import Any, cast
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.application.common.ports.transaction_manager import TransactionManager
-from app.domain.exceptions.user import UsernameAlreadyExists
+from app.domain.exceptions.user import UsernameAlreadyExistsError
 from app.infrastructure.adapters.application.new_types import UserAsyncSession
 from app.infrastructure.exceptions.gateway_implementations import DataMapperError
 
@@ -29,7 +29,7 @@ class SqlaUserTransactionManager(TransactionManager):
             if "uq_users_username" in str(error):
                 params: Mapping[str, Any] = cast("Mapping[str, Any]", error.params)
                 username = str(params.get("username", "unknown"))
-                raise UsernameAlreadyExists(username) from error
+                raise UsernameAlreadyExistsError(username) from error
 
             raise DataMapperError("Database constraint violation.") from error
 

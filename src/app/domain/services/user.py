@@ -10,8 +10,8 @@
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import (
-    ActivationChangeNotPermitted,
-    RoleChangeNotPermitted,
+    ActivationChangeNotPermittedError,
+    RoleChangeNotPermittedError,
 )
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
@@ -59,7 +59,7 @@ class UserService:
         :raises ActivationChangeNotPermitted:
         """
         if user.role == UserRole.SUPER_ADMIN:
-            raise ActivationChangeNotPermitted(user.username, user.role)
+            raise ActivationChangeNotPermittedError(user.username, user.role)
         user.is_active = is_active
 
     def toggle_user_admin_role(self, user: User, *, is_admin: bool) -> None:
@@ -67,5 +67,5 @@ class UserService:
         :raises RoleChangeNotPermitted:
         """
         if user.role == UserRole.SUPER_ADMIN:
-            raise RoleChangeNotPermitted(user.username, user.role)
+            raise RoleChangeNotPermittedError(user.username, user.role)
         user.role = UserRole.ADMIN if is_admin else UserRole.USER

@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from app.domain.entities.user import User
-from app.domain.exceptions.user import UserNotFoundByUsername
+from app.domain.exceptions.user import UserNotFoundByUsernameError
 from app.domain.services.user import UserService
 from app.domain.value_objects.raw_password.raw_password import RawPassword
 from app.domain.value_objects.username.username import Username
@@ -74,7 +74,7 @@ class LogInHandler:
 
         user: User | None = await self._sqla_user_data_mapper.read_by_username(username)
         if user is None:
-            raise UserNotFoundByUsername(username)
+            raise UserNotFoundByUsernameError(username)
 
         if not self._user_service.is_password_valid(user, password):
             raise AuthenticationError("Invalid password.")

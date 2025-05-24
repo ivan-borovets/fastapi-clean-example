@@ -151,7 +151,7 @@ In other words, dependencies must never point outwards within the application's 
     layer.
 >
 > - In specific cases where database constraints enforce business rules, the Infrastructure layer may raise
-    domain-specific exceptions, such as `UsernameAlreadyExists` for a `UNIQUE CONSTRAINT` violation.
+    domain-specific exceptions, such as `UsernameAlreadyExistsError` for a `UNIQUE CONSTRAINT` violation.
     Handling these exceptions in the Application layer ensures that any business logic implemented in adapters remains
     under control.
 >
