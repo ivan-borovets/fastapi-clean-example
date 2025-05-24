@@ -1,7 +1,6 @@
 from sqlalchemy import Delete, delete
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.dml import ReturningDelete
-from sqlalchemy.sql.operators import eq
 
 from app.domain.value_objects.user_id import UserId
 from app.infrastructure.auth_context.common.auth_session import AuthSession
@@ -49,7 +48,7 @@ class SqlaAuthSessionDataMapper:
         """
         delete_stmt: ReturningDelete[tuple[str, ...]] = (
             delete(AuthSession)
-            .where(eq(AuthSession.id_, auth_session_id))  # type: ignore
+            .where(AuthSession.id_ == auth_session_id)  # type: ignore
             .returning(AuthSession.id_)
         )
 
@@ -68,7 +67,7 @@ class SqlaAuthSessionDataMapper:
         :raises DataMapperError:
         """
         delete_stmt: Delete = delete(AuthSession).where(
-            eq(AuthSession.user_id, user_id),  # type: ignore
+            (AuthSession.user_id == user_id),  # type: ignore
         )
 
         try:

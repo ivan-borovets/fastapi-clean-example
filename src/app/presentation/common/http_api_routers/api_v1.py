@@ -14,7 +14,7 @@ async def healthcheck(_: Request) -> dict[str, str]:
     return {"status": "ok"}
 
 
-api_v1_sub_routers = (
+api_v1_sub_routers: tuple[APIRouter, ...] = (
     account_router,
     users_router,
 )

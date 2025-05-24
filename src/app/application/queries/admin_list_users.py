@@ -59,7 +59,7 @@ class ListUsersQueryService:
         )
 
         log.debug("Retrieving list of users.")
-        user_read_all_params: UserReadAllParams = UserReadAllParams(
+        user_read_all_params = UserReadAllParams(
             pagination=UserReadAllPagination(
                 limit=request_data.limit,
                 offset=request_data.offset,

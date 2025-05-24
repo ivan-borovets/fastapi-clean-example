@@ -36,7 +36,7 @@ class AuthSessionManager:
 
         auth_session_id: str = self._str_auth_session_id_generator()
         expiration: datetime = self._utc_auth_session_timer.access_expiration
-        auth_session: AuthSession = AuthSession(
+        auth_session = AuthSession(
             id_=auth_session_id,
             user_id=user_id,
             expiration=expiration,
@@ -130,7 +130,7 @@ class AuthSessionManager:
             auth_session.id_,
         )
 
-        is_expired: bool = (
+        is_expired = (
             auth_session.expiration <= self._utc_auth_session_timer.current_time
         )
 
@@ -149,7 +149,7 @@ class AuthSessionManager:
         time_remaining: timedelta = (
             auth_session.expiration - self._utc_auth_session_timer.current_time
         )
-        is_near_expiry: bool = (
+        is_near_expiry = (
             time_remaining < self._utc_auth_session_timer.refresh_trigger_interval
         )
 

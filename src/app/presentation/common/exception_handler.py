@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Any, Final
 
 import pydantic
@@ -40,7 +41,7 @@ class ExceptionSchemaRich:
 
 
 class ExceptionHandler:
-    _ERROR_MAPPING: Final[dict[type[Exception], int]] = {
+    _ERROR_MAPPING: Final[MappingProxyType[type[Exception], int]] = MappingProxyType({
         # 400
         DomainFieldError: status.HTTP_400_BAD_REQUEST,
         SortingError: status.HTTP_400_BAD_REQUEST,
@@ -62,7 +63,7 @@ class ExceptionHandler:
         DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
         ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
         InfrastructureError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-    }
+    })
 
     def __init__(self, app: FastAPI):
         self._app = app

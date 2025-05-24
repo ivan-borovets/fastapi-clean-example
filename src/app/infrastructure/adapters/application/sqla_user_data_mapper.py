@@ -1,6 +1,5 @@
 from sqlalchemy import Select, select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.sql.operators import eq
 
 from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.domain.entities.user import User
@@ -28,7 +27,7 @@ class SqlaUserDataMapper(UserCommandGateway):
         """
         :raises DataMapperError:
         """
-        select_stmt: Select = select(User).where(eq(User.id_, user_id))  # type: ignore
+        select_stmt: Select[tuple[User]] = select(User).where(User.id_ == user_id)  # type: ignore
 
         try:
             user: User | None = (
@@ -48,9 +47,7 @@ class SqlaUserDataMapper(UserCommandGateway):
         """
         :raises DataMapperError:
         """
-        select_stmt: Select[tuple[User]] = select(User).where(
-            eq(User.username, username),  # type: ignore
-        )
+        select_stmt: Select[tuple[User]] = select(User).where(User.username == username)  # type: ignore
 
         if for_update:
             select_stmt = select_stmt.with_for_update()

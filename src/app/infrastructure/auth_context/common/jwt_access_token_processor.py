@@ -36,13 +36,11 @@ class JwtAccessTokenProcessor:
 
     def extract_auth_session_id(self, access_token: str) -> str | None:
         payload: dict[str, Any] | None = self._decode_token(access_token)
-
         if payload is None:
             log.debug("Empty payload in token.")
             return None
 
         auth_session_id: str | None = payload.get("auth_session_id")
-
         if auth_session_id is None:
             log.debug("Token has no auth session id.")
             return None

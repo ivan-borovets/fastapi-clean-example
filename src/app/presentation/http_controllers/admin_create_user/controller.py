@@ -42,7 +42,7 @@ async def create_user(
     # :raises AuthorizationError 403:
     # :raises DomainFieldError 400:
     # :raises UsernameAlreadyExists 409:
-    request_data: CreateUserRequest = CreateUserRequest(
+    request_data = CreateUserRequest(
         username=request_data_pydantic.username,
         password=request_data_pydantic.password,
         role=request_data_pydantic.role,
