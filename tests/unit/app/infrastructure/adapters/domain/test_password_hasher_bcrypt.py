@@ -11,6 +11,13 @@ def get_bcrypt_password_hasher() -> BcryptPasswordHasher:
     return BcryptPasswordHasher(PasswordPepper("Habanero!"))
 
 
+def test_bcrypt_password_hasher_init():
+    pepper = PasswordPepper("Serrano")
+    hasher = BcryptPasswordHasher(pepper)
+
+    assert hasher._pepper == pepper
+
+
 @pytest.mark.slow
 def test_bcrypt_password_hasher_hash() -> None:
     bcrypt_password_hasher: BcryptPasswordHasher = get_bcrypt_password_hasher()

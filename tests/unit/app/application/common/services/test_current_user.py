@@ -17,6 +17,7 @@ async def test_get_current_user_success(sample_user: User) -> None:
     service = CurrentUserService(identity_provider, user_gateway)
 
     current_user = await service.get_current_user()
+
     assert current_user == sample_user
 
 

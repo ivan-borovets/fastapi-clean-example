@@ -106,7 +106,9 @@ ignore = [
 "src/app/infrastructure/sqla_persistence/alembic/**" = ["ALL", ]
 "tests/**" = [
     "PLR2004", # magic-value-comparison
+    "PT011", # pytest-raises-too-broad
     "S101", # assert
+    "S105", # hardcoded-password-string
     "SLF001", # private-member-access
     "UP012", # unnecessary-encode-utf8
 ]
@@ -120,7 +122,6 @@ ignore = [
 "scripts/dishka/plot_dependencies_data.py" = ["T201", ]                        # print
 "src/app/presentation/common/exception_handler.py" = ["PLR2004", ]             # magic-value-comparison
 "src/app/setup/config/settings.py" = ["PLR2004", ]                             # magic-value-comparison
-"tests/unit/app/setup/config/test_logs.py" = ["PT011", ]                       # pytest-raises-too-broad
 "src/app/setup/app_factory.py" = ["RUF100", ]                                  # unused-noqa
 
 [tool.ruff.format]
@@ -175,4 +176,8 @@ exclude_also = [
     '@(abc\.)?abstractmethod',
     "pass",
     '\.\.\.',
+    "from .*",
+    "import .*",
+    'logging\..*',
+    'log\..*',
 ]

@@ -19,6 +19,7 @@ class SampleEntity(Entity[SingleFieldValueObject]):
 
 def test_setattr():
     entity = SampleEntity(id_=SingleFieldValueObject(value=123), name="abc")
+
     with pytest.raises(DomainError):
         entity.id_ = SingleFieldValueObject(value=456)
 
@@ -26,9 +27,13 @@ def test_setattr():
 def test_eq_hash():
     entity_1 = SampleEntity(id_=SingleFieldValueObject(value=123), name="abc")
     entity_2 = SampleEntity(id_=SingleFieldValueObject(value=123), name="def")
+
     assert entity_1 == entity_2
+    assert id(entity_1) != id(entity_2)
     assert hash(entity_1) == hash(entity_2)
 
     entity_3 = SampleEntity(id_=SingleFieldValueObject(value=456), name="abc")
+
     assert entity_1 != entity_3
+    assert id(entity_1) != id(entity_3)
     assert hash(entity_1) != hash(entity_3)

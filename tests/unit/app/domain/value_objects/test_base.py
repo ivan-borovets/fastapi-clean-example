@@ -24,11 +24,15 @@ def test_post_init():
 
 def test_repr():
     vo_1 = SingleFieldValueObject(value=123)
+
     assert repr(vo_1) == "SingleFieldValueObject(123)"
+
     vo_2 = MultiFieldValueObject(value1=123, value2="abc")
+
     assert repr(vo_2) == "MultiFieldValueObject(value1=123, value2='abc')"
 
 
 def test_get_fields():
     vo = MultiFieldValueObject(value1=123, value2="abc")
+
     assert vo.get_fields() == {"value1": 123, "value2": "abc"}

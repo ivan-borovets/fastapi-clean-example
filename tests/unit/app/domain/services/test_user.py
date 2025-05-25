@@ -36,6 +36,7 @@ def test_create_user() -> None:
     cast(Mock, user_service._password_hasher.hash).return_value = password_hash_value
 
     user: User = user_service.create_user(username, raw_password)
+
     assert isinstance(user, User)
     assert user.id_ == UserId(user_uuid)
     assert user.username == username
@@ -51,10 +52,12 @@ def test_is_password_valid(sample_user: User) -> None:
 
     verify_mock.return_value = True
     correct_result: bool = user_service.is_password_valid(sample_user, password)
+
     assert correct_result
 
     verify_mock.return_value = False
     incorrect_result: bool = user_service.is_password_valid(sample_user, password)
+
     assert not incorrect_result
 
 
@@ -67,6 +70,7 @@ def test_change_password(sample_user: User) -> None:
     hash_mock.return_value = new_password_hash_value
 
     user_service.change_password(sample_user, raw_new_password)
+
     assert sample_user.password_hash != original_password_hash
     assert sample_user.password_hash == UserPasswordHash(new_password_hash_value)
 
@@ -76,12 +80,15 @@ def test_toggle_activation(sample_user: User) -> None:
     initial_state: bool = sample_user.is_active
 
     user_service.toggle_user_activation(sample_user, is_active=not initial_state)
+
     assert sample_user.is_active != initial_state
 
     user_service.toggle_user_activation(sample_user, is_active=initial_state)
+
     assert sample_user.is_active == initial_state
 
     sample_user.role = UserRole.SUPER_ADMIN
+
     with pytest.raises(ActivationChangeNotPermittedError):
         user_service.toggle_user_activation(sample_user, is_active=True)
     with pytest.raises(ActivationChangeNotPermittedError):
@@ -92,12 +99,15 @@ def test_toggle_admin_role(sample_user: User) -> None:
     user_service: UserService = create_user_service()
 
     user_service.toggle_user_admin_role(sample_user, is_admin=True)
+
     assert sample_user.role == UserRole.ADMIN
 
     user_service.toggle_user_admin_role(sample_user, is_admin=False)
+
     assert sample_user.role != UserRole.ADMIN
 
     sample_user.role = UserRole.SUPER_ADMIN
+
     with pytest.raises(RoleChangeNotPermittedError):
         user_service.toggle_user_admin_role(sample_user, is_admin=True)
     with pytest.raises(RoleChangeNotPermittedError):
