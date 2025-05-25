@@ -27,7 +27,7 @@ class SqlaUserTransactionManager(TransactionManager):
 
         except IntegrityError as error:
             if "uq_users_username" in str(error):
-                params: Mapping[str, Any] = cast("Mapping[str, Any]", error.params)
+                params: Mapping[str, Any] = cast(Mapping[str, Any], error.params)
                 username = str(params.get("username", "unknown"))
                 raise UsernameAlreadyExistsError(username) from error
 

@@ -102,7 +102,7 @@ class UserInfrastructureProvider(Provider):
         log.debug("Starting User async session...")
         async with async_session_maker() as session:
             log.debug("Async session started for User.")
-            yield cast("UserAsyncSession", session)
+            yield cast(UserAsyncSession, session)
             log.debug("Closing async session.")
         log.debug("Async session closed for User.")
 
@@ -119,7 +119,7 @@ class AuthInfrastructureProvider(Provider):
         log.debug("Starting Auth async session...")
         async with async_session_maker() as session:
             log.debug("Async session started for Auth.")
-            yield cast("AuthAsyncSession", session)
+            yield cast(AuthAsyncSession, session)
             log.debug("Closing async session.")
         log.debug("Async session closed for Auth.")
 

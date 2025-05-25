@@ -22,7 +22,7 @@ VALID_LOGGING_LEVELS: Final[set[LoggingLevel]] = {
 def validate_logging_level(*, level: str) -> LoggingLevel:
     if level not in VALID_LOGGING_LEVELS:
         raise ValueError(f"Invalid log level: '{level}'.")
-    return cast("LoggingLevel", level)
+    return cast(LoggingLevel, level)
 
 
 def configure_logging(*, level: LoggingLevel = "INFO") -> None:
