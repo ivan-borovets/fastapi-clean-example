@@ -26,6 +26,8 @@ def validate_logging_level(*, level: str) -> LoggingLevel:
 
 
 def configure_logging(*, level: LoggingLevel = "INFO") -> None:
+    logging.getLogger().handlers.clear()
+
     level_map: dict[LoggingLevel, int] = {
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
@@ -34,10 +36,8 @@ def configure_logging(*, level: LoggingLevel = "INFO") -> None:
         "CRITICAL": logging.CRITICAL,
     }
 
-    numeric_level: int = level_map.get(level, logging.INFO)
-
     logging.basicConfig(
-        level=numeric_level,
+        level=level_map[level],
         datefmt="%Y-%m-%d %H:%M:%S",
         format=(
             "[%(asctime)s.%(msecs)03d] "

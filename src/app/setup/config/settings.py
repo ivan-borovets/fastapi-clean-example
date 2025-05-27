@@ -1,7 +1,7 @@
 import logging
 import os
 from datetime import timedelta
-from typing import Any, Literal, NewType, Self, cast
+from typing import Any, Literal, NewType, cast
 
 import rtoml
 from pydantic import (
@@ -137,14 +137,6 @@ class AppSettings(BaseModel):
     security: SecuritySettings
     logs: LoggingSettings
 
-    @classmethod
-    def from_toml(cls, env: ValidEnvs | None = None) -> Self:
-        if env is None:
-            env = get_current_env()
-        raw_config = load_full_config(env=env)
-        log.info("Reading config for environment: '%s'", env)
-        return cls.model_validate(raw_config)
-
 
 def validate_env(*, env: str | None) -> ValidEnvs:
     if env is None or env not in ValidEnvs:
@@ -185,6 +177,7 @@ def merge_dicts(*, dict1: dict[str, Any], dict2: dict[str, Any]) -> dict[str, An
 
 
 def load_full_config(*, env: ValidEnvs) -> dict[str, Any]:
+    log.info("Reading config for environment: '%s'", env)
     config = read_config(env=env)
     try:
         secrets = read_config(env=env, config=DirContents.SECRETS_NAME)
@@ -201,4 +194,7 @@ def get_current_env() -> ValidEnvs:
 
 
 def load_settings(env: ValidEnvs | None = None) -> AppSettings:
-    return AppSettings.from_toml(env=env)
+    if env is None:
+        env = get_current_env()
+    raw_config = load_full_config(env=env)
+    return AppSettings.model_validate(raw_config)
