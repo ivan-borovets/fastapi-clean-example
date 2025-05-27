@@ -146,8 +146,8 @@ In other words, dependencies must never point outwards within the application's 
     them. For example, components in the Presentation layer can directly depend on the Domain layer, bypassing the
     Application and Infrastructure layers.
 >
-> - However, avoid letting business logic leak into peripheral details, such as raising business-specific exceptions in
-    the Infrastructure layer without re-raising them in the business logic or declaring domain rules outside the Domain
+> - Avoid letting business logic leak into peripheral details, such as raising business-specific exceptions in the
+    Infrastructure layer without re-raising them in the business logic or declaring domain rules outside the Domain
     layer.
 >
 > - In specific cases where database constraints enforce business rules, the Infrastructure layer may raise
@@ -218,6 +218,11 @@ Let's agree, for this project, that Dependency Rule **does not apply to adapters
     within a specific date range or a promotion code is valid for orders above a certain total.
 > - **Carefully** consider using Pydantic for business rule validation. While convenient, Pydantic models are slower
     than regular dataclasses and reduce application core stability by coupling business logic to an external library.
+> - If you choose Pydantic (or a similar tool bundled with web framework) for business model definitions, ensure that
+    a Pydantic model in business layers is a separate model from the one in the Presentation layer, even if their
+    structure appears identical. Mixing data presentation logic with business logic is a common mistake made early in
+    development to save effort on creating separate models and field mapping, often due to not understanding that
+    structural similarities are temporary.
 
 ![#gray](https://placehold.co/15x15/gray/gray.svg) **External Layer**
 

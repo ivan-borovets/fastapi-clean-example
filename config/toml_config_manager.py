@@ -8,6 +8,9 @@ from typing import Any, Final, Literal, cast
 
 import rtoml
 
+# LOGGING
+
+
 LoggingLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 VALID_LOGGING_LEVELS: Final[set[LoggingLevel]] = {
@@ -17,6 +20,8 @@ VALID_LOGGING_LEVELS: Final[set[LoggingLevel]] = {
     "ERROR",
     "CRITICAL",
 }
+
+log = logging.getLogger(__name__)
 
 
 def validate_logging_level(*, level: str) -> LoggingLevel:
@@ -49,10 +54,7 @@ def configure_logging(*, level: LoggingLevel = "INFO") -> None:
     )
 
 
-log = logging.getLogger(__name__)
-
-BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent
-CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
+# ENVIRONMENT & PATHS
 
 
 class ValidEnvs(StrEnum):
@@ -65,13 +67,6 @@ class ValidEnvs(StrEnum):
     PROD = "prod"
 
 
-ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
-    ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
-    ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
-    ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
-})
-
-
 class DirContents(StrEnum):
     """
     Values should reflect actual file names.
@@ -81,6 +76,17 @@ class DirContents(StrEnum):
     SECRETS_NAME = ".secrets.toml"
     EXPORT_NAME = "export.toml"
     DOTENV_NAME = ".env"
+
+
+BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent
+CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
+
+
+ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
+    ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
+    ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
+    ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
+})
 
 
 ENV_VAR_NAME: Final[str] = "APP_ENV"
@@ -95,6 +101,9 @@ def validate_env(*, env: str | None) -> ValidEnvs:
             f"Must be one of: {valid_values}.",
         )
     return ValidEnvs(env)
+
+
+# CONFIG READING
 
 
 def read_config(
@@ -133,6 +142,9 @@ def load_full_config(*, env: ValidEnvs) -> dict[str, Any]:
     else:
         config = merge_dicts(dict1=config, dict2=secrets)
     return config
+
+
+# EXPORT PROCESSING
 
 
 def get_env_value_by_export_field(*, config: dict[str, Any], field: str) -> Any:
@@ -176,6 +188,9 @@ def load_export_fields(*, env: ValidEnvs) -> tuple[dict[str, Any], list[str]]:
     return config, export_fields
 
 
+# DOTENV GENERATION
+
+
 def write_dotenv_file(*, env: ValidEnvs, exported_fields: dict[str, str]) -> None:
     env_filename = f"{DirContents.DOTENV_NAME}.{env.value}"
     env_path = ENV_TO_DIR_PATHS[env] / env_filename
@@ -210,10 +225,14 @@ def generate_dotenv(*, env: ValidEnvs) -> None:
     write_dotenv_file(env=env, exported_fields=exported_fields)
 
 
+# ENTRY POINT
+
+
 def main() -> None:
     log_lvl: str = os.getenv("LOG_LEVEL", "INFO")
     validated_log_lvl: LoggingLevel = validate_logging_level(level=log_lvl)
     configure_logging(level=validated_log_lvl)
+
     raw_env = os.getenv(key="APP_ENV")
     current_env = validate_env(env=raw_env)
     generate_dotenv(env=current_env)

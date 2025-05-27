@@ -13,7 +13,7 @@ def make_app(
     *di_providers: Provider,
     settings: AppSettings | None = None,
 ) -> FastAPI:
-    configure_logging(level="DEBUG")
+    configure_logging(level="INFO")
 
     if not settings:
         settings = load_settings()

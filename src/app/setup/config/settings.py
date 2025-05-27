@@ -23,6 +23,9 @@ log = logging.getLogger(__name__)
 PostgresDsn = NewType("PostgresDsn", str)
 
 
+# PYDANTIC MODELS
+
+
 class PasswordSettings(BaseModel):
     pepper: str = Field(alias="PEPPER")
 
@@ -138,6 +141,9 @@ class AppSettings(BaseModel):
     logs: LoggingSettings
 
 
+# ENVIRONMENT VALIDATION
+
+
 def validate_env(*, env: str | None) -> ValidEnvs:
     if env is None or env not in ValidEnvs:
         valid_values = ", ".join(f"'{e}'" for e in ValidEnvs)
@@ -147,6 +153,14 @@ def validate_env(*, env: str | None) -> ValidEnvs:
             f"Must be one of: {valid_values}.",
         )
     return ValidEnvs(env)
+
+
+def get_current_env() -> ValidEnvs:
+    env_value = os.environ.get(ENV_VAR_NAME)
+    return validate_env(env=env_value)
+
+
+# CONFIG READING
 
 
 def read_config(
@@ -188,9 +202,7 @@ def load_full_config(*, env: ValidEnvs) -> dict[str, Any]:
     return config
 
 
-def get_current_env() -> ValidEnvs:
-    env_value = os.environ.get(ENV_VAR_NAME)
-    return validate_env(env=env_value)
+# PUBLIC INTERFACE
 
 
 def load_settings(env: ValidEnvs | None = None) -> AppSettings:
