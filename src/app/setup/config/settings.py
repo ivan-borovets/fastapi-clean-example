@@ -17,6 +17,7 @@ from app.setup.config.constants import (
     DirContents,
     ValidEnvs,
 )
+from app.setup.config.logs import LoggingLevel
 
 log = logging.getLogger(__name__)
 
@@ -125,13 +126,7 @@ class SqlaEngineSettings(BaseModel):
 
 
 class LoggingSettings(BaseModel):
-    level: Literal[
-        "DEBUG",
-        "INFO",
-        "WARNING",
-        "ERROR",
-        "CRITICAL",
-    ] = Field(alias="LEVEL")
+    level: LoggingLevel = Field(alias="LEVEL")
 
 
 class AppSettings(BaseModel):
@@ -145,18 +140,19 @@ class AppSettings(BaseModel):
 
 
 def validate_env(*, env: str | None) -> ValidEnvs:
-    if env is None or env not in ValidEnvs:
+    if env is None:
+        raise ValueError(f"{ENV_VAR_NAME} is not set.")
+    try:
+        return ValidEnvs(env)
+    except ValueError as e:
         valid_values = ", ".join(f"'{e}'" for e in ValidEnvs)
-        env_display = "not set" if env is None else f"'{env}'"
         raise ValueError(
-            f"Environment variable {ENV_VAR_NAME} has invalid value: {env_display}. "
-            f"Must be one of: {valid_values}.",
-        )
-    return ValidEnvs(env)
+            f"Invalid {ENV_VAR_NAME}: '{env}'. Must be one of: {valid_values}."
+        ) from e
 
 
 def get_current_env() -> ValidEnvs:
-    env_value = os.environ.get(ENV_VAR_NAME)
+    env_value = os.getenv(ENV_VAR_NAME)
     return validate_env(env=env_value)
 
 
