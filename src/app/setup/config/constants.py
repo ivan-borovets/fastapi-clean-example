@@ -3,8 +3,7 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Final
 
-BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent.parent.parent.parent
-CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
+ENV_VAR_NAME: Final[str] = "APP_ENV"
 
 
 class ValidEnvs(StrEnum):
@@ -15,13 +14,6 @@ class ValidEnvs(StrEnum):
     LOCAL = "local"
     DEV = "dev"
     PROD = "prod"
-
-
-ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
-    ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
-    ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
-    ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
-})
 
 
 class DirContents(StrEnum):
@@ -35,4 +27,12 @@ class DirContents(StrEnum):
     DOTENV_NAME = ".env"
 
 
-ENV_VAR_NAME: Final[str] = "APP_ENV"
+BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent.parent.parent.parent
+CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
+
+
+ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
+    ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
+    ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
+    ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,
+})
