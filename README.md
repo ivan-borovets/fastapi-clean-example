@@ -533,10 +533,10 @@ setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
     - Restores a previously soft-deleted user.
     - Only super admins can reactivate other admins.
     - Super admins cannot be soft-deleted.
-- `/grant`: Open to super **admins**.
+- `/grant`: Open to **super admins**.
     - Grants admin rights to a specified user.
     - Super admin rights can not be changed.
-- `/revoke`: Open to super **admins**.
+- `/revoke`: Open to **super admins**.
     - Revokes admin rights from a specified user.
     - Super admin rights can not be changed.
 - `/change_password`: Open to **authenticated users**.
