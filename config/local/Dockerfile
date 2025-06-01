@@ -8,13 +8,17 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system --target /app/dependencies .
 COPY . ./
 
-FROM python:3.12-slim-bookworm
+FROM python:3.12-slim-bookworm AS final
+ARG APP_UID=10001
+ARG APP_GID=10001
+RUN groupadd -g ${APP_GID} appgroup && \
+    useradd -u ${APP_UID} -g ${APP_GID} -s /usr/sbin/nologin -M appuser
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH="/app/dependencies" \
     PATH="/app/dependencies/bin:$PATH"
-COPY --from=builder /app/dependencies /app/dependencies
-COPY --from=builder /app/ ./
+COPY --from=builder --chown=${APP_UID}:${APP_GID} /app/ ./
+USER appuser
 EXPOSE 8888
 CMD ["uvicorn", "app.run:make_app", "--host", "0.0.0.0", "--port", "8888", "--loop", "uvloop"]
