@@ -91,7 +91,7 @@ def test_postgres_settings_init_correct():
                 host=host,
                 port=port,
                 path=db,
-            )
+            ),
         )
 
 
@@ -228,7 +228,7 @@ def test_load_full_config(tmp_path):
         result_no_secrets = load_full_config(env=ValidEnvs.DEV)
 
         assert result_no_secrets == {
-            "database": {"USER": "test_postgres", "PORT": 1234}
+            "database": {"USER": "test_postgres", "PORT": 1234},
         }
 
 
@@ -245,7 +245,7 @@ def test_load_settings_with_env_correct(app_settings_config_dict_valid):
     actual = settings.model_dump(by_alias=True)
     expected = copy.deepcopy(app_settings_config_dict_valid)
     expected["security"]["auth"]["SESSION_TTL_MIN"] = timedelta(
-        minutes=expected["security"]["auth"]["SESSION_TTL_MIN"]
+        minutes=expected["security"]["auth"]["SESSION_TTL_MIN"],
     )
 
     assert actual == expected
@@ -268,7 +268,7 @@ def test_load_settings_without_env_correct(app_settings_config_dict_valid):
     actual = settings.model_dump(by_alias=True)
     expected = copy.deepcopy(app_settings_config_dict_valid)
     expected["security"]["auth"]["SESSION_TTL_MIN"] = timedelta(
-        minutes=expected["security"]["auth"]["SESSION_TTL_MIN"]
+        minutes=expected["security"]["auth"]["SESSION_TTL_MIN"],
     )
 
     assert actual == expected

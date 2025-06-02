@@ -105,7 +105,7 @@ def validate_env(*, env: str | None) -> ValidEnvs:
     except ValueError as e:
         valid_values = ", ".join(f"'{e}'" for e in ValidEnvs)
         raise ValueError(
-            f"Invalid {ENV_VAR_NAME}: '{env}'. Must be one of: {valid_values}."
+            f"Invalid {ENV_VAR_NAME}: '{env}'. Must be one of: {valid_values}.",
         ) from e
 
 

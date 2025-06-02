@@ -1,12 +1,3 @@
-"""
-- Flat (non-nested) models are best kept anemic (without methods).
-  The behavior of such models is described in the domain service.
-
-- When working with non-flat models, such as aggregates, it makes sense
-  to have rich models (with methods). The behavior of these models is
-  described within the models themselves.
-"""
-
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import (

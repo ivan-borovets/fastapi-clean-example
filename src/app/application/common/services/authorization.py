@@ -1,9 +1,10 @@
 from collections.abc import Mapping
 from typing import Final
 
+from app.application.common.constants import AUTHZ_NOT_AUTHORIZED
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
+from app.domain.value_objects.user_id import UserId
 
 SUBORDINATE_ROLES: Final[Mapping[UserRole, set[UserRole]]] = {
     UserRole.SUPER_ADMIN: {UserRole.ADMIN, UserRole.USER},
@@ -13,16 +14,22 @@ SUBORDINATE_ROLES: Final[Mapping[UserRole, set[UserRole]]] = {
 
 
 class AuthorizationService:
-    def authorize_for_self(self, current_user: User, /, *, target_user: User) -> None:
+    def authorize_for_self(
+        self,
+        current_user_id: UserId,
+        /,
+        *,
+        target_id: UserId,
+    ) -> None:
         """
         :raises AuthorizationError:
         """
-        if current_user.id_ != target_user.id_:
-            raise AuthorizationError("Not authorized.")
+        if current_user_id != target_id:
+            raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)
 
     def authorize_for_subordinate_role(
         self,
-        current_user: User,
+        current_user_role: UserRole,
         /,
         *,
         target_role: UserRole,
@@ -30,6 +37,6 @@ class AuthorizationService:
         """
         :raises AuthorizationError:
         """
-        allowed_roles = SUBORDINATE_ROLES.get(current_user.role, set())
+        allowed_roles = SUBORDINATE_ROLES.get(current_user_role, set())
         if target_role not in allowed_roles:
-            raise AuthorizationError("Not authorized.")
+            raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)

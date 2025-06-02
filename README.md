@@ -420,56 +420,54 @@ natural.
 
 ```
 .
-├── config/...                               # configuration files and scripts, includes Docker
-├── Makefile                                 # shortcuts for setup and common tasks
-├── scripts/...                              # helper scripts
-├── pyproject.toml                           # tooling and environment config (uv)
+├── config/...                                   # configuration files and scripts, includes Docker
+├── Makefile                                     # shortcuts for setup and common tasks
+├── scripts/...                                  # helper scripts
+├── pyproject.toml                               # tooling and environment config (uv)
 ├── ...
 └── src/
     └── app/
-        ├── run.py                           # app entry point
+        ├── run.py                               # app entry point
         │
-        ├── application/...                  # application layer
-        │   ├── common/                      # common layer objects
-        │   │   ├── services/...             # authorization, etc.
-        │   │   └── ...                      # ports, exceptions, etc.
+        ├── application/...                      # application layer
+        │   ├── commands/                        # write operations, business-critical reads
+        │   │   ├── create_user.py               # interactor
+        │   │   └── ...                          # other interactors
         │   │
-        │   ├── commands/                    # write operations, business-critical reads
-        │   │   ├── admin_create_user.py     # interactor
-        │   │   └── ...                      # other interactors
+        │   ├── queries/                         # optimized read operations
+        │   │   ├── list_users.py                # query service
+        │   │   └── ...                          # other query services
         │   │
-        │   └── queries/                     # optimized read operations
-        │       ├── admin_list_users.py      # query service
-        │       └── ...                      # other query services
+        │   └── common/                          # common layer objects
+        │       ├── services/...                 # authorization, etc.
+        │       └── ...                          # ports, exceptions, etc.
         │
-        ├── domain/                          # domain layer
-        │   ├── entities/...                 # entities (have identity)
-        │   │   ├── base.py                  # base declarations
-        │   │   └── ...                      # concrete entities
+        ├── domain/                              # domain layer
+        │   ├── services/...                     # domain layer services
         │   │
-        │   ├── services/...                 # domain layer services
+        │   ├── entities/...                     # entities (have identity)
+        │   │   ├── base.py                      # base declarations
+        │   │   └── ...                          # concrete entities
         │   │
-        │   ├── value_objects/...            # value objects (no identity)
-        │   │   ├── base.py                  # base declarations
-        │   │   └── ...                      # concrete value objects
+        │   ├── value_objects/...                # value objects (no identity)
+        │   │   ├── base.py                      # base declarations
+        │   │   └── ...                          # concrete value objects
         │   │
-        │   └── ...                          # ports, enums, exceptions, etc.
+        │   └── ...                              # ports, enums, exceptions, etc.
         │
-        ├── infrastructure/...               # infrastructure layer
-        │   ├── auth_context/...             # auth context (session-based)
-        │   │   ├── common/...               # common context objects
-        │   │   │
-        │   │   ├── log_in.py                # handler
-        │   │   └── ...                      # other handlers
+        ├── infrastructure/...                   # infrastructure layer
+        │   ├── auth_session/...                 # auth context (session-based)
+        │   ├── handlers/...                     # account handlers (log in, log out, sign up)
         │   │
-        │   └── ...                          # adapters, exceptions, etc.
+        │   └── ...                              # adapters, persistence, exceptions, etc.
         │
-        ├── presentation/...                 # presentation layer
-        │   ├── common/...                   # common layer objects
-        │   │
-        │   └── http_controllers/            # controllers (http)
-        │       ├── user_change_password.py  # controller
-        │       └── ...                      # other controllers
+        ├── presentation/...                     # presentation layer
+        │   └── web/                             # web presentation
+        │       ├── controllers/...              # controllers and routers (http)
+        │       │   ├── user_change_password.py  # controller
+        │       │   └── ...                      # other controllers
+        │       │
+        │       └── common/...                   # adapters, middlewares, exception handlers, etc.
         │
         └── setup/
             ├── app_factory.py               # app builder
