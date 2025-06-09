@@ -470,9 +470,9 @@ natural.
         │       └── common/...                   # adapters, middlewares, exception handlers, etc.
         │
         └── setup/
-            ├── app_factory.py               # app builder
-            ├── config/...                   # app settings
-            └── ioc/...                      # dependency injection setup
+            ├── app_factory.py                   # app builder
+            ├── config/...                       # app settings
+            └── ioc/...                          # dependency injection setup
 ```
 
 If you find this structure useful but prefer starting with a clean state rather than deleting unnecessary code, I've
