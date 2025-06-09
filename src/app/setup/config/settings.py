@@ -1,13 +1,13 @@
 import logging
 import os
 from datetime import timedelta
-from typing import Any, Literal, NewType, cast
+from typing import Any, Literal
 
 import rtoml
 from pydantic import (
     BaseModel,
     Field,
-    PostgresDsn as PydanticPostgresDsn,
+    PostgresDsn,
     field_validator,
 )
 
@@ -20,8 +20,6 @@ from app.setup.config.constants import (
 from app.setup.config.logs import LoggingLevel
 
 log = logging.getLogger(__name__)
-
-PostgresDsn = NewType("PostgresDsn", str)
 
 
 # PYDANTIC MODELS
@@ -102,18 +100,15 @@ class PostgresSettings(BaseModel):
         return v
 
     @property
-    def dsn(self) -> PostgresDsn:
-        return cast(
-            PostgresDsn,
-            str(
-                PydanticPostgresDsn.build(
-                    scheme=f"postgresql+{self.driver}",
-                    username=self.user,
-                    password=self.password,
-                    host=self.host,
-                    port=self.port,
-                    path=self.db,
-                ),
+    def dsn(self) -> str:
+        return str(
+            PostgresDsn.build(
+                scheme=f"postgresql+{self.driver}",
+                username=self.user,
+                password=self.password,
+                host=self.host,
+                port=self.port,
+                path=self.db,
             ),
         )
 
@@ -147,7 +142,7 @@ def validate_env(*, env: str | None) -> ValidEnvs:
     except ValueError as e:
         valid_values = ", ".join(f"'{e}'" for e in ValidEnvs)
         raise ValueError(
-            f"Invalid {ENV_VAR_NAME}: '{env}'. Must be one of: {valid_values}."
+            f"Invalid {ENV_VAR_NAME}: '{env}'. Must be one of: {valid_values}.",
         ) from e
 
 

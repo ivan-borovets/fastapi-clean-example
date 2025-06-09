@@ -7,7 +7,7 @@ from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.user_password_hash import UserPasswordHash
 from app.domain.value_objects.username.constants import USERNAME_MAX_LEN
 from app.domain.value_objects.username.username import Username
-from app.infrastructure.sqla_persistence.orm_registry import mapping_registry
+from app.infrastructure.sqla_persistence.registry import mapping_registry
 
 users_table = Table(
     "users",
@@ -17,7 +17,7 @@ users_table = Table(
     Column("password_hash", LargeBinary, nullable=False),
     Column(
         "role",
-        Enum(UserRole),
+        Enum(UserRole, name="userrole"),
         default=UserRole.USER,
         nullable=False,
     ),

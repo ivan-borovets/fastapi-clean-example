@@ -10,7 +10,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.infrastructure.sqla_persistence.mappings.all import map_tables
-from app.infrastructure.sqla_persistence.orm_registry import mapping_registry
+from app.infrastructure.sqla_persistence.registry import mapping_registry
 from app.setup.config.settings import AppSettings, load_settings
 
 # this is the Alembic Config object, which provides

@@ -26,7 +26,7 @@ class Entity[T: ValueObject](ABC):
         Other attributes can be changed as usual.
         """
         if name == "id_" and getattr(self, "id_", None) is not None:
-            raise DomainError("Changing entity id is not permitted.")
+            raise DomainError("Changing entity ID is not permitted.")
         super().__setattr__(name, value)
 
     def __eq__(self, other: Any) -> bool:

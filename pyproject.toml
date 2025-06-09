@@ -112,17 +112,14 @@ ignore = [
     "SLF001", # private-member-access
     "UP012", # unnecessary-encode-utf8
 ]
-"src/app/domain/value_objects/base.py" = ["B024", ]                            # abstract-base-class-without-abstract-method
-"src/app/infrastructure/adapters/domain/bcrypt_password_hasher.py" = ["E501"]  # line-too-long
-"src/app/infrastructure/auth_context/log_in.py" = ["E501", ]                   # line-too-long
-"src/app/infrastructure/auth_context/log_out.py" = ["E501", ]                  # line-too-long
-"src/app/infrastructure/auth_context/sign_up.py" = ["E501", ]                  # line-too-long
-"src/app/setup/ioc/di_providers/application.py" = ["E501", ]                   # line-too-long
-"src/app/setup/ioc/di_providers/infrastructure.py" = ["E501", ]                # line-too-long
-"scripts/dishka/plot_dependencies_data.py" = ["T201", ]                        # print
-"src/app/presentation/common/exception_handler.py" = ["PLR2004", ]             # magic-value-comparison
-"src/app/setup/config/settings.py" = ["PLR2004", ]                             # magic-value-comparison
-"src/app/setup/app_factory.py" = ["RUF100", ]                                  # unused-noqa
+"src/app/domain/value_objects/base.py" = ["B024", ]                          # abstract-base-class-without-abstract-method
+"src/app/infrastructure/adapters/user/bcrypt_password_hasher.py" = ["E501"]  # line-too-long
+"src/app/infrastructure/constants.py" = ["S105"]                             # hardcoded-password-string
+"src/app/presentation/web/constants.py" = ["S105"]                           # hardcoded-password-string
+"src/app/presentation/web/exception_handlers.py" = ["PLR2004", ]             # magic-value-comparison
+"src/app/setup/config/settings.py" = ["PLR2004", ]                           # magic-value-comparison
+"src/app/setup/ioc/di_providers/infrastructure.py" = ["E501", ]              # line-too-long
+"scripts/dishka/plot_dependencies_data.py" = ["T201", ]                      # print
 
 [tool.ruff.format]
 skip-magic-trailing-comma = false

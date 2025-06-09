@@ -1,35 +1,37 @@
 from dishka import Provider, Scope, provide, provide_all
 
-from app.application.commands.admin_create_user import CreateUserInteractor
-from app.application.commands.admin_inactivate_user import InactivateUserInteractor
-from app.application.commands.admin_reactivate_user import ReactivateUserInteractor
-from app.application.commands.super_admin_grant_admin import GrantAdminInteractor
-from app.application.commands.super_admin_revoke_admin import RevokeAdminInteractor
-from app.application.commands.user_change_password import ChangePasswordInteractor
+from app.application.commands.change_password import ChangePasswordInteractor
+from app.application.commands.create_user import CreateUserInteractor
+from app.application.commands.grant_admin import GrantAdminInteractor
+from app.application.commands.inactivate_user import InactivateUserInteractor
+from app.application.commands.reactivate_user import ReactivateUserInteractor
+from app.application.commands.revoke_admin import RevokeAdminInteractor
 from app.application.common.ports.access_revoker import AccessRevoker
-from app.application.common.ports.command_gateways.user import UserCommandGateway
 from app.application.common.ports.identity_provider import IdentityProvider
-from app.application.common.ports.query_gateways.user import UserQueryGateway
-from app.application.common.ports.transaction_manager import TransactionManager
+from app.application.common.ports.transaction_manager import (
+    TransactionManager,
+)
+from app.application.common.ports.user_command_gateway import UserCommandGateway
+from app.application.common.ports.user_query_gateway import UserQueryGateway
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
-from app.application.queries.admin_list_users import ListUsersQueryService
-from app.infrastructure.adapters.application.sqla_user_data_mapper import (
+from app.application.queries.list_users import ListUsersQueryService
+from app.infrastructure.adapters.sqla_main_transaction_manager import (
+    SqlaMainTransactionManager,
+)
+from app.infrastructure.adapters.user.sqla_data_mapper import (
     SqlaUserDataMapper,
 )
-from app.infrastructure.adapters.application.sqla_user_reader import SqlaUserReader
-from app.infrastructure.adapters.application.sqla_user_transaction_manager import (
-    SqlaUserTransactionManager,
-)
-from app.infrastructure.auth_context.common.application_adapters.auth_session_access_revoker import (
+from app.infrastructure.adapters.user.sqla_reader import SqlaUserReader
+from app.infrastructure.auth_session.adapters.access_revoker import (
     AuthSessionAccessRevoker,
 )
-from app.infrastructure.auth_context.common.application_adapters.auth_session_identity_provider import (
+from app.infrastructure.auth_session.adapters.identity_provider import (
     AuthSessionIdentityProvider,
 )
 
 
-class UserApplicationProvider(Provider):
+class ApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     # Services
@@ -38,21 +40,21 @@ class UserApplicationProvider(Provider):
         CurrentUserService,
     )
 
-    # Ports
-    user_transaction_manager = provide(
-        source=SqlaUserTransactionManager,
-        provides=TransactionManager,
-    )
-    auth_session_identity_provider = provide(
-        source=AuthSessionIdentityProvider,
-        provides=IdentityProvider,
-    )
+    # Ports Auth
     access_revoker = provide(
         source=AuthSessionAccessRevoker,
         provides=AccessRevoker,
     )
+    identity_provider = provide(
+        source=AuthSessionIdentityProvider,
+        provides=IdentityProvider,
+    )
 
-    # Gateways
+    # Ports Persistence
+    tx_manager = provide(
+        source=SqlaMainTransactionManager,
+        provides=TransactionManager,
+    )
     user_command_gateway = provide(
         source=SqlaUserDataMapper,
         provides=UserCommandGateway,
@@ -62,8 +64,8 @@ class UserApplicationProvider(Provider):
         provides=UserQueryGateway,
     )
 
-    # Interactors
-    interactors = provide_all(
+    # Commands
+    commands = provide_all(
         CreateUserInteractor,
         GrantAdminInteractor,
         InactivateUserInteractor,
@@ -71,6 +73,8 @@ class UserApplicationProvider(Provider):
         RevokeAdminInteractor,
         ChangePasswordInteractor,
     )
+
+    # Queries
     query_services = provide_all(
         ListUsersQueryService,
     )

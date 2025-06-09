@@ -1,10 +1,10 @@
 from line_profiler import LineProfiler
 
 from app.domain.value_objects.raw_password.raw_password import RawPassword
-from app.infrastructure.adapters.domain.bcrypt_password_hasher import (
+from app.infrastructure.adapters.user.bcrypt_password_hasher import (
     BcryptPasswordHasher,
+    PasswordPepper,
 )
-from app.infrastructure.adapters.domain.new_types import PasswordPepper
 
 
 def run_operations(hasher: BcryptPasswordHasher) -> None:

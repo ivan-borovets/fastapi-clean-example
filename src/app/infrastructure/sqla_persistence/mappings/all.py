@@ -21,7 +21,7 @@ in `env.py` for Alembic migrations to ensure all models are available
 during database migrations.
 """
 
-from app.infrastructure.sqla_persistence.mappings.auth_context_session import (
+from app.infrastructure.sqla_persistence.mappings.auth_session import (
     map_auth_sessions_table,
 )
 from app.infrastructure.sqla_persistence.mappings.user import map_users_table
