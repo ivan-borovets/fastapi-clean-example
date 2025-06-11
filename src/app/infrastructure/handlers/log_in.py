@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
 
+from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.exceptions.user import UserNotFoundByUsernameError
@@ -17,7 +18,6 @@ from app.infrastructure.exceptions.authentication import (
     AlreadyAuthenticatedError,
     AuthenticationError,
 )
-from app.infrastructure.ports.user.data_gateway import UserDataGateway
 
 log = logging.getLogger(__name__)
 
@@ -50,14 +50,12 @@ class LogInHandler:
 
     def __init__(
         self,
-        # abstract
-        user_data_gateway: UserDataGateway,
-        # concrete
+        user_command_gateway: UserCommandGateway,
         current_user_service: CurrentUserService,
         user_service: UserService,
         auth_session_service: AuthSessionService,
     ):
-        self._user_data_gateway = user_data_gateway
+        self._user_command_gateway = user_command_gateway
         self._current_user_service = current_user_service
         self._user_service = user_service
         self._auth_session_service = auth_session_service
@@ -74,7 +72,7 @@ class LogInHandler:
         username = Username(request_data.username)
         password = RawPassword(request_data.password)
 
-        user: User | None = await self._user_data_gateway.read_by_username(username)
+        user: User | None = await self._user_command_gateway.read_by_username(username)
         if user is None:
             raise UserNotFoundByUsernameError(username)
 

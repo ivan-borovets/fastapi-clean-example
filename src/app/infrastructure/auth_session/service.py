@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 from app.domain.value_objects.user_id import UserId
+from app.infrastructure.auth_session.id_generator_str import StrAuthSessionIdGenerator
 from app.infrastructure.auth_session.model import AuthSession
 from app.infrastructure.auth_session.ports.gateway import (
     AuthSessionGateway,
@@ -10,8 +11,7 @@ from app.infrastructure.auth_session.ports.transaction_manager import (
     AuthSessionTransactionManager,
 )
 from app.infrastructure.auth_session.ports.transport import AuthSessionTransport
-from app.infrastructure.auth_session.str_id_generator import StrAuthSessionIdGenerator
-from app.infrastructure.auth_session.utc_timer import UtcAuthSessionTimer
+from app.infrastructure.auth_session.timer_utc import UtcAuthSessionTimer
 from app.infrastructure.constants import (
     AUTH_IS_UNAVAILABLE,
     AUTH_NOT_AUTHENTICATED,
@@ -29,11 +29,9 @@ log = logging.getLogger(__name__)
 class AuthSessionService:
     def __init__(
         self,
-        # abstract
         auth_session_gateway: AuthSessionGateway,
         auth_session_transport: AuthSessionTransport,
         auth_transaction_manager: AuthSessionTransactionManager,
-        # concrete
         auth_session_id_generator: StrAuthSessionIdGenerator,
         auth_session_timer: UtcAuthSessionTimer,
     ):
@@ -42,7 +40,6 @@ class AuthSessionService:
         self._auth_transaction_manager = auth_transaction_manager
         self._auth_session_id_generator = auth_session_id_generator
         self._auth_session_timer = auth_session_timer
-        # cache
         self._cached_auth_session: AuthSession | None = None
 
     async def create_session(self, user_id: UserId) -> None:

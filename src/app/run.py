@@ -2,7 +2,7 @@ from dishka import Provider
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from app.presentation.web.controllers.root_router import root_router
+from app.presentation.http.controllers.root_router import root_router
 from app.setup.app_factory import configure_app, create_app, create_async_ioc_container
 from app.setup.config.logs import configure_logging
 from app.setup.config.settings import AppSettings, load_settings

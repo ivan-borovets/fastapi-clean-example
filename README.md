@@ -433,46 +433,38 @@ natural.
         │   ├── commands/                        # write operations, business-critical reads
         │   │   ├── create_user.py               # interactor
         │   │   └── ...                          # other interactors
-        │   │
         │   ├── queries/                         # optimized read operations
         │   │   ├── list_users.py                # query service
         │   │   └── ...                          # other query services
-        │   │
         │   └── common/                          # common layer objects
         │       ├── services/...                 # authorization, etc.
         │       └── ...                          # ports, exceptions, etc.
         │
         ├── domain/                              # domain layer
         │   ├── services/...                     # domain layer services
-        │   │
         │   ├── entities/...                     # entities (have identity)
         │   │   ├── base.py                      # base declarations
         │   │   └── ...                          # concrete entities
-        │   │
         │   ├── value_objects/...                # value objects (no identity)
         │   │   ├── base.py                      # base declarations
         │   │   └── ...                          # concrete value objects
-        │   │
         │   └── ...                              # ports, enums, exceptions, etc.
         │
         ├── infrastructure/...                   # infrastructure layer
         │   ├── auth_session/...                 # auth context (session-based)
         │   ├── handlers/...                     # account handlers (log in, log out, sign up)
-        │   │
         │   └── ...                              # adapters, persistence, exceptions, etc.
         │
         ├── presentation/...                     # presentation layer
-        │   └── web/                             # web presentation
-        │       ├── controllers/...              # controllers and routers (http)
-        │       │   ├── user_change_password.py  # controller
-        │       │   └── ...                      # other controllers
-        │       │
-        │       └── common/...                   # adapters, middlewares, exception handlers, etc.
+        │   └── http/                            # web presentation
+        │       ├── auth/...                     # web auth logic
+        │       ├── controllers/...              # controllers and routers
+        │       └── exception_handlers.py        # exception handlers
         │
         └── setup/
-            ├── app_factory.py                   # app builder
+            ├── ioc/...                          # dependency injection setup
             ├── config/...                       # app settings
-            └── ioc/...                          # dependency injection setup
+            └── app_factory.py                   # app builder
 ```
 
 If you find this structure useful but prefer starting with a clean state rather than deleting unnecessary code, I've

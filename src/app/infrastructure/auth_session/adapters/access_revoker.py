@@ -6,7 +6,6 @@ from app.infrastructure.auth_session.service import AuthSessionService
 class AuthSessionAccessRevoker(AccessRevoker):
     def __init__(
         self,
-        # concrete
         auth_session_service: AuthSessionService,
     ):
         self._auth_session_service = auth_session_service

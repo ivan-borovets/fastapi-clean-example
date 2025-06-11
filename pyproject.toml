@@ -103,7 +103,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"src/app/infrastructure/sqla_persistence/alembic/**" = ["ALL", ]
+"src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL", ]
 "tests/**" = [
     "PLR2004", # magic-value-comparison
     "PT011", # pytest-raises-too-broad
@@ -113,10 +113,10 @@ ignore = [
     "UP012", # unnecessary-encode-utf8
 ]
 "src/app/domain/value_objects/base.py" = ["B024", ]                          # abstract-base-class-without-abstract-method
-"src/app/infrastructure/adapters/user/bcrypt_password_hasher.py" = ["E501"]  # line-too-long
+"src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501"]       # line-too-long
 "src/app/infrastructure/constants.py" = ["S105"]                             # hardcoded-password-string
-"src/app/presentation/web/constants.py" = ["S105"]                           # hardcoded-password-string
-"src/app/presentation/web/exception_handlers.py" = ["PLR2004", ]             # magic-value-comparison
+"src/app/presentation/http/auth/constants.py" = ["S105"]                     # hardcoded-password-string
+"src/app/presentation/http/exception_handlers.py" = ["PLR2004", ]            # magic-value-comparison
 "src/app/setup/config/settings.py" = ["PLR2004", ]                           # magic-value-comparison
 "src/app/setup/ioc/di_providers/infrastructure.py" = ["E501", ]              # line-too-long
 "scripts/dishka/plot_dependencies_data.py" = ["T201", ]                      # print
