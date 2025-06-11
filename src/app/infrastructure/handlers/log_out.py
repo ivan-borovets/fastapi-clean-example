@@ -19,7 +19,6 @@ class LogOutHandler:
 
     def __init__(
         self,
-        # concrete
         current_user_service: CurrentUserService,
         auth_session_service: AuthSessionService,
     ):

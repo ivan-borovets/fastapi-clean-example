@@ -3,10 +3,10 @@ from dishka import Provider, Scope, provide
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
 from app.domain.services.user import UserService
-from app.infrastructure.adapters.user.bcrypt_password_hasher import (
+from app.infrastructure.adapters.password_hasher_bcrypt import (
     BcryptPasswordHasher,
 )
-from app.infrastructure.adapters.user.uuid_id_generator import (
+from app.infrastructure.adapters.user_id_generator_uuid import (
     UuidUserIdGenerator,
 )
 

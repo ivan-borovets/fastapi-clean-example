@@ -1,16 +1,16 @@
 from dishka import Provider, Scope, from_context, provide
 
-from app.infrastructure.adapters.user.bcrypt_password_hasher import PasswordPepper
-from app.infrastructure.auth_session.utc_timer import (
+from app.infrastructure.adapters.password_hasher_bcrypt import PasswordPepper
+from app.infrastructure.auth_session.timer_utc import (
     AuthSessionRefreshThreshold,
     AuthSessionTtlMin,
 )
-from app.infrastructure.sqla_persistence.config import PostgresDsn, SqlaEngineConfig
-from app.presentation.web.adapters.cookie_params import CookieParams
-from app.presentation.web.adapters.jwt_access_token_processor import (
+from app.infrastructure.persistence_sqla.config import PostgresDsn, SqlaEngineConfig
+from app.presentation.http.auth.access_token_processor_jwt import (
     JwtAlgorithm,
     JwtSecret,
 )
+from app.presentation.http.auth.cookie_params import CookieParams
 from app.setup.config.settings import AppSettings
 
 

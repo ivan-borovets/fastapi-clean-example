@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID
 
+from app.application.common.ports.transaction_manager import TransactionManager
+from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.exceptions.user import UsernameAlreadyExistsError
@@ -13,10 +15,6 @@ from app.infrastructure.constants import AUTH_ALREADY_AUTHENTICATED
 from app.infrastructure.exceptions.authentication import (
     AlreadyAuthenticatedError,
     AuthenticationError,
-)
-from app.infrastructure.ports.user.data_gateway import UserDataGateway
-from app.infrastructure.ports.user.transaction_manager import (
-    UserTransactionManager,
 )
 
 log = logging.getLogger(__name__)
@@ -48,15 +46,13 @@ class SignUpHandler:
 
     def __init__(
         self,
-        # abstract
-        user_data_gateway: UserDataGateway,
-        user_transaction_manager: UserTransactionManager,
-        # concrete
+        user_command_gateway: UserCommandGateway,
+        transaction_manager: TransactionManager,
         current_user_service: CurrentUserService,
         user_service: UserService,
     ):
-        self._user_data_gateway = user_data_gateway
-        self._user_transaction_manager = user_transaction_manager
+        self._user_command_gateway = user_command_gateway
+        self._transaction_manager = transaction_manager
         self._current_user_service = current_user_service
         self._user_service = user_service
 
@@ -74,14 +70,14 @@ class SignUpHandler:
 
         user: User = self._user_service.create_user(username, password)
 
-        self._user_data_gateway.add(user)
+        self._user_command_gateway.add(user)
 
         try:
-            await self._user_transaction_manager.flush()
+            await self._transaction_manager.flush()
         except UsernameAlreadyExistsError:
             raise
 
-        await self._user_transaction_manager.commit()
+        await self._transaction_manager.commit()
 
         log.info("Sign up: done. Username: '%s'.", user.username.value)
         return SignUpResponse(id=user.id_.value)

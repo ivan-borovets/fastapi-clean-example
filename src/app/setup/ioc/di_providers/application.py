@@ -16,13 +16,13 @@ from app.application.common.ports.user_query_gateway import UserQueryGateway
 from app.application.common.services.authorization import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.application.queries.list_users import ListUsersQueryService
-from app.infrastructure.adapters.sqla_main_transaction_manager import (
+from app.infrastructure.adapters.main_transaction_manager_sqla import (
     SqlaMainTransactionManager,
 )
-from app.infrastructure.adapters.user.sqla_data_mapper import (
+from app.infrastructure.adapters.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
-from app.infrastructure.adapters.user.sqla_reader import SqlaUserReader
+from app.infrastructure.adapters.user_reader_sqla import SqlaUserReader
 from app.infrastructure.auth_session.adapters.access_revoker import (
     AuthSessionAccessRevoker,
 )

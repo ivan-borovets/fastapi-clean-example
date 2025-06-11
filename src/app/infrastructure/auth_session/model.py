@@ -11,7 +11,7 @@ class AuthSession:
     a monolithic architecture to become modular, while the other classes working
     with it are likely to become application and infrastructure layer components.
 
-    For example, `SignUpHandler` can become an interactor.
+    For example, `LogInHandler` can become an interactor.
     """
 
     id_: str

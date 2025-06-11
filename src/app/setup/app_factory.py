@@ -11,11 +11,11 @@ from dishka import AsyncContainer, Provider, make_async_container
 from fastapi import APIRouter, FastAPI
 from fastapi.responses import ORJSONResponse
 
-from app.infrastructure.sqla_persistence.mappings.all import map_tables
-from app.presentation.web.asgi_auth_middleware import (
+from app.infrastructure.persistence_sqla.mappings.all import map_tables
+from app.presentation.http.auth.asgi_middleware import (
     ASGIAuthMiddleware,
 )
-from app.presentation.web.exception_handlers import ExceptionHandler
+from app.presentation.http.exception_handlers import ExceptionHandler
 from app.setup.config.settings import AppSettings
 
 

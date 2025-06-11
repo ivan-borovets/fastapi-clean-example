@@ -1,7 +1,7 @@
 from dishka import Provider, Scope, from_context, provide_all
 from starlette.requests import Request
 
-from app.presentation.web.adapters.jwt_access_token_processor import (
+from app.presentation.http.auth.access_token_processor_jwt import (
     JwtAccessTokenProcessor,
 )
 
