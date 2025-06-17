@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from enum import StrEnum
 from pathlib import Path
 from types import MappingProxyType
@@ -31,7 +32,7 @@ BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent.parent.paren
 CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
 
 
-ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
+ENV_TO_DIR_PATHS: Final[Mapping[ValidEnvs, Path]] = MappingProxyType({
     ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
     ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
     ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,

@@ -17,16 +17,8 @@ DEFAULT_LOG_LEVEL: Final[LoggingLevel] = LoggingLevel.INFO
 def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
     logging.getLogger().handlers.clear()
 
-    level_map: dict[LoggingLevel, int] = {
-        LoggingLevel.DEBUG: logging.DEBUG,
-        LoggingLevel.INFO: logging.INFO,
-        LoggingLevel.WARNING: logging.WARNING,
-        LoggingLevel.ERROR: logging.ERROR,
-        LoggingLevel.CRITICAL: logging.CRITICAL,
-    }
-
     logging.basicConfig(
-        level=level_map[level],
+        level=getattr(logging, level),
         datefmt="%Y-%m-%d %H:%M:%S",
         format=(
             "[%(asctime)s.%(msecs)03d] "

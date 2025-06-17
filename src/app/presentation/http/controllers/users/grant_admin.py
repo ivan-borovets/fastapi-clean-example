@@ -7,9 +7,9 @@ from app.application.commands.grant_admin import (
     GrantAdminRequest,
 )
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
-from app.presentation.http.exception_handlers import (
+from app.presentation.http.exceptions.schemas import (
     ExceptionSchema,
-    ExceptionSchemaRich,
+    ExceptionSchemaDetailed,
 )
 
 grant_admin_router = APIRouter()
@@ -22,7 +22,7 @@ grant_admin_router = APIRouter()
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaDetailed},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
         status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ExceptionSchema},
     },

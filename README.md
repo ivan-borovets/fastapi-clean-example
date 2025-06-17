@@ -427,7 +427,15 @@ natural.
 ├── ...
 └── src/
     └── app/
-        ├── run.py                               # app entry point
+        ├── domain/                              # domain layer
+        │   ├── services/...                     # domain layer services
+        │   ├── entities/...                     # entities (have identity)
+        │   │   ├── base.py                      # base declarations
+        │   │   └── ...                          # concrete entities
+        │   ├── value_objects/...                # value objects (no identity)
+        │   │   ├── base.py                      # base declarations
+        │   │   └── ...                          # concrete value objects
+        │   └── ...                              # ports, enums, exceptions, etc.
         │
         ├── application/...                      # application layer
         │   ├── commands/                        # write operations, business-critical reads
@@ -440,31 +448,23 @@ natural.
         │       ├── services/...                 # authorization, etc.
         │       └── ...                          # ports, exceptions, etc.
         │
-        ├── domain/                              # domain layer
-        │   ├── services/...                     # domain layer services
-        │   ├── entities/...                     # entities (have identity)
-        │   │   ├── base.py                      # base declarations
-        │   │   └── ...                          # concrete entities
-        │   ├── value_objects/...                # value objects (no identity)
-        │   │   ├── base.py                      # base declarations
-        │   │   └── ...                          # concrete value objects
-        │   └── ...                              # ports, enums, exceptions, etc.
-        │
         ├── infrastructure/...                   # infrastructure layer
         │   ├── auth_session/...                 # auth context (session-based)
         │   ├── handlers/...                     # account handlers (log in, log out, sign up)
         │   └── ...                              # adapters, persistence, exceptions, etc.
         │
         ├── presentation/...                     # presentation layer
-        │   └── http/                            # web presentation
+        │   └── http/                            # http interface
         │       ├── auth/...                     # web auth logic
         │       ├── controllers/...              # controllers and routers
-        │       └── exception_handlers.py        # exception handlers
+        │       └── exceptions/...               # exception schemas and handlers
         │
-        └── setup/
-            ├── ioc/...                          # dependency injection setup
-            ├── config/...                       # app settings
-            └── app_factory.py                   # app builder
+        ├── setup/
+        │   ├── ioc/...                          # dependency injection setup
+        │   ├── config/...                       # app settings
+        │   └── app_factory.py                   # app builder
+        │  
+        └── run.py                               # app entry point
 ```
 
 If you find this structure useful but prefer starting with a clean state rather than deleting unnecessary code, I've
