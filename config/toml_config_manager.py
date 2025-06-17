@@ -1,5 +1,6 @@
 import logging
 import os
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
@@ -38,16 +39,8 @@ def validate_logging_level(*, level: str) -> LoggingLevel:
 def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
     logging.getLogger().handlers.clear()
 
-    level_map: dict[LoggingLevel, int] = {
-        LoggingLevel.DEBUG: logging.DEBUG,
-        LoggingLevel.INFO: logging.INFO,
-        LoggingLevel.WARNING: logging.WARNING,
-        LoggingLevel.ERROR: logging.ERROR,
-        LoggingLevel.CRITICAL: logging.CRITICAL,
-    }
-
     logging.basicConfig(
-        level=level_map[level],
+        level=getattr(logging, level),
         datefmt="%Y-%m-%d %H:%M:%S",
         format=(
             "[%(asctime)s.%(msecs)03d] "
@@ -90,7 +83,7 @@ BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent
 CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
 
 
-ENV_TO_DIR_PATHS: Final[MappingProxyType[ValidEnvs, Path]] = MappingProxyType({
+ENV_TO_DIR_PATHS: Final[Mapping[ValidEnvs, Path]] = MappingProxyType({
     ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
     ValidEnvs.DEV: CONFIG_PATH / ValidEnvs.DEV,
     ValidEnvs.PROD: CONFIG_PATH / ValidEnvs.PROD,

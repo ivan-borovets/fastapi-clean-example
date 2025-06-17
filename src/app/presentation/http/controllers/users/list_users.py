@@ -12,9 +12,9 @@ from app.application.queries.list_users import (
     ListUsersResponse,
 )
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
-from app.presentation.http.exception_handlers import (
+from app.presentation.http.exceptions.schemas import (
     ExceptionSchema,
-    ExceptionSchemaRich,
+    ExceptionSchemaDetailed,
 )
 
 list_users_router = APIRouter()
@@ -40,7 +40,7 @@ class ListUsersRequestPydantic(BaseModel):
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaDetailed},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
         status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ExceptionSchema},
     },

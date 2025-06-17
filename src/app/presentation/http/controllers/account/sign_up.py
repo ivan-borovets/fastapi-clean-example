@@ -7,9 +7,9 @@ from app.infrastructure.handlers.sign_up import (
     SignUpRequest,
     SignUpResponse,
 )
-from app.presentation.http.exception_handlers import (
+from app.presentation.http.exceptions.schemas import (
     ExceptionSchema,
-    ExceptionSchemaRich,
+    ExceptionSchemaDetailed,
 )
 
 sign_up_router = APIRouter()
@@ -22,7 +22,7 @@ sign_up_router = APIRouter()
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
         status.HTTP_409_CONFLICT: {"model": ExceptionSchema},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaDetailed},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
         status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ExceptionSchema},
     },

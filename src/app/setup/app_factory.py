@@ -15,7 +15,7 @@ from app.infrastructure.persistence_sqla.mappings.all import map_tables
 from app.presentation.http.auth.asgi_middleware import (
     ASGIAuthMiddleware,
 )
-from app.presentation.http.exception_handlers import ExceptionHandler
+from app.presentation.http.exceptions.handlers import setup_handlers
 from app.setup.config.settings import AppSettings
 
 
@@ -41,8 +41,7 @@ def configure_app(
     app.include_router(root_router)
     app.add_middleware(ASGIAuthMiddleware)
     # https://github.com/encode/starlette/discussions/2451
-    exception_handler = ExceptionHandler(app)
-    exception_handler.setup_handlers()
+    setup_handlers(app)
 
 
 def create_async_ioc_container(

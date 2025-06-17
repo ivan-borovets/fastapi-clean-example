@@ -1,10 +1,11 @@
+from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Final
 
 from sqlalchemy import MetaData
 from sqlalchemy.orm import registry
 
-NAMING_CONVENTIONS: Final[MappingProxyType[str, str]] = MappingProxyType({
+NAMING_CONVENTIONS: Final[Mapping[str, str]] = MappingProxyType({
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
     "ck": "ck_%(table_name)s_%(constraint_name)s",

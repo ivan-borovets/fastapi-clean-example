@@ -10,9 +10,9 @@ from app.application.commands.create_user import (
 )
 from app.domain.enums.user_role import UserRole
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
-from app.presentation.http.exception_handlers import (
+from app.presentation.http.exceptions.schemas import (
     ExceptionSchema,
-    ExceptionSchemaRich,
+    ExceptionSchemaDetailed,
 )
 
 create_user_router = APIRouter()
@@ -37,7 +37,7 @@ class CreateUserRequestPydantic(BaseModel):
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaRich},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaDetailed},
         status.HTTP_409_CONFLICT: {"model": ExceptionSchema},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
         status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ExceptionSchema},
