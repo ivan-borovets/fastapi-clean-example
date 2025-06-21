@@ -51,7 +51,7 @@ class GrantAdminInteractor:
 
     async def __call__(self, request_data: GrantAdminRequest) -> None:
         log.info(
-            "Grant admin by admin: started. Username: '%s'.",
+            "Grant admin: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -72,4 +72,4 @@ class GrantAdminInteractor:
         self._user_service.toggle_user_admin_role(user, is_admin=True)
         await self._transaction_manager.commit()
 
-        log.info("Grant admin by admin: finished. Username: '%s'.", user.username.value)
+        log.info("Grant admin: done. Username: '%s'.", user.username.value)

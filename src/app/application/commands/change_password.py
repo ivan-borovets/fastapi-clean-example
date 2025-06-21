@@ -79,4 +79,4 @@ class ChangePasswordInteractor:
         self._user_service.change_password(user, password)
         await self._transaction_manager.commit()
 
-        log.info("Change password: finished.")
+        log.info("Change password: done.")

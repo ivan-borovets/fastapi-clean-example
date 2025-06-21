@@ -54,7 +54,7 @@ class ListUsersQueryService:
         self._user_query_gateway = user_query_gateway
 
     async def __call__(self, request_data: ListUsersRequest) -> ListUsersResponse:
-        log.info("List users by admin: started.")
+        log.info("List users: started.")
 
         current_user = await self._current_user_service.get_current_user()
         self._authorization_service.authorize_for_subordinate_role(
@@ -86,5 +86,5 @@ class ListUsersQueryService:
 
         response = ListUsersResponse(users=users)
 
-        log.info("List users by admin: finished.")
+        log.info("List users: done.")
         return response

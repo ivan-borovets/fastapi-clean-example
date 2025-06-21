@@ -52,7 +52,7 @@ class ReactivateUserInteractor:
 
     async def __call__(self, request_data: ReactivateUserRequest) -> None:
         log.info(
-            "Reactivate user by admin: started. Username: '%s'.",
+            "Reactivate user: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -79,6 +79,6 @@ class ReactivateUserInteractor:
         await self._transaction_manager.commit()
 
         log.info(
-            "Reactivate user by admin: finished. Username: '%s'.",
+            "Reactivate user: done. Username: '%s'.",
             user.username.value,
         )

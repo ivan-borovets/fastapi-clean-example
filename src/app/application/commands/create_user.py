@@ -58,7 +58,7 @@ class CreateUserInteractor:
 
     async def __call__(self, request_data: CreateUserRequest) -> CreateUserResponse:
         log.info(
-            "Create user by admin: started. Username: '%s'.",
+            "Create user: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -81,5 +81,5 @@ class CreateUserInteractor:
 
         await self._transaction_manager.commit()
 
-        log.info("Create user by admin: finished. Username: '%s'.", user.username.value)
+        log.info("Create user: done. Username: '%s'.", user.username.value)
         return CreateUserResponse(id=user.id_.value)

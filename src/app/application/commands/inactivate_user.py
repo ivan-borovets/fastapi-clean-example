@@ -56,7 +56,7 @@ class InactivateUserInteractor:
 
     async def __call__(self, request_data: InactivateUserRequest) -> None:
         log.info(
-            "Inactivate user by admin: started. Username: '%s'.",
+            "Inactivate user: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -84,6 +84,6 @@ class InactivateUserInteractor:
         await self._access_revoker.remove_all_user_access(user.id_)
 
         log.info(
-            "Inactivate user by admin: finished. Username: '%s'.",
+            "Inactivate user: done. Username: '%s'.",
             user.username.value,
         )

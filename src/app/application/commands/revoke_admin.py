@@ -51,7 +51,7 @@ class RevokeAdminInteractor:
 
     async def __call__(self, request_data: RevokeAdminRequest) -> None:
         log.info(
-            "Revoke admin by admin: started. Username: '%s'.",
+            "Revoke admin: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -73,6 +73,6 @@ class RevokeAdminInteractor:
         await self._transaction_manager.commit()
 
         log.info(
-            "Revoke admin by admin: finished. Username: '%s'.",
+            "Revoke admin: done. Username: '%s'.",
             user.username.value,
         )
