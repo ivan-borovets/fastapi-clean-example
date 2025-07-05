@@ -1,39 +1,74 @@
-from dataclasses import dataclass
-
 import pytest
 
-from app.domain.entities.base import Entity
 from app.domain.exceptions.base import DomainError
-from app.domain.value_objects.base import ValueObject
+from tests.unit.app.factories.named_entity import (
+    create_named_entity,
+    create_named_entity_id,
+)
+from tests.unit.app.factories.tagged_entity import create_tagged_entity
 
 
-@dataclass(frozen=True, slots=True, repr=False)
-class SingleFieldValueObject(ValueObject):
-    value: int
-
-
-@dataclass(eq=False, slots=True)
-class SampleEntity(Entity[SingleFieldValueObject]):
-    name: str
-
-
-def test_setattr():
-    entity = SampleEntity(id_=SingleFieldValueObject(value=123), name="abc")
+@pytest.mark.parametrize(
+    "new_id",
+    [
+        pytest.param(1, id="same_id"),
+        pytest.param(999, id="different_id"),
+    ],
+)
+def test_entity_id_cannot_be_changed(new_id: int) -> None:
+    sut = create_named_entity(id_=1)
 
     with pytest.raises(DomainError):
-        entity.id_ = SingleFieldValueObject(value=456)
+        sut.id_ = create_named_entity_id(new_id)
 
 
-def test_eq_hash():
-    entity_1 = SampleEntity(id_=SingleFieldValueObject(value=123), name="abc")
-    entity_2 = SampleEntity(id_=SingleFieldValueObject(value=123), name="def")
+@pytest.mark.parametrize(
+    ("name1", "name2"),
+    [
+        pytest.param("Alice", "Alice", id="same_name"),
+        pytest.param("Alice", "Bob", id="different_name"),
+    ],
+)
+def test_entities_with_same_id_are_equal(
+    name1: str,
+    name2: str,
+) -> None:
+    e1 = create_named_entity(name=name1)
+    e2 = create_named_entity(name=name2)
 
-    assert entity_1 == entity_2
-    assert id(entity_1) != id(entity_2)
-    assert hash(entity_1) == hash(entity_2)
+    assert e1 == e2
 
-    entity_3 = SampleEntity(id_=SingleFieldValueObject(value=456), name="abc")
 
-    assert entity_1 != entity_3
-    assert id(entity_1) != id(entity_3)
-    assert hash(entity_1) != hash(entity_3)
+def test_entities_with_different_id_are_not_equal() -> None:
+    e1 = create_named_entity(id_=1)
+    e2 = create_named_entity(id_=2)
+
+    assert e1 != e2
+
+
+def test_entities_of_different_types_are_not_equal() -> None:
+    sut_id = 1
+    e1 = create_named_entity(id_=sut_id)
+    e2 = create_tagged_entity(id_=sut_id)
+
+    assert e1 != e2
+
+
+def test_equal_entities_have_equal_hash() -> None:
+    sut_id = 1
+    e1 = create_named_entity(id_=sut_id, name="Alice")
+    e2 = create_named_entity(id_=sut_id, name="Bob")
+
+    assert e1 == e2
+    assert hash(e1) == hash(e2)
+
+
+def test_entity_can_be_used_in_set() -> None:
+    e1 = create_named_entity(id_=1, name="Alice")
+    e2 = create_named_entity(id_=1, name="Bob")
+    e3 = create_named_entity(id_=2)
+    e4 = create_tagged_entity(id_=1)
+
+    entity_set = {e1, e2, e3, e4}
+
+    assert len(entity_set) == 3

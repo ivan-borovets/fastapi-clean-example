@@ -13,21 +13,29 @@ def run_operations(hasher: BcryptPasswordHasher) -> None:
     hasher.verify(raw_password=raw_password, hashed_password=hashed)
 
 
-def setup_profiler() -> tuple[LineProfiler, BcryptPasswordHasher]:
-    hasher = BcryptPasswordHasher(PasswordPepper("Cayenne!"))
+def create_hasher() -> BcryptPasswordHasher:
+    pepper = PasswordPepper("Cayenne!")
+    return BcryptPasswordHasher(pepper)
+
+
+def create_profiler() -> LineProfiler:
     profiler = LineProfiler()
-
-    profiler.add_function(hasher.hash)
-    profiler.add_function(hasher.verify)
     profiler.add_function(run_operations)
+    return profiler
 
-    return profiler, hasher
+
+def run_profiling(
+    profiler: LineProfiler,
+    hasher: BcryptPasswordHasher,
+) -> None:
+    profiler.runcall(run_operations, hasher)  # type: ignore[no-untyped-call]
+    profiler.print_stats()
 
 
 def main() -> None:
-    profiler, hasher = setup_profiler()
-    profiler.runcall(run_operations, hasher)  # type: ignore[no-untyped-call]
-    profiler.print_stats()
+    hasher = create_hasher()
+    profiler = create_profiler()
+    run_profiling(profiler, hasher)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,4 @@
-from typing import cast
-from unittest.mock import Mock, create_autospec
-from uuid import UUID
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -10,105 +8,151 @@ from app.domain.exceptions.user import (
     ActivationChangeNotPermittedError,
     RoleChangeNotPermittedError,
 )
-from app.domain.ports.password_hasher import PasswordHasher
-from app.domain.ports.user_id_generator import UserIdGenerator
 from app.domain.services.user import UserService
-from app.domain.value_objects.raw_password.raw_password import RawPassword
-from app.domain.value_objects.user_id import UserId
-from app.domain.value_objects.user_password_hash import UserPasswordHash
-from app.domain.value_objects.username.username import Username
+from tests.unit.app.factories.user_entity import create_user
+from tests.unit.app.factories.value_objects import (
+    create_password_hash,
+    create_raw_password,
+    create_user_id,
+    create_username,
+)
 
 
-def create_user_service() -> UserService:
-    return UserService(
-        user_id_generator=create_autospec(UserIdGenerator),
-        password_hasher=create_autospec(PasswordHasher),
-    )
+def test_creates_active_regular_user_with_hashed_password(
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    # Arrange
+    username = create_username()
+    raw_password = create_raw_password()
+
+    expected_id = create_user_id()
+    expected_hash = create_password_hash()
+
+    user_id_generator.return_value = expected_id.value
+    password_hasher.hash.return_value = expected_hash.value
+    sut = UserService(user_id_generator, password_hasher)
+
+    # Act
+    result = sut.create_user(username, raw_password)
+
+    # Assert
+    assert isinstance(result, User)
+    assert result.id_ == expected_id
+    assert result.username == username
+    assert result.password_hash == expected_hash
+    assert result.role == UserRole.USER
+    assert result.is_active is True
 
 
-def test_create_user() -> None:
-    user_service: UserService = create_user_service()
-    username = Username("username")
-    raw_password = RawPassword("securepassword")
-    user_uuid = UUID("12345678-1234-5678-1234-567812345678")
-    cast(Mock, user_service._user_id_generator).return_value = user_uuid
-    password_hash_value = "mocked_password_hash".encode()
-    cast(Mock, user_service._password_hasher.hash).return_value = password_hash_value
+@pytest.mark.parametrize(
+    "is_valid",
+    [True, False],
+)
+def test_checks_password_authenticity(
+    is_valid: bool,
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    # Arrange
+    user = create_user()
+    raw_password = create_raw_password()
 
-    user: User = user_service.create_user(username, raw_password)
+    password_hasher.verify.return_value = is_valid
+    sut = UserService(user_id_generator, password_hasher)
 
-    assert isinstance(user, User)
-    assert user.id_ == UserId(user_uuid)
-    assert user.username == username
-    assert user.password_hash == UserPasswordHash(password_hash_value)
-    assert user.role == UserRole.USER
-    assert user.is_active
+    # Act
+    result = sut.is_password_valid(user, raw_password)
 
-
-def test_is_password_valid(sample_user: User) -> None:
-    user_service: UserService = create_user_service()
-    password = RawPassword("test_password")
-    verify_mock = cast(Mock, user_service._password_hasher.verify)
-
-    verify_mock.return_value = True
-    correct_result: bool = user_service.is_password_valid(sample_user, password)
-
-    assert correct_result
-
-    verify_mock.return_value = False
-    incorrect_result: bool = user_service.is_password_valid(sample_user, password)
-
-    assert not incorrect_result
+    # Assert
+    assert result is is_valid
 
 
-def test_change_password(sample_user: User) -> None:
-    user_service: UserService = create_user_service()
-    raw_new_password = RawPassword("raw_new_password_to_be_hashed")
-    hash_mock = cast(Mock, user_service._password_hasher.hash)
-    original_password_hash: UserPasswordHash = sample_user.password_hash
-    new_password_hash_value: bytes = "new_password_hash".encode()
-    hash_mock.return_value = new_password_hash_value
+def test_changes_password(
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    # Arrange
+    initial_hash = create_password_hash(b"old")
+    user = create_user(password_hash=initial_hash)
+    raw_password = create_raw_password()
 
-    user_service.change_password(sample_user, raw_new_password)
+    expected_hash = create_password_hash(b"new")
+    password_hasher.hash.return_value = expected_hash.value
+    sut = UserService(user_id_generator, password_hasher)
 
-    assert sample_user.password_hash != original_password_hash
-    assert sample_user.password_hash == UserPasswordHash(new_password_hash_value)
+    # Act
+    sut.change_password(user, raw_password)
+
+    # Assert
+    assert user.password_hash == expected_hash
 
 
-def test_toggle_activation(sample_user: User) -> None:
-    user_service: UserService = create_user_service()
-    initial_state: bool = sample_user.is_active
+@pytest.mark.parametrize(
+    "is_active",
+    [True, False],
+)
+def test_toggles_activation_state(
+    is_active: bool,
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    user = create_user(is_active=not is_active)
+    sut = UserService(user_id_generator, password_hasher)
 
-    user_service.toggle_user_activation(sample_user, is_active=not initial_state)
+    sut.toggle_user_activation(user, is_active=is_active)
 
-    assert sample_user.is_active != initial_state
+    assert user.is_active is is_active
 
-    user_service.toggle_user_activation(sample_user, is_active=initial_state)
 
-    assert sample_user.is_active == initial_state
-
-    sample_user.role = UserRole.SUPER_ADMIN
+@pytest.mark.parametrize(
+    "is_active",
+    [True, False],
+)
+def test_preserves_super_admin_activation_state(
+    is_active: bool,
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    user = create_user(role=UserRole.SUPER_ADMIN, is_active=not is_active)
+    sut = UserService(user_id_generator, password_hasher)
 
     with pytest.raises(ActivationChangeNotPermittedError):
-        user_service.toggle_user_activation(sample_user, is_active=True)
-    with pytest.raises(ActivationChangeNotPermittedError):
-        user_service.toggle_user_activation(sample_user, is_active=False)
+        sut.toggle_user_activation(user, is_active=is_active)
+
+    assert user.is_active is not is_active
 
 
-def test_toggle_admin_role(sample_user: User) -> None:
-    user_service: UserService = create_user_service()
+@pytest.mark.parametrize(
+    "is_admin",
+    [True, False],
+)
+def test_toggles_role(
+    is_admin: bool,
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    user = create_user()
+    sut = UserService(user_id_generator, password_hasher)
 
-    user_service.toggle_user_admin_role(sample_user, is_admin=True)
+    sut.toggle_user_admin_role(user, is_admin=is_admin)
 
-    assert sample_user.role == UserRole.ADMIN
+    assert user.role == UserRole.ADMIN if is_admin else UserRole.USER
 
-    user_service.toggle_user_admin_role(sample_user, is_admin=False)
 
-    assert sample_user.role != UserRole.ADMIN
-
-    sample_user.role = UserRole.SUPER_ADMIN
+@pytest.mark.parametrize(
+    "is_admin",
+    [True, False],
+)
+def test_preserves_super_admin_role(
+    is_admin: bool,
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    user = create_user(role=UserRole.SUPER_ADMIN)
+    sut = UserService(user_id_generator, password_hasher)
 
     with pytest.raises(RoleChangeNotPermittedError):
-        user_service.toggle_user_admin_role(sample_user, is_admin=True)
-    with pytest.raises(RoleChangeNotPermittedError):
-        user_service.toggle_user_admin_role(sample_user, is_admin=False)
+        sut.toggle_user_admin_role(user, is_admin=is_admin)
+
+    assert user.role == UserRole.SUPER_ADMIN
