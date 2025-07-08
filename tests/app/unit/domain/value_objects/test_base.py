@@ -4,7 +4,7 @@ import pytest
 
 from app.domain.exceptions.base import DomainFieldError
 from app.domain.value_objects.base import ValueObject
-from tests.unit.app.factories.value_objects import (
+from tests.app.unit.factories.value_objects import (
     create_multi_field_vo,
     create_single_field_vo,
 )

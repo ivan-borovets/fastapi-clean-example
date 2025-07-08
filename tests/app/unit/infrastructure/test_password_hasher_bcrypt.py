@@ -4,7 +4,7 @@ from app.infrastructure.adapters.password_hasher_bcrypt import (
     BcryptPasswordHasher,
     PasswordPepper,
 )
-from tests.unit.app.factories.value_objects import create_raw_password
+from tests.app.unit.factories.value_objects import create_raw_password
 
 
 def create_bcrypt_password_hasher(pepper: str = "Habanero!") -> BcryptPasswordHasher:

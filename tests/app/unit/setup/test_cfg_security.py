@@ -4,7 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.setup.config.security import AuthSettings
-from tests.unit.app.factories.settings_data import create_auth_settings_data
+from tests.app.unit.factories.settings_data import create_auth_settings_data
 
 
 @pytest.mark.parametrize(

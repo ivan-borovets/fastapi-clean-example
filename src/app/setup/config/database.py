@@ -1,6 +1,10 @@
 import os
+from typing import Final
 
 from pydantic import BaseModel, Field, PostgresDsn, field_validator
+
+PORT_MIN: Final[int] = 1
+PORT_MAX: Final[int] = 65535
 
 
 class PostgresSettings(BaseModel):
@@ -22,8 +26,8 @@ class PostgresSettings(BaseModel):
     @field_validator("port")
     @classmethod
     def validate_port_range(cls, v: int) -> int:
-        if not 1 <= v <= 65535:
-            raise ValueError("Port must be between 1 and 65535")
+        if not PORT_MIN <= v <= PORT_MAX:
+            raise ValueError(f"Port must be between {PORT_MIN} and {PORT_MAX}")
         return v
 
     @property

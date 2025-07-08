@@ -1,11 +1,11 @@
 import pytest
 
 from app.domain.exceptions.base import DomainError
-from tests.unit.app.factories.named_entity import (
+from tests.app.unit.factories.named_entity import (
     create_named_entity,
     create_named_entity_id,
 )
-from tests.unit.app.factories.tagged_entity import create_tagged_entity
+from tests.app.unit.factories.tagged_entity import create_tagged_entity
 
 
 @pytest.mark.parametrize(

@@ -13,6 +13,10 @@ class LoggingLevel(StrEnum):
     CRITICAL = "CRITICAL"
 
 
+class LoggingSettings(BaseModel):
+    level: LoggingLevel = Field(alias="LEVEL")
+
+
 DEFAULT_LOG_LEVEL: Final[LoggingLevel] = LoggingLevel.INFO
 
 
@@ -30,7 +34,3 @@ def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
             "%(message)s"
         ),
     )
-
-
-class LoggingSettings(BaseModel):
-    level: LoggingLevel = Field(alias="LEVEL")

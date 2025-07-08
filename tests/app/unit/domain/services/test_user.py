@@ -9,8 +9,8 @@ from app.domain.exceptions.user import (
     RoleChangeNotPermittedError,
 )
 from app.domain.services.user import UserService
-from tests.unit.app.factories.user_entity import create_user
-from tests.unit.app.factories.value_objects import (
+from tests.app.unit.factories.user_entity import create_user
+from tests.app.unit.factories.value_objects import (
     create_password_hash,
     create_raw_password,
     create_user_id,

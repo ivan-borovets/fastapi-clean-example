@@ -109,6 +109,7 @@ ignore = [
     "PT011", # pytest-raises-too-broad
     "S101", # assert
     "S105", # hardcoded-password-string
+    "S106", # hardcoded-password-func-arg
     "S107", # hardcoded-password-default
     "SLF001", # private-member-access
     "UP012", # unnecessary-encode-utf8
@@ -119,7 +120,6 @@ ignore = [
 "src/app/infrastructure/constants.py" = ["S105"]                             # hardcoded-password-string
 "src/app/presentation/http/auth/constants.py" = ["S105"]                     # hardcoded-password-string
 "src/app/presentation/http/exceptions/handlers.py" = ["RUF029", ]            # unused-async
-"src/app/setup/config/database.py" = ["PLR2004", ]                           # magic-value-comparison
 "scripts/dishka/plot_dependencies_data.py" = ["T201", ]                      # print
 
 [tool.ruff.format]

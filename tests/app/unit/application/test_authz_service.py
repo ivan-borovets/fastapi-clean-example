@@ -3,7 +3,7 @@ import pytest
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.services.authorization import AuthorizationService
 from app.domain.enums.user_role import UserRole
-from tests.unit.app.factories.user_entity import create_user
+from tests.app.unit.factories.user_entity import create_user
 
 
 def test_user_can_act_on_himself() -> None:
