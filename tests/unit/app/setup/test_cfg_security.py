@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 from pydantic import ValidationError
 
-from app.setup.config.settings import AuthSettings
+from app.setup.config.security import AuthSettings
 from tests.unit.app.factories.settings_data import create_auth_settings_data
 
 
@@ -14,7 +14,7 @@ from tests.unit.app.factories.settings_data import create_auth_settings_data
         pytest.param(2.5, timedelta(minutes=2.5), id="ordinary"),
     ],
 )
-def test_converts_ttl_to_timedelta(ttl: int, expected: timedelta) -> None:
+def test_auth_converts_ttl_to_timedelta(ttl: int, expected: timedelta) -> None:
     data = create_auth_settings_data(session_ttl_min=ttl)
 
     sut = AuthSettings.model_validate(data)
@@ -29,14 +29,14 @@ def test_converts_ttl_to_timedelta(ttl: int, expected: timedelta) -> None:
         pytest.param(0.99, id="too_small"),
     ],
 )
-def test_rejects_invalid_ttl(ttl: int | str) -> None:
+def test_auth_rejects_invalid_ttl(ttl: int | str) -> None:
     data = create_auth_settings_data(session_ttl_min=ttl)  # type: ignore[arg-type]
 
     with pytest.raises(ValidationError):
         AuthSettings.model_validate(data)
 
 
-def test_accepts_correct_session_refresh_threshold() -> None:
+def test_auth_accepts_correct_session_refresh_threshold() -> None:
     correct_threshold = 0.5
     data = create_auth_settings_data(session_refresh_threshold=correct_threshold)
 
@@ -51,7 +51,7 @@ def test_accepts_correct_session_refresh_threshold() -> None:
         pytest.param(1, id="too_big"),
     ],
 )
-def test_rejects_incorrect_session_refresh_threshold(threshold: int | str) -> None:
+def test_auth_rejects_incorrect_session_refresh_threshold(threshold: int | str) -> None:
     data = create_auth_settings_data(session_refresh_threshold=threshold)  # type: ignore[arg-type]
 
     with pytest.raises(ValidationError):

@@ -2,6 +2,8 @@ import logging
 from enum import StrEnum
 from typing import Final
 
+from pydantic import BaseModel, Field
+
 
 class LoggingLevel(StrEnum):
     DEBUG = "DEBUG"
@@ -28,3 +30,7 @@ def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
             "%(message)s"
         ),
     )
+
+
+class LoggingSettings(BaseModel):
+    level: LoggingLevel = Field(alias="LEVEL")
