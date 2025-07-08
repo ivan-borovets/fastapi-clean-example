@@ -54,40 +54,40 @@ preview = true  # experimental
 
 [tool.ruff.lint]
 select = [
-    "ERA001", # commented-out-code    https://docs.astral.sh/ruff/rules/#eradicate-era
-    "ASYNC", # flake8-async           https://docs.astral.sh/ruff/rules/#flake8-async-async
-    "S", # flake8-bandit              https://docs.astral.sh/ruff/rules/#flake8-bandit-s
-    "B", # flake8-bugbear             https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
     "A", # flake8-builtins            https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+    "ARG", # flake8-unused-arguments  https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
+    "ASYNC", # flake8-async           https://docs.astral.sh/ruff/rules/#flake8-async-async
+    "B", # flake8-bugbear             https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "C4", # flake8-comprehensions     https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "C90", # mccabe                   https://docs.astral.sh/ruff/rules/#mccabe-c90
     #    "COM", # flake8-commas            https://docs.astral.sh/ruff/rules/#flake8-commas-com
     # Incompatible with ruff formatter, but can be useful (uncomment once, then review changes)
     # See: https://github.com/astral-sh/ruff/issues/9216
-    "C4", # flake8-comprehensions     https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
     "DTZ", # flake8-datetimez         https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
-    "LOG", # flake8-logging           https://docs.astral.sh/ruff/rules/#flake8-logging-log
-    "T20", # flake8-print             https://docs.astral.sh/ruff/rules/#flake8-print-t20
-    "PT", # flake8-pytest-style       https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
-    "RSE", #flake8-raise (RSE)        https://docs.astral.sh/ruff/rules/#flake8-raise-rse
-    "RET", #flake8-return (RET)       https://docs.astral.sh/ruff/rules/#flake8-return-ret
-    "SLF", #flake8-self (SLF)         https://docs.astral.sh/ruff/rules/#flake8-self-slf
-    "SIM", # flake8-simplify          https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
-    "SLOT", # flake8-slots            https://docs.astral.sh/ruff/rules/#flake8-slots-slot
-    "TID", # flake8-tidy-imports      https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
-    "TCH", # flake8-type-checking     https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
-    "ARG", # flake8-unused-arguments  https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
-    "PTH", # flake8-use-pathlib       https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
-    "Q", # flake8-quotes              https://docs.astral.sh/ruff/rules/#flake8-quotes-q
+    "E", # pycodestyle-error          https://docs.astral.sh/ruff/rules/#error-e
+    "ERA001", # commented-out-code    https://docs.astral.sh/ruff/rules/#eradicate-era
+    "F", # pyflakes                   https://docs.astral.sh/ruff/rules/#pyflakes-f
     "FLY", # flynt                    https://docs.astral.sh/ruff/rules/#flynt-fly
     "I", # isort                      https://docs.astral.sh/ruff/rules/#isort-i
-    "C90", # mccabe                   https://docs.astral.sh/ruff/rules/#mccabe-c90
+    "LOG", # flake8-logging           https://docs.astral.sh/ruff/rules/#flake8-logging-log
     "N", # pep8-naming                https://docs.astral.sh/ruff/rules/#pep8-naming-n
     "PERF", # Perflint                https://docs.astral.sh/ruff/rules/#perflint-perf
-    "E", # pycodestyle-error          https://docs.astral.sh/ruff/rules/#error-e
-    "W", # pycodestyle-warning        https://docs.astral.sh/ruff/rules/#warning-w
-    "F", # pyflakes                   https://docs.astral.sh/ruff/rules/#pyflakes-f
     "PL", # pylint                    https://docs.astral.sh/ruff/rules/#pylint-pl
-    "UP", # pyupgrade                 https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "PT", # flake8-pytest-style       https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
+    "PTH", # flake8-use-pathlib       https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+    "Q", # flake8-quotes              https://docs.astral.sh/ruff/rules/#flake8-quotes-q
+    "RET", # flake8-return (RET)      https://docs.astral.sh/ruff/rules/#flake8-return-ret
+    "RSE", # flake8-raise (RSE)       https://docs.astral.sh/ruff/rules/#flake8-raise-rse
     "RUF", # Ruff-specific rules      https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "S", # flake8-bandit              https://docs.astral.sh/ruff/rules/#flake8-bandit-s
+    "SIM", # flake8-simplify          https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "SLF", # flake8-self (SLF)        https://docs.astral.sh/ruff/rules/#flake8-self-slf
+    "SLOT", # flake8-slots            https://docs.astral.sh/ruff/rules/#flake8-slots-slot
+    "T20", # flake8-print             https://docs.astral.sh/ruff/rules/#flake8-print-t20
+    "TCH", # flake8-type-checking     https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
+    "TID", # flake8-tidy-imports      https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
+    "UP", # pyupgrade                 https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "W", # pycodestyle-warning        https://docs.astral.sh/ruff/rules/#warning-w
 ]
 ignore = [
     "N818", # error-suffix-on-exception-name
@@ -113,12 +113,13 @@ ignore = [
     "SLF001", # private-member-access
     "UP012", # unnecessary-encode-utf8
 ]
+#
 "src/app/domain/value_objects/base.py" = ["B024", ]                          # abstract-base-class-without-abstract-method
 "src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501"]       # line-too-long
 "src/app/infrastructure/constants.py" = ["S105"]                             # hardcoded-password-string
 "src/app/presentation/http/auth/constants.py" = ["S105"]                     # hardcoded-password-string
-"src/app/setup/config/settings.py" = ["PLR2004", ]                           # magic-value-comparison
 "src/app/presentation/http/exceptions/handlers.py" = ["RUF029", ]            # unused-async
+"src/app/setup/config/settings.py" = ["PLR2004", ]                           # magic-value-comparison
 "scripts/dishka/plot_dependencies_data.py" = ["T201", ]                      # print
 
 [tool.ruff.format]
