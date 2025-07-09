@@ -55,9 +55,6 @@ def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
 # ENVIRONMENT & PATHS
 
 
-ENV_VAR_NAME: Final[str] = "APP_ENV"
-
-
 class ValidEnvs(StrEnum):
     """
     Values should reflect actual directory names.
@@ -79,9 +76,10 @@ class DirContents(StrEnum):
     DOTENV_NAME = ".env"
 
 
+ENV_VAR_NAME: Final[str] = "APP_ENV"
+
 BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parent.parent
 CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
-
 
 ENV_TO_DIR_PATHS: Final[Mapping[ValidEnvs, Path]] = MappingProxyType({
     ValidEnvs.LOCAL: CONFIG_PATH / ValidEnvs.LOCAL,
@@ -113,9 +111,10 @@ def get_current_env() -> ValidEnvs:
 def read_config(
     *,
     env: ValidEnvs,
-    config: DirContents = DirContents.CONFIG_NAME,
+    config: DirContents,
+    dir_paths: Mapping[ValidEnvs, Path],
 ) -> dict[str, Any]:
-    dir_path = ENV_TO_DIR_PATHS.get(env)
+    dir_path = dir_paths.get(env)
     if dir_path is None:
         raise FileNotFoundError(f"No directory path configured for environment: {env}")
     file_path = dir_path / config
@@ -137,15 +136,21 @@ def merge_dicts(*, dict1: dict[str, Any], dict2: dict[str, Any]) -> dict[str, An
     return result
 
 
-def load_full_config(*, env: ValidEnvs) -> dict[str, Any]:
-    config = read_config(env=env)
+def load_full_config(
+    *,
+    env: ValidEnvs,
+    main_config: DirContents = DirContents.CONFIG_NAME,
+    secrets_config: DirContents = DirContents.SECRETS_NAME,
+    dir_paths: Mapping[ValidEnvs, Path] = ENV_TO_DIR_PATHS,
+) -> dict[str, Any]:
+    log.info("Reading config for environment: '%s'", env)
+    config = read_config(env=env, config=main_config, dir_paths=dir_paths)
     try:
-        secrets = read_config(env=env, config=DirContents.SECRETS_NAME)
+        secrets = read_config(env=env, config=secrets_config, dir_paths=dir_paths)
     except FileNotFoundError:
         log.warning("Secrets file not found. Full config will not contain secrets.")
-    else:
-        config = merge_dicts(dict1=config, dict2=secrets)
-    return config
+        return config
+    return merge_dicts(dict1=config, dict2=secrets)
 
 
 # EXPORT PROCESSING
@@ -185,7 +190,11 @@ def extract_exported(
 
 def load_export_fields(*, env: ValidEnvs) -> tuple[dict[str, Any], list[str]]:
     config = load_full_config(env=env)
-    export_data = read_config(env=env, config=DirContents.EXPORT_NAME)
+    export_data = read_config(
+        env=env,
+        config=DirContents.EXPORT_NAME,
+        dir_paths=ENV_TO_DIR_PATHS,
+    )
     if "export" not in export_data or "fields" not in export_data["export"]:
         raise ValueError("Invalid export.toml: missing [export] section or 'fields'")
     export_fields = export_data["export"]["fields"]

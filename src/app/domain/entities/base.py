@@ -38,7 +38,8 @@ class Entity[T: ValueObject](ABC):
 
     def __hash__(self) -> int:
         """
-        Generate a hash based on the immutable `id`.
-        This allows entities to be used in hash-based collections.
+        Generate a hash based on entity type and the immutable `id`.
+        This allows entities to be used in hash-based collections and
+        reduces the risk of hash collisions between different entity types.
         """
-        return hash(self.id_)
+        return hash((type(self), self.id_))

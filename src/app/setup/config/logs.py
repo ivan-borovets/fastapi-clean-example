@@ -2,6 +2,8 @@ import logging
 from enum import StrEnum
 from typing import Final
 
+from pydantic import BaseModel, Field
+
 
 class LoggingLevel(StrEnum):
     DEBUG = "DEBUG"
@@ -9,6 +11,10 @@ class LoggingLevel(StrEnum):
     WARNING = "WARNING"
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
+
+
+class LoggingSettings(BaseModel):
+    level: LoggingLevel = Field(alias="LEVEL")
 
 
 DEFAULT_LOG_LEVEL: Final[LoggingLevel] = LoggingLevel.INFO

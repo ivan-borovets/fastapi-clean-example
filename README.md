@@ -6,10 +6,6 @@ Although it's not meant to serve as a comprehensive reference or a strict applic
 project demonstrates how their core ideas can be effectively put into practice in Python.
 If they're new to you, refer to the [Useful Resources](#useful-resources) section.
 
-If you find this project's structure useful but prefer starting with a clean state rather than deleting unnecessary
-code, I've created an interactive template for quickly generating a similar project
-setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
-
 # Table of contents
 
 1. [Overview](#overview)
@@ -97,15 +93,14 @@ For now, we will focus on the purpose of the layers.
 
 ![#red](https://placehold.co/15x15/red/red.svg) **Application Layer**
 
-- This layer contains applied business logic, defining _**use cases**_ — high-level abstractions that bridge the domain
-  layer with its practical implementation, orchestrating business logic to achieve specific goals.
-- Its core component is the **interactor**, representing an individual step within a use case.
-- To access external systems, interactors use **interfaces (ports)**, which abstract infrastructure details.
-- Alternatively, **application services** provide a different way to organize interactors — placing them in a class per
-  business context.
-- Interactors are independent and should not call one another.
-- The application layer may also include classes with non-orchestration business logic — e.g., authorization.
-  These can also be considered services.
+- This layer implements the application-specific business logic by realizing steps of business-defined _**use cases**_.
+- Its main components are **interactors** — each handles a single business operation matching a step within a use case.
+- An interactor **orchestrates** domain logic and external calls needed to perform the operation.
+- Interactors are stateless, isolated, and do not call each other. Each is invoked independently — typically by external
+  drivers such as HTTP controllers, message consumers, or scheduled jobs.
+- To access external systems, interactors rely on **interfaces (ports)** that abstract infrastructure details.
+- In some cases, **application services** may group related interactors under a common business context.
+- The layer may also include standalone services for non-orchestration logic, such as authorization.
 
 > [!NOTE]
 > Domain and Application layers may import external tools and libraries to the extent necessary for describing business
@@ -467,10 +462,6 @@ natural.
         └── run.py                               # app entry point
 ```
 
-If you find this structure useful but prefer starting with a clean state rather than deleting unnecessary code, I've
-created an interactive template for quickly generating a similar project
-setup: [FastAPI Starter](https://github.com/ivan-borovets/fastapi-starter).
-
 ## Technology Stack
 
 - **Python**: `3.12`
@@ -730,7 +721,7 @@ frequent and lively communication challenges, as well as the ⚗️ Reagento (ad
 - [x] set up CI
 - [x] simplify settings
 - [x] simplify annotations
-- [ ] increase test coverage
+- [ ] add integration tests
 - [ ] explain code
 
 [^1]: Session and token share the same expiry time, avoiding database reads if the token is expired.
