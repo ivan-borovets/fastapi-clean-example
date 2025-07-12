@@ -4,6 +4,7 @@ from app.domain.exceptions.base import DomainError
 from tests.app.unit.factories.named_entity import (
     create_named_entity,
     create_named_entity_id,
+    create_named_entity_subclass,
 )
 from tests.app.unit.factories.tagged_entity import create_tagged_entity
 
@@ -22,6 +23,15 @@ def test_entity_id_cannot_be_changed(new_id: int) -> None:
         sut.id_ = create_named_entity_id(new_id)
 
 
+def test_entity_is_mutable_except_id() -> None:
+    sut = create_named_entity(name="Alice")
+    new_name = "Bob"
+
+    sut.name = new_name
+
+    assert sut.name == new_name
+
+
 @pytest.mark.parametrize(
     ("name1", "name2"),
     [
@@ -29,7 +39,7 @@ def test_entity_id_cannot_be_changed(new_id: int) -> None:
         pytest.param("Alice", "Bob", id="different_name"),
     ],
 )
-def test_entities_with_same_id_are_equal(
+def test_same_type_entities_with_same_id_are_equal(
     name1: str,
     name2: str,
 ) -> None:
@@ -39,7 +49,7 @@ def test_entities_with_same_id_are_equal(
     assert e1 == e2
 
 
-def test_entities_with_different_id_are_not_equal() -> None:
+def test_same_type_entities_with_different_id_are_not_equal() -> None:
     e1 = create_named_entity(id_=1)
     e2 = create_named_entity(id_=2)
 
@@ -52,6 +62,18 @@ def test_entities_of_different_types_are_not_equal() -> None:
     e2 = create_tagged_entity(id_=sut_id)
 
     assert e1 != e2
+
+
+def test_entity_is_not_equal_to_subclass_with_same_id() -> None:
+    parent = create_named_entity()
+    child = create_named_entity_subclass(
+        id_=parent.id_.value,
+        name=parent.name,
+        value=1,
+    )
+
+    assert parent.__eq__(child) is False
+    assert child.__eq__(parent) is False
 
 
 def test_equal_entities_have_equal_hash() -> None:

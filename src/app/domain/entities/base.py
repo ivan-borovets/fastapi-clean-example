@@ -34,7 +34,7 @@ class Entity[T: ValueObject](ABC):
         Two entities are considered equal if they have the same `id`,
         regardless of other attribute values.
         """
-        return isinstance(other, type(self)) and other.id_ == self.id_
+        return type(self) is type(other) and other.id_ == self.id_
 
     def __hash__(self) -> int:
         """

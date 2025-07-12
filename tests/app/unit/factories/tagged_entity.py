@@ -9,7 +9,7 @@ class TaggedEntityId(ValueObject):
     value: int
 
 
-@dataclass(eq=False, slots=True)
+@dataclass(eq=False)
 class TaggedEntity(Entity[TaggedEntityId]):
     tag: str
 
@@ -24,5 +24,4 @@ def create_tagged_entity(
     id_: int = 54,
     tag: str = "tag",
 ) -> TaggedEntity:
-    id_vo = create_tagged_entity_id(id_)
-    return TaggedEntity(id_vo, tag)
+    return TaggedEntity(TaggedEntityId(id_), tag)

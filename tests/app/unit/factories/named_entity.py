@@ -9,9 +9,14 @@ class NamedEntityId(ValueObject):
     value: int
 
 
-@dataclass(eq=False, slots=True)
+@dataclass(eq=False)
 class NamedEntity(Entity[NamedEntityId]):
     name: str
+
+
+@dataclass(eq=False)
+class NamedEntitySubclass(NamedEntity):
+    value: int
 
 
 def create_named_entity_id(
@@ -24,5 +29,12 @@ def create_named_entity(
     id_: int = 42,
     name: str = "name",
 ) -> NamedEntity:
-    id_vo = create_named_entity_id(id_)
-    return NamedEntity(id_vo, name)
+    return NamedEntity(NamedEntityId(id_), name)
+
+
+def create_named_entity_subclass(
+    id_: int = 42,
+    name: str = "name",
+    value: int = 314,
+) -> NamedEntitySubclass:
+    return NamedEntitySubclass(NamedEntityId(id_), name, value)
