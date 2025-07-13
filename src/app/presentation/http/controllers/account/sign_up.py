@@ -37,5 +37,6 @@ async def sign_up(
     # :raises AuthorizationError 403:
     # :raises DataMapperError 503:
     # :raises DomainFieldError 400:
+    # :raises RoleAssignmentNotPermittedError 422:
     # :raises UsernameAlreadyExists 409:
     return await interactor(request_data)

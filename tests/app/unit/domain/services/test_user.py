@@ -6,6 +6,7 @@ from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import (
     ActivationChangeNotPermittedError,
+    RoleAssignmentNotPermittedError,
     RoleChangeNotPermittedError,
 )
 from app.domain.services.user import UserService
@@ -18,7 +19,12 @@ from tests.app.unit.factories.value_objects import (
 )
 
 
-def test_creates_active_regular_user_with_hashed_password(
+@pytest.mark.parametrize(
+    "role",
+    [UserRole.USER, UserRole.ADMIN],
+)
+def test_creates_active_user_with_hashed_password(
+    role: UserRole,
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
@@ -34,15 +40,53 @@ def test_creates_active_regular_user_with_hashed_password(
     sut = UserService(user_id_generator, password_hasher)
 
     # Act
-    result = sut.create_user(username, raw_password)
+    result = sut.create_user(username, raw_password, role)
 
     # Assert
     assert isinstance(result, User)
     assert result.id_ == expected_id
     assert result.username == username
     assert result.password_hash == expected_hash
-    assert result.role == UserRole.USER
+    assert result.role == role
     assert result.is_active is True
+
+
+def test_creates_inactive_user_if_specified(
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    # Arrange
+    username = create_username()
+    raw_password = create_raw_password()
+
+    expected_id = create_user_id()
+    expected_hash = create_password_hash()
+
+    user_id_generator.return_value = expected_id.value
+    password_hasher.hash.return_value = expected_hash.value
+    sut = UserService(user_id_generator, password_hasher)
+
+    # Act
+    result = sut.create_user(username, raw_password, is_active=False)
+
+    # Assert
+    assert not result.is_active
+
+
+def test_fails_to_create_user_with_unassignable_role(
+    user_id_generator: MagicMock,
+    password_hasher: MagicMock,
+) -> None:
+    username = create_username()
+    raw_password = create_raw_password()
+    sut = UserService(user_id_generator, password_hasher)
+
+    with pytest.raises(RoleAssignmentNotPermittedError):
+        sut.create_user(
+            username=username,
+            raw_password=raw_password,
+            role=UserRole.SUPER_ADMIN,
+        )
 
 
 @pytest.mark.parametrize(

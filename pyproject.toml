@@ -32,7 +32,7 @@ dependencies = [
     "sqlalchemy[mypy]>=2.0.41",
     "uuid6>=2024.7.10",
     "uvicorn>=0.34.2",
-    "uvloop>=0.21.0"
+    "uvloop>=0.21.0",
 ]
 
 [project.optional-dependencies]
@@ -40,12 +40,30 @@ dev = [
     "mypy>=1.15.0",
     "pre-commit>=4.2.0",
     "ruff>=0.11.10",
+    "slotscheck>=0.19.1",
 ]
 test = [
     "coverage>=7.8.1",
     "line-profiler>=4.2.0",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0"
+]
+
+[tool.mypy]
+files = [
+    "config",
+    "scripts",
+    "src",
+    "tests",
+]
+exclude = "^.*alembic.*$"
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+disallow_untyped_defs = false
+plugins = [
+    "pydantic.mypy",
+    "sqlalchemy.ext.mypy.plugin",
 ]
 
 [tool.ruff]
@@ -131,22 +149,11 @@ combine-as-imports = true
 force-wrap-aliases = true
 split-on-trailing-comma = true
 
-[tool.mypy]
-files = [
-    "config",
-    "scripts",
-    "src",
-    "tests",
-]
-exclude = "^.*alembic.*$"
-strict = true
-ignore_missing_imports = true
-allow_subclassing_any = true
-disallow_untyped_defs = false
-plugins = [
-    "pydantic.mypy",
-    "sqlalchemy.ext.mypy.plugin",
-]
+[tool.slotscheck]
+strict-imports = true
+exclude-modules = '''
+^app\.infrastructure\.persistence_sqla\.alembic
+'''
 
 [tool.pytest.ini_options]
 testpaths = ["tests", ]

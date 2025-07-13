@@ -318,6 +318,7 @@ dev = [
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "ruff" },
+    { name = "slotscheck" },
 ]
 test = [
     { name = "coverage" },
@@ -345,6 +346,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.26.0" },
     { name = "rtoml", specifier = ">=0.12.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.10" },
+    { name = "slotscheck", marker = "extra == 'dev'", specifier = ">=0.19.1" },
     { name = "sqlalchemy", extras = ["mypy"], specifier = ">=2.0.41" },
     { name = "uuid6", specifier = ">=2024.7.10" },
     { name = "uvicorn", specifier = ">=0.34.2" },
@@ -869,6 +871,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d9/2b/162fa86d2639076667c9aa59196c020dc6d7023ac8f342416c2f5ec4bda0/ruff-0.11.10-py3-none-win32.whl", hash = "sha256:dc061a98d32a97211af7e7f3fa1d4ca2fcf919fb96c28f39551f35fc55bdbc19", size = 10494958 },
     { url = "https://files.pythonhosted.org/packages/24/f3/66643d8f32f50a4b0d09a4832b7d919145ee2b944d43e604fbd7c144d175/ruff-0.11.10-py3-none-win_amd64.whl", hash = "sha256:5cc725fbb4d25b0f185cb42df07ab6b76c4489b4bfb740a175f3a59c70e8a224", size = 11650285 },
     { url = "https://files.pythonhosted.org/packages/95/3a/2e8704d19f376c799748ff9cb041225c1d59f3e7711bc5596c8cfdc24925/ruff-0.11.10-py3-none-win_arm64.whl", hash = "sha256:ef69637b35fb8b210743926778d0e45e1bffa850a7c61e428c6b971549b5f5d1", size = 10765278 },
+]
+
+[[package]]
+name = "slotscheck"
+version = "0.19.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4b/57/6fcb8df11e7c76eb87b23bfa931408e47f051c6161749c531b4060a45516/slotscheck-0.19.1.tar.gz", hash = "sha256:6146b7747f8db335a00a66b782f86011b74b995f61746dc5b36a9e77d5326013", size = 16050 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/32/bd569256267f80b76b87d21a09795741a175778b954bee1d7b1a89852b6f/slotscheck-0.19.1-py3-none-any.whl", hash = "sha256:bff9926f8d6408ea21b6c6bbaa4389cea1682962e73ee4f30084b6d2b89260ee", size = 16995 },
 ]
 
 [[package]]

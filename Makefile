@@ -58,6 +58,7 @@ code.format:
 
 code.lint: code.format
 	ruff check --exit-non-zero-on-fix
+	slotscheck src
 	mypy
 
 code.test:
