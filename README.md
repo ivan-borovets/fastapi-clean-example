@@ -467,7 +467,7 @@ natural.
 - **Python**: `3.12`
 - **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi`, `orjson`, `psycopg3[binary]`,
   `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
-- **Development**: `mypy`, `pre-commit`, `ruff`
+- **Development**: `mypy`, `pre-commit`, `ruff`, `slotscheck`
 - **Testing**: `coverage`, `line-profiler`, `pytest`, `pytest-asyncio`
 
 ## API

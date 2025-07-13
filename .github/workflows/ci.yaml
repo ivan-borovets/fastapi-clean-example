@@ -26,6 +26,7 @@ jobs:
       - name: Lint code
         run: |
           ruff check --exit-non-zero-on-fix
+          slotscheck src
           mypy
 
       - name: Test code
