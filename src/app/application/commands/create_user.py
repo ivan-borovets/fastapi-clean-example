@@ -39,6 +39,7 @@ class CreateUserInteractor:
     :raises DataMapperError:
     :raises AuthorizationError:
     :raises DomainFieldError:
+    :raises RoleAssignmentNotPermittedError:
     :raises UsernameAlreadyExists:
     """
 
@@ -70,8 +71,8 @@ class CreateUserInteractor:
 
         username = Username(request_data.username)
         password = RawPassword(request_data.password)
-        user = self._user_service.create_user(username, password)
-        user.role = request_data.role
+        user = self._user_service.create_user(username, password, request_data.role)
+
         self._user_command_gateway.add(user)
 
         try:

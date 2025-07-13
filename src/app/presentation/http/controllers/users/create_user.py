@@ -54,6 +54,7 @@ async def create_user(
     # :raises DataMapperError 503:
     # :raises AuthorizationError 403:
     # :raises DomainFieldError 400:
+    # :raises RoleAssignmentNotPermittedError 422:
     # :raises UsernameAlreadyExists 409:
     request_data = CreateUserRequest(
         username=request_data_pydantic.username,
