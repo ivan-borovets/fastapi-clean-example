@@ -11,5 +11,5 @@ class UserRole(StrEnum):
         return self != UserRole.SUPER_ADMIN
 
     @property
-    def is_modifiable(self) -> bool:
+    def is_changeable(self) -> bool:
         return self != UserRole.SUPER_ADMIN

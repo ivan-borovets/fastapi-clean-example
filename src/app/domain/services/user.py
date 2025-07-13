@@ -60,7 +60,7 @@ class UserService:
         """
         :raises ActivationChangeNotPermitted:
         """
-        if not user.role.is_modifiable:
+        if not user.role.is_changeable:
             raise ActivationChangeNotPermittedError(user.username, user.role)
         user.is_active = is_active
 
@@ -68,6 +68,6 @@ class UserService:
         """
         :raises RoleChangeNotPermitted:
         """
-        if not user.role.is_modifiable:
+        if not user.role.is_changeable:
             raise RoleChangeNotPermittedError(user.username, user.role)
         user.role = UserRole.ADMIN if is_admin else UserRole.USER

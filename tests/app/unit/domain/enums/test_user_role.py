@@ -23,5 +23,5 @@ def test_assignability(role: UserRole, expected: bool) -> None:
         (UserRole.SUPER_ADMIN, False),
     ],
 )
-def test_modifiability(role: UserRole, expected: bool) -> None:
-    assert role.is_modifiable is expected
+def test_changeability(role: UserRole, expected: bool) -> None:
+    assert role.is_changeable is expected
