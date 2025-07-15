@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 
-from app.application.common.exceptions.authorization import AuthorizationError
+from app.application.common.permissions import AnyOf, IsSelf, IsSuperior
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
@@ -65,16 +65,12 @@ class ChangePasswordInteractor:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        try:
-            self._authorization_service.authorize_for_self(
-                current_user.id_,
-                target_id=user.id_,
-            )
-        except AuthorizationError:
-            self._authorization_service.authorize_for_subordinate_role(
-                current_user.role,
-                target_role=user.role,
-            )
+        # Declarative authorization: can change own or subordinate's password
+        self._authorization_service.authorize(
+            current_user,
+            AnyOf(IsSelf(), IsSuperior()),
+            target_user=user,
+        )
 
         self._user_service.change_password(user, password)
         await self._transaction_manager.commit()
