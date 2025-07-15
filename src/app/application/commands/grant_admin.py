@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
 
+from app.application.common.permissions import CanManageRole
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
@@ -56,9 +57,11 @@ class GrantAdminInteractor:
         )
 
         current_user = await self._current_user_service.get_current_user()
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=UserRole.ADMIN,
+
+        # Declarative authorization: only users who can manage ADMIN role
+        self._authorization_service.authorize(
+            current_user,
+            CanManageRole(UserRole.ADMIN),
         )
 
         username = Username(request_data.username)
