@@ -1,54 +1,20 @@
-from typing import Any
-
 from app.application.common.constants import AUTHZ_NOT_AUTHORIZED
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.application.common.services.authorization.permissions import Permission
-from app.application.common.services.authorization.role_hierarchy import (
-    SUBORDINATE_ROLES,
+from app.application.common.services.authorization.base import (
+    Permission,
+    PermissionContext,
 )
-from app.domain.entities.user import User
-from app.domain.enums.user_role import UserRole
-from app.domain.value_objects.user_id import UserId
 
 
 class AuthorizationService:
-    def authorize(
+    def authorize[PC: PermissionContext](
         self,
-        current_user: User,
-        permission: Permission,
-        **kwargs: Any,
-    ) -> None:
-        """
-        Authorize action using declarative permission policy.
-
-        :raises AuthorizationError: If permission is not satisfied
-        """
-        if not permission.is_satisfied_by(current_user, **kwargs):
-            raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)
-
-    def authorize_for_self(
-        self,
-        current_user_id: UserId,
-        /,
+        permission: Permission[PC],
         *,
-        target_id: UserId,
+        context: PC,
     ) -> None:
         """
         :raises AuthorizationError:
         """
-        if current_user_id != target_id:
-            raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)
-
-    def authorize_for_subordinate_role(
-        self,
-        current_user_role: UserRole,
-        /,
-        *,
-        target_role: UserRole,
-    ) -> None:
-        """
-        :raises AuthorizationError:
-        """
-        allowed_roles = SUBORDINATE_ROLES.get(current_user_role, set())
-        if target_role not in allowed_roles:
+        if not permission.is_satisfied_by(context):
             raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)
