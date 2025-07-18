@@ -11,7 +11,13 @@ from app.application.common.query_params.user import (
     UserListParams,
     UserListSorting,
 )
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.authorize import (
+    authorize,
+)
+from app.application.common.services.authorization.permissions import (
+    CanManageRole,
+    RoleManagementContext,
+)
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.enums.user_role import UserRole
 
@@ -46,20 +52,22 @@ class ListUsersQueryService:
     def __init__(
         self,
         current_user_service: CurrentUserService,
-        authorization_service: AuthorizationService,
         user_query_gateway: UserQueryGateway,
     ):
         self._current_user_service = current_user_service
-        self._authorization_service = authorization_service
         self._user_query_gateway = user_query_gateway
 
     async def __call__(self, request_data: ListUsersRequest) -> ListUsersResponse:
         log.info("List users: started.")
 
         current_user = await self._current_user_service.get_current_user()
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=UserRole.USER,
+
+        authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=UserRole.USER,
+            ),
         )
 
         log.debug("Retrieving list of users.")

@@ -7,7 +7,13 @@ from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.authorize import (
+    authorize,
+)
+from app.application.common.services.authorization.permissions import (
+    CanManageRole,
+    RoleManagementContext,
+)
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import UsernameAlreadyExistsError
@@ -46,13 +52,11 @@ class CreateUserInteractor:
     def __init__(
         self,
         current_user_service: CurrentUserService,
-        authorization_service: AuthorizationService,
         user_command_gateway: UserCommandGateway,
         user_service: UserService,
         transaction_manager: TransactionManager,
     ):
         self._current_user_service = current_user_service
-        self._authorization_service = authorization_service
         self._user_command_gateway = user_command_gateway
         self._user_service = user_service
         self._transaction_manager = transaction_manager
@@ -64,9 +68,13 @@ class CreateUserInteractor:
         )
 
         current_user = await self._current_user_service.get_current_user()
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=request_data.role,
+
+        authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=request_data.role,
+            ),
         )
 
         username = Username(request_data.username)
