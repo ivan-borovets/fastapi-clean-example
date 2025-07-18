@@ -3,7 +3,9 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from app.application.common.services.authorization import SUBORDINATE_ROLES
+from app.application.common.services.authorization.role_hierarchy import (
+    SUBORDINATE_ROLES,
+)
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
 

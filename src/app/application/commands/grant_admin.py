@@ -1,12 +1,12 @@
 import logging
 from dataclasses import dataclass
 
-from app.application.common.permissions import CanManageRole
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.permissions import CanManageRole
+from app.application.common.services.authorization.service import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole

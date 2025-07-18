@@ -11,7 +11,7 @@ from app.application.common.query_params.user import (
     UserListParams,
     UserListSorting,
 )
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.service import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.enums.user_role import UserRole
 

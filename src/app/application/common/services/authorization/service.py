@@ -1,20 +1,16 @@
-from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any
 
 from app.application.common.constants import AUTHZ_NOT_AUTHORIZED
 from app.application.common.exceptions.authorization import AuthorizationError
+from app.application.common.services.authorization.role_hierarchy import (
+    SUBORDINATE_ROLES,
+)
 from app.domain.enums.user_role import UserRole
 from app.domain.value_objects.user_id import UserId
 
 if TYPE_CHECKING:
-    from app.application.common.permissions import Permission
+    from app.application.common.services.authorization.permissions import Permission
     from app.domain.entities.user import User
-
-SUBORDINATE_ROLES: Final[Mapping[UserRole, set[UserRole]]] = {
-    UserRole.SUPER_ADMIN: {UserRole.ADMIN, UserRole.USER},
-    UserRole.ADMIN: {UserRole.USER},
-    UserRole.USER: set(),
-}
 
 
 class AuthorizationService:
