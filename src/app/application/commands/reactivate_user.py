@@ -5,6 +5,12 @@ from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
+from app.application.common.services.authorization.permissions import (
+    CanManageRole,
+    CanManageSubordinate,
+    RoleManagementContext,
+    UserManagementContext,
+)
 from app.application.common.services.authorization.service import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
@@ -57,9 +63,13 @@ class ReactivateUserInteractor:
         )
 
         current_user = await self._current_user_service.get_current_user()
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=UserRole.USER,
+
+        self._authorization_service.authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=UserRole.USER,
+            ),
         )
 
         username = Username(request_data.username)
@@ -70,9 +80,12 @@ class ReactivateUserInteractor:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=user.role,
+        self._authorization_service.authorize(
+            CanManageSubordinate(),
+            context=UserManagementContext(
+                subject=current_user,
+                target=user,
+            ),
         )
 
         self._user_service.toggle_user_activation(user, is_active=True)

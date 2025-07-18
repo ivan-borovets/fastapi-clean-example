@@ -5,10 +5,11 @@ from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
+from app.application.common.services.authorization.composite import AnyOf
 from app.application.common.services.authorization.permissions import (
-    AnyOf,
-    IsSelf,
-    IsSuperior,
+    CanManageSelf,
+    CanManageSubordinate,
+    UserManagementContext,
 )
 from app.application.common.services.authorization.service import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
@@ -69,11 +70,15 @@ class ChangePasswordInteractor:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        # Declarative authorization: can change own or subordinate's password
         self._authorization_service.authorize(
-            current_user,
-            AnyOf(IsSelf(), IsSuperior()),
-            target_user=user,
+            AnyOf(
+                CanManageSelf(),
+                CanManageSubordinate(),
+            ),
+            context=UserManagementContext(
+                subject=current_user,
+                target=user,
+            ),
         )
 
         self._user_service.change_password(user, password)

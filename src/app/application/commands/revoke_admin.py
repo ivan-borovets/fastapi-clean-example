@@ -5,6 +5,10 @@ from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
+from app.application.common.services.authorization.permissions import (
+    CanManageRole,
+    RoleManagementContext,
+)
 from app.application.common.services.authorization.service import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
@@ -56,9 +60,13 @@ class RevokeAdminInteractor:
         )
 
         current_user = await self._current_user_service.get_current_user()
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=UserRole.ADMIN,
+
+        self._authorization_service.authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=UserRole.ADMIN,
+            ),
         )
 
         username = Username(request_data.username)
