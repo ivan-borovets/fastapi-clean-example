@@ -12,7 +12,7 @@ from tests.app.unit.factories.user_entity import create_user
 from tests.app.unit.factories.value_objects import create_user_id
 
 
-def test_can_manage_self_correct() -> None:
+def test_can_manage_self() -> None:
     user_id = create_user_id()
     subject = create_user(user_id=user_id)
     target = create_user(user_id=user_id)
@@ -22,7 +22,7 @@ def test_can_manage_self_correct() -> None:
     assert sut.is_satisfied_by(context)
 
 
-def test_can_manage_self_incorrect() -> None:
+def test_cannot_manage_another_user() -> None:
     subject_id = create_user_id()
     subject = create_user(user_id=subject_id)
     target_id = create_user_id()
@@ -41,7 +41,7 @@ def test_can_manage_self_incorrect() -> None:
         (UserRole.ADMIN, UserRole.USER),
     ],
 )
-def test_can_manage_subordinate_correct(
+def test_can_manage_subordinate(
     subject_role: UserRole,
     target_role: UserRole,
 ) -> None:
@@ -62,7 +62,7 @@ def test_can_manage_subordinate_correct(
         (UserRole.USER, UserRole.ADMIN),
     ],
 )
-def test_can_manage_subordinate_incorrect(
+def test_cannot_manage_non_subordinate(
     subject_role: UserRole,
     target_role: UserRole,
 ) -> None:
@@ -82,7 +82,7 @@ def test_can_manage_subordinate_incorrect(
         (UserRole.ADMIN, UserRole.USER),
     ],
 )
-def test_can_manage_role_correct(
+def test_can_manage_role(
     subject_role: UserRole,
     target_role: UserRole,
 ) -> None:
@@ -102,7 +102,7 @@ def test_can_manage_role_correct(
         (UserRole.USER, UserRole.ADMIN),
     ],
 )
-def test_can_manage_role_incorrect(
+def test_cannot_manage_role(
     subject_role: UserRole,
     target_role: UserRole,
 ) -> None:
