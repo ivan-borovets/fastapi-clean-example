@@ -6,7 +6,6 @@ from uuid import UUID
 from app.application.common.ports.transaction_manager import TransactionManager
 from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.services.current_user import CurrentUserService
-from app.domain.entities.user import User
 from app.domain.exceptions.user import UsernameAlreadyExistsError
 from app.domain.services.user import UserService
 from app.domain.value_objects.raw_password.raw_password import RawPassword
@@ -69,7 +68,7 @@ class SignUpHandler:
         username = Username(request_data.username)
         password = RawPassword(request_data.password)
 
-        user: User = self._user_service.create_user(username, password)
+        user = self._user_service.create_user(username, password)
 
         self._user_command_gateway.add(user)
 

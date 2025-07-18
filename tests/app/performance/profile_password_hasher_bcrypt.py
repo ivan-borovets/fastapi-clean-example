@@ -20,7 +20,7 @@ def main() -> None:
     profiler = LineProfiler()
     profiler.add_function(profile_password_hashing)
 
-    profiler.runcall(profile_password_hashing, hasher)  # type: ignore[no-untyped-call]
+    profiler.runcall(profile_password_hashing, hasher)
     profiler.print_stats()
 
 

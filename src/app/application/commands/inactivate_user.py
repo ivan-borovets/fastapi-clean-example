@@ -6,7 +6,15 @@ from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.authorize import (
+    authorize,
+)
+from app.application.common.services.authorization.permissions import (
+    CanManageRole,
+    CanManageSubordinate,
+    RoleManagementContext,
+    UserManagementContext,
+)
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
@@ -41,14 +49,12 @@ class InactivateUserInteractor:
     def __init__(
         self,
         current_user_service: CurrentUserService,
-        authorization_service: AuthorizationService,
         user_command_gateway: UserCommandGateway,
         user_service: UserService,
         transaction_manager: TransactionManager,
         access_revoker: AccessRevoker,
     ):
         self._current_user_service = current_user_service
-        self._authorization_service = authorization_service
         self._user_command_gateway = user_command_gateway
         self._user_service = user_service
         self._transaction_manager = transaction_manager
@@ -61,9 +67,13 @@ class InactivateUserInteractor:
         )
 
         current_user = await self._current_user_service.get_current_user()
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=UserRole.USER,
+
+        authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=UserRole.USER,
+            ),
         )
 
         username = Username(request_data.username)
@@ -74,9 +84,12 @@ class InactivateUserInteractor:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        self._authorization_service.authorize_for_subordinate_role(
-            current_user.role,
-            target_role=user.role,
+        authorize(
+            CanManageSubordinate(),
+            context=UserManagementContext(
+                subject=current_user,
+                target=user,
+            ),
         )
 
         self._user_service.toggle_user_activation(user, is_active=False)

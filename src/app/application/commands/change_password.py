@@ -1,12 +1,19 @@
 import logging
 from dataclasses import dataclass
 
-from app.application.common.permissions import AnyOf, IsSelf, IsSuperior
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.authorize import (
+    authorize,
+)
+from app.application.common.services.authorization.composite import AnyOf
+from app.application.common.services.authorization.permissions import (
+    CanManageSelf,
+    CanManageSubordinate,
+    UserManagementContext,
+)
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.exceptions.user import UserNotFoundByUsernameError
@@ -40,13 +47,11 @@ class ChangePasswordInteractor:
     def __init__(
         self,
         current_user_service: CurrentUserService,
-        authorization_service: AuthorizationService,
         user_command_gateway: UserCommandGateway,
         user_service: UserService,
         transaction_manager: TransactionManager,
     ):
         self._current_user_service = current_user_service
-        self._authorization_service = authorization_service
         self._user_command_gateway = user_command_gateway
         self._user_service = user_service
         self._transaction_manager = transaction_manager
@@ -65,11 +70,15 @@ class ChangePasswordInteractor:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        # Declarative authorization: can change own or subordinate's password
-        self._authorization_service.authorize(
-            current_user,
-            AnyOf(IsSelf(), IsSuperior()),
-            target_user=user,
+        authorize(
+            AnyOf(
+                CanManageSelf(),
+                CanManageSubordinate(),
+            ),
+            context=UserManagementContext(
+                subject=current_user,
+                target=user,
+            ),
         )
 
         self._user_service.change_password(user, password)
