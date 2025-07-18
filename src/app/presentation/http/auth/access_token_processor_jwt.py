@@ -3,7 +3,7 @@ from typing import Any, Literal, NewType, TypedDict, cast
 
 import jwt
 
-from app.infrastructure.auth_session.model import AuthSession
+from app.infrastructure.auth.session.model import AuthSession
 from app.presentation.http.auth.constants import (
     ACCESS_TOKEN_INVALID_OR_EXPIRED,
     ACCESS_TOKEN_PAYLOAD_MISSING,

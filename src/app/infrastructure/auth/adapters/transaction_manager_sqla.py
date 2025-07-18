@@ -2,14 +2,14 @@ import logging
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.infrastructure.auth_session.adapters.types import AuthAsyncSession
-from app.infrastructure.auth_session.ports.transaction_manager import (
-    AuthSessionTransactionManager,
-)
-from app.infrastructure.constants import (
+from app.infrastructure.adapters.constants import (
     DB_COMMIT_DONE,
     DB_COMMIT_FAILED,
     DB_QUERY_FAILED,
+)
+from app.infrastructure.auth.adapters.types import AuthAsyncSession
+from app.infrastructure.auth.session.ports.transaction_manager import (
+    AuthSessionTransactionManager,
 )
 from app.infrastructure.exceptions.gateway import DataMapperError
 

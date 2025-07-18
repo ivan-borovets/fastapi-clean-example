@@ -1,10 +1,13 @@
 import logging
 
-from app.application.common.constants import AUTHZ_NO_CURRENT_USER, AUTHZ_NOT_AUTHORIZED
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.ports.access_revoker import AccessRevoker
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.application.common.ports.user_command_gateway import UserCommandGateway
+from app.application.common.services.constants import (
+    AUTHZ_NO_CURRENT_USER,
+    AUTHZ_NOT_AUTHORIZED,
+)
 from app.domain.entities.user import User
 
 log = logging.getLogger(__name__)

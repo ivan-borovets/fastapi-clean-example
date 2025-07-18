@@ -1,7 +1,7 @@
 from dishka import Provider, Scope, from_context, provide
 
 from app.infrastructure.adapters.password_hasher_bcrypt import PasswordPepper
-from app.infrastructure.auth_session.timer_utc import (
+from app.infrastructure.auth.session.timer_utc import (
     AuthSessionRefreshThreshold,
     AuthSessionTtlMin,
 )

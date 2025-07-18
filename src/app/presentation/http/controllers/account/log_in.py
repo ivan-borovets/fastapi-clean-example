@@ -2,7 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
-from app.infrastructure.handlers.log_in import LogInHandler, LogInRequest
+from app.infrastructure.auth.handlers.log_in import LogInHandler, LogInRequest
 from app.presentation.http.exceptions.schemas import (
     ExceptionSchema,
     ExceptionSchemaDetailed,

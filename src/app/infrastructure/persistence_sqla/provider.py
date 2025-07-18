@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import (
 from app.infrastructure.adapters.types import (
     MainAsyncSession,
 )
-from app.infrastructure.auth_session.adapters.types import AuthAsyncSession
+from app.infrastructure.auth.adapters.types import AuthAsyncSession
 from app.infrastructure.persistence_sqla.config import PostgresDsn, SqlaEngineConfig
 
 log = logging.getLogger(__name__)

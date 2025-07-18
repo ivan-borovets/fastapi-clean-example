@@ -16,7 +16,7 @@ from app.domain.exceptions.user import (
     UsernameAlreadyExistsError,
     UserNotFoundByUsernameError,
 )
-from app.infrastructure.exceptions.authentication import (
+from app.infrastructure.auth.exceptions import (
     AlreadyAuthenticatedError,
     AuthenticationError,
 )

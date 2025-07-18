@@ -22,10 +22,10 @@ from app.infrastructure.adapters.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
 from app.infrastructure.adapters.user_reader_sqla import SqlaUserReader
-from app.infrastructure.auth_session.adapters.access_revoker import (
+from app.infrastructure.auth.adapters.access_revoker import (
     AuthSessionAccessRevoker,
 )
-from app.infrastructure.auth_session.adapters.identity_provider import (
+from app.infrastructure.auth.adapters.identity_provider import (
     AuthSessionIdentityProvider,
 )
 

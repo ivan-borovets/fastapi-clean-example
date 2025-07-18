@@ -2,8 +2,8 @@ import logging
 
 from starlette.requests import Request
 
-from app.infrastructure.auth_session.model import AuthSession
-from app.infrastructure.auth_session.ports.transport import AuthSessionTransport
+from app.infrastructure.auth.session.model import AuthSession
+from app.infrastructure.auth.session.ports.transport import AuthSessionTransport
 from app.presentation.http.auth.access_token_processor_jwt import (
     JwtAccessTokenProcessor,
 )

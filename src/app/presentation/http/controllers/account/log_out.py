@@ -2,7 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
 
-from app.infrastructure.handlers.log_out import LogOutHandler
+from app.infrastructure.auth.handlers.log_out import LogOutHandler
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
 from app.presentation.http.exceptions.schemas import (
     ExceptionSchema,

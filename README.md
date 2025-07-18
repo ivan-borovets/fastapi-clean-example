@@ -433,7 +433,7 @@ natural.
         │   └── ...                              # ports, enums, exceptions, etc.
         │
         ├── application/...                      # application layer
-        │   ├── commands/                        # write operations, business-critical reads
+        │   ├── commands/                        # write ops, business-critical reads
         │   │   ├── create_user.py               # interactor
         │   │   └── ...                          # other interactors
         │   ├── queries/                         # optimized read operations
@@ -444,9 +444,9 @@ natural.
         │       └── ...                          # ports, exceptions, etc.
         │
         ├── infrastructure/...                   # infrastructure layer
-        │   ├── auth_session/...                 # auth context (session-based)
-        │   ├── handlers/...                     # account handlers (log in, log out, sign up)
-        │   └── ...                              # adapters, persistence, exceptions, etc.
+        │   ├── adapters/...                     # port adapters
+        │   ├── auth/...                         # auth context (session-based)
+        │   └── ...                              # persistence, exceptions, etc.
         │
         ├── presentation/...                     # presentation layer
         │   └── http/                            # http interface

@@ -2,7 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
-from app.infrastructure.handlers.sign_up import (
+from app.infrastructure.auth.handlers.sign_up import (
     SignUpHandler,
     SignUpRequest,
     SignUpResponse,

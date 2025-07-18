@@ -8,8 +8,7 @@ from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.domain.exceptions.user import UsernameAlreadyExistsError
-from app.infrastructure.adapters.types import MainAsyncSession
-from app.infrastructure.constants import (
+from app.infrastructure.adapters.constants import (
     DB_COMMIT_DONE,
     DB_COMMIT_FAILED,
     DB_CONSTRAINT_VIOLATION,
@@ -17,6 +16,7 @@ from app.infrastructure.constants import (
     DB_FLUSH_FAILED,
     DB_QUERY_FAILED,
 )
+from app.infrastructure.adapters.types import MainAsyncSession
 from app.infrastructure.exceptions.gateway import DataMapperError
 
 log = logging.getLogger(__name__)

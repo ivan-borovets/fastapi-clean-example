@@ -1,6 +1,6 @@
 from app.application.common.ports.access_revoker import AccessRevoker
 from app.domain.value_objects.user_id import UserId
-from app.infrastructure.auth_session.service import AuthSessionService
+from app.infrastructure.auth.session.service import AuthSessionService
 
 
 class AuthSessionAccessRevoker(AccessRevoker):
