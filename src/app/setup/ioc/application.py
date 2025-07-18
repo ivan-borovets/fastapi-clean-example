@@ -7,6 +7,7 @@ from app.application.commands.inactivate_user import InactivateUserInteractor
 from app.application.commands.reactivate_user import ReactivateUserInteractor
 from app.application.commands.revoke_admin import RevokeAdminInteractor
 from app.application.common.ports.access_revoker import AccessRevoker
+from app.application.common.ports.flusher import Flusher
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
@@ -15,6 +16,7 @@ from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.ports.user_query_gateway import UserQueryGateway
 from app.application.common.services.current_user import CurrentUserService
 from app.application.queries.list_users import ListUsersQueryService
+from app.infrastructure.adapters.main_flusher_sqla import SqlaMainFlusher
 from app.infrastructure.adapters.main_transaction_manager_sqla import (
     SqlaMainTransactionManager,
 )
@@ -52,6 +54,10 @@ class ApplicationProvider(Provider):
     tx_manager = provide(
         source=SqlaMainTransactionManager,
         provides=TransactionManager,
+    )
+    flusher = provide(
+        source=SqlaMainFlusher,
+        provides=Flusher,
     )
     user_command_gateway = provide(
         source=SqlaUserDataMapper,

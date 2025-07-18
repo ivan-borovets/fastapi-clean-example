@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID
 
+from app.application.common.ports.flusher import Flusher
 from app.application.common.ports.transaction_manager import TransactionManager
 from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.services.current_user import CurrentUserService
@@ -48,15 +49,17 @@ class SignUpHandler:
 
     def __init__(
         self,
-        user_command_gateway: UserCommandGateway,
-        transaction_manager: TransactionManager,
         current_user_service: CurrentUserService,
         user_service: UserService,
+        user_command_gateway: UserCommandGateway,
+        flusher: Flusher,
+        transaction_manager: TransactionManager,
     ):
-        self._user_command_gateway = user_command_gateway
-        self._transaction_manager = transaction_manager
         self._current_user_service = current_user_service
         self._user_service = user_service
+        self._user_command_gateway = user_command_gateway
+        self._flusher = flusher
+        self._transaction_manager = transaction_manager
 
     async def __call__(self, request_data: SignUpRequest) -> SignUpResponse:
         log.info("Sign up: started. Username: '%s'.", request_data.username)
@@ -75,7 +78,7 @@ class SignUpHandler:
         self._user_command_gateway.add(user)
 
         try:
-            await self._transaction_manager.flush()
+            await self._flusher.flush()
         except UsernameAlreadyExistsError:
             raise
 

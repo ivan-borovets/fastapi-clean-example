@@ -4,25 +4,15 @@ from typing import Protocol
 
 class TransactionManager(Protocol):
     """
-    UOW-compatible interface for flushing and
-    committing changes to the data source.
-    The actual implementation of UOW can be bundled with an ORM,
-    like SQLAlchemy's session.
+    UoW-compatible interface for committing a business transaction.
+    May be extended with rollback support.
+    The implementation may be an ORM session, such as SQLAlchemy's.
     """
-
-    @abstractmethod
-    async def flush(self) -> None:
-        """
-        Mostly to check data source constraints.
-
-        :raises DataMapperError:
-        :raises UsernameAlreadyExists:
-        """
 
     @abstractmethod
     async def commit(self) -> None:
         """
-        Persist changes to the data source.
+        Commit the successful outcome of a business transaction.
 
         :raises DataMapperError:
         """
