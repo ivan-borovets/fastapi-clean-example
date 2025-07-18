@@ -2,7 +2,7 @@ import pytest
 
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.services.authorization.service import AuthorizationService
-from tests.app.unit.application.permission_stubs import (
+from tests.app.unit.application.authz_service.permission_stubs import (
     AlwaysAllow,
     AlwaysDeny,
     DummyContext,

@@ -1,5 +1,5 @@
 from app.application.common.services.authorization.composite import AnyOf
-from tests.app.unit.application.permission_stubs import (
+from tests.app.unit.application.authz_service.permission_stubs import (
     AlwaysAllow,
     AlwaysDeny,
     DummyContext,
