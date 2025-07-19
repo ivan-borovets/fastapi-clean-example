@@ -1,12 +1,17 @@
 import logging
 from dataclasses import dataclass
 
-from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
 from app.application.common.ports.user_command_gateway import UserCommandGateway
-from app.application.common.services.authorization import AuthorizationService
+from app.application.common.services.authorization.composite import AnyOf
+from app.application.common.services.authorization.permissions import (
+    CanManageSelf,
+    CanManageSubordinate,
+    UserManagementContext,
+)
+from app.application.common.services.authorization.service import AuthorizationService
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.exceptions.user import UserNotFoundByUsernameError
@@ -65,16 +70,16 @@ class ChangePasswordInteractor:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        try:
-            self._authorization_service.authorize_for_self(
-                current_user.id_,
-                target_id=user.id_,
-            )
-        except AuthorizationError:
-            self._authorization_service.authorize_for_subordinate_role(
-                current_user.role,
-                target_role=user.role,
-            )
+        self._authorization_service.authorize(
+            AnyOf(
+                CanManageSelf(),
+                CanManageSubordinate(),
+            ),
+            context=UserManagementContext(
+                subject=current_user,
+                target=user,
+            ),
+        )
 
         self._user_service.change_password(user, password)
         await self._transaction_manager.commit()

@@ -123,15 +123,13 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL", ]
 "tests/**" = [
+    "ARG002", # unused-method-argument
     "PLC2801", # unnecessary-dunder-call
     "PLR2004", # magic-value-comparison
     "PT011", # pytest-raises-too-broad
     "S101", # assert
-    "S105", # hardcoded-password-string
     "S106", # hardcoded-password-func-arg
     "S107", # hardcoded-password-default
-    "SLF001", # private-member-access
-    "UP012", # unnecessary-encode-utf8
 ]
 #
 "src/app/domain/value_objects/base.py" = ["B024", ]                          # abstract-base-class-without-abstract-method
