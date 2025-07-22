@@ -18,7 +18,7 @@ from app.setup.config.loader import (
 
 @pytest.mark.parametrize("env", list(ValidEnvs))
 def test_returns_enum_for_correct_env_string(env: ValidEnvs) -> None:
-    assert validate_env(env=env) == env
+    assert validate_env(env) == env
 
 
 @pytest.mark.parametrize(
@@ -27,7 +27,7 @@ def test_returns_enum_for_correct_env_string(env: ValidEnvs) -> None:
 )
 def test_raises_for_incorrect_env_string_or_none(env: str | None) -> None:
     with pytest.raises(ValueError):
-        validate_env(env=env)
+        validate_env(env)
 
 
 @pytest.mark.parametrize("env_str", list(ValidEnvs))

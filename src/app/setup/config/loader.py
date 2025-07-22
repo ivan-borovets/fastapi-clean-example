@@ -8,7 +8,11 @@ from typing import Any, Final
 
 import rtoml
 
+ConfigDict = dict[str, Any]
+
 log = logging.getLogger(__name__)
+
+ENV_VAR_NAME: Final[str] = "APP_ENV"
 
 
 class ValidEnvs(StrEnum):
@@ -32,8 +36,6 @@ class DirContents(StrEnum):
     DOTENV_NAME = ".env"
 
 
-ENV_VAR_NAME: Final[str] = "APP_ENV"
-
 BASE_DIR_PATH = Path(__file__).resolve().parents[4]
 CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
 
@@ -44,7 +46,7 @@ ENV_TO_DIR_PATHS: Final[Mapping[ValidEnvs, Path]] = MappingProxyType({
 })
 
 
-def validate_env(*, env: str | None) -> ValidEnvs:
+def validate_env(env: str | None) -> ValidEnvs:
     if env is None:
         raise ValueError(f"{ENV_VAR_NAME} is not set.")
     try:
@@ -57,16 +59,30 @@ def validate_env(*, env: str | None) -> ValidEnvs:
 
 
 def get_current_env() -> ValidEnvs:
-    env_value = os.getenv(ENV_VAR_NAME)
-    return validate_env(env=env_value)
+    return validate_env(os.getenv(ENV_VAR_NAME))
+
+
+def load_full_config(
+    env: ValidEnvs,
+    dir_paths: Mapping[ValidEnvs, Path] = ENV_TO_DIR_PATHS,
+    main_config: DirContents = DirContents.CONFIG_NAME,
+    secrets_config: DirContents = DirContents.SECRETS_NAME,
+) -> ConfigDict:
+    log.info("Reading config for environment: '%s'", env)
+    config = read_config(env=env, config=main_config, dir_paths=dir_paths)
+    try:
+        secrets = read_config(env=env, config=secrets_config, dir_paths=dir_paths)
+    except FileNotFoundError:
+        log.warning("Secrets file not found. Full config will not contain secrets.")
+        return config
+    return merge_dicts(dict1=config, dict2=secrets)
 
 
 def read_config(
-    *,
     env: ValidEnvs,
-    config: DirContents,
     dir_paths: Mapping[ValidEnvs, Path],
-) -> dict[str, Any]:
+    config: DirContents,
+) -> ConfigDict:
     dir_path = dir_paths.get(env)
     if dir_path is None:
         raise FileNotFoundError(f"No directory path configured for environment: {env}")
@@ -79,7 +95,7 @@ def read_config(
         return rtoml.load(file)
 
 
-def merge_dicts(*, dict1: dict[str, Any], dict2: dict[str, Any]) -> dict[str, Any]:
+def merge_dicts(*, dict1: ConfigDict, dict2: ConfigDict) -> ConfigDict:
     result = dict1.copy()
     for key, value in dict2.items():
         if key in result and isinstance(result[key], dict) and isinstance(value, dict):
@@ -87,20 +103,3 @@ def merge_dicts(*, dict1: dict[str, Any], dict2: dict[str, Any]) -> dict[str, An
         else:
             result[key] = value
     return result
-
-
-def load_full_config(
-    *,
-    env: ValidEnvs,
-    main_config: DirContents = DirContents.CONFIG_NAME,
-    secrets_config: DirContents = DirContents.SECRETS_NAME,
-    dir_paths: Mapping[ValidEnvs, Path] = ENV_TO_DIR_PATHS,
-) -> dict[str, Any]:
-    log.info("Reading config for environment: '%s'", env)
-    config = read_config(env=env, config=main_config, dir_paths=dir_paths)
-    try:
-        secrets = read_config(env=env, config=secrets_config, dir_paths=dir_paths)
-    except FileNotFoundError:
-        log.warning("Secrets file not found. Full config will not contain secrets.")
-        return config
-    return merge_dicts(dict1=config, dict2=secrets)
