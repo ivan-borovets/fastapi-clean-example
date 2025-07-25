@@ -7,26 +7,28 @@ from app.infrastructure.adapters.user_data_mapper_sqla import (
     SqlaUserDataMapper,
 )
 from app.infrastructure.adapters.user_reader_sqla import SqlaUserReader
-from app.infrastructure.auth_session.adapters.data_mapper_sqla import (
+from app.infrastructure.auth.adapters.data_mapper_sqla import (
     SqlaAuthSessionDataMapper,
 )
-from app.infrastructure.auth_session.adapters.identity_provider import (
+from app.infrastructure.auth.adapters.identity_provider import (
     AuthSessionIdentityProvider,
 )
-from app.infrastructure.auth_session.adapters.transaction_manager_sqla import (
+from app.infrastructure.auth.adapters.transaction_manager_sqla import (
     SqlaAuthSessionTransactionManager,
 )
-from app.infrastructure.auth_session.id_generator_str import StrAuthSessionIdGenerator
-from app.infrastructure.auth_session.ports.gateway import AuthSessionGateway
-from app.infrastructure.auth_session.ports.transaction_manager import (
+from app.infrastructure.auth.handlers.log_in import LogInHandler
+from app.infrastructure.auth.handlers.log_out import LogOutHandler
+from app.infrastructure.auth.handlers.sign_up import SignUpHandler
+from app.infrastructure.auth.session.id_generator_str import (
+    StrAuthSessionIdGenerator,
+)
+from app.infrastructure.auth.session.ports.gateway import AuthSessionGateway
+from app.infrastructure.auth.session.ports.transaction_manager import (
     AuthSessionTransactionManager,
 )
-from app.infrastructure.auth_session.ports.transport import AuthSessionTransport
-from app.infrastructure.auth_session.service import AuthSessionService
-from app.infrastructure.auth_session.timer_utc import UtcAuthSessionTimer
-from app.infrastructure.handlers.log_in import LogInHandler
-from app.infrastructure.handlers.log_out import LogOutHandler
-from app.infrastructure.handlers.sign_up import SignUpHandler
+from app.infrastructure.auth.session.ports.transport import AuthSessionTransport
+from app.infrastructure.auth.session.service import AuthSessionService
+from app.infrastructure.auth.session.timer_utc import UtcAuthSessionTimer
 from app.infrastructure.persistence_sqla.provider import (
     get_async_engine,
     get_async_session_factory,

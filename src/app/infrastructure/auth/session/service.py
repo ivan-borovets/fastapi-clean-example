@@ -2,17 +2,8 @@ import logging
 from datetime import datetime
 
 from app.domain.value_objects.user_id import UserId
-from app.infrastructure.auth_session.id_generator_str import StrAuthSessionIdGenerator
-from app.infrastructure.auth_session.model import AuthSession
-from app.infrastructure.auth_session.ports.gateway import (
-    AuthSessionGateway,
-)
-from app.infrastructure.auth_session.ports.transaction_manager import (
-    AuthSessionTransactionManager,
-)
-from app.infrastructure.auth_session.ports.transport import AuthSessionTransport
-from app.infrastructure.auth_session.timer_utc import UtcAuthSessionTimer
-from app.infrastructure.constants import (
+from app.infrastructure.auth.exceptions import AuthenticationError
+from app.infrastructure.auth.session.constants import (
     AUTH_IS_UNAVAILABLE,
     AUTH_NOT_AUTHENTICATED,
     AUTH_SESSION_EXPIRED,
@@ -20,7 +11,18 @@ from app.infrastructure.constants import (
     AUTH_SESSION_EXTRACTION_FAILED,
     AUTH_SESSION_NOT_FOUND,
 )
-from app.infrastructure.exceptions.authentication import AuthenticationError
+from app.infrastructure.auth.session.id_generator_str import (
+    StrAuthSessionIdGenerator,
+)
+from app.infrastructure.auth.session.model import AuthSession
+from app.infrastructure.auth.session.ports.gateway import (
+    AuthSessionGateway,
+)
+from app.infrastructure.auth.session.ports.transaction_manager import (
+    AuthSessionTransactionManager,
+)
+from app.infrastructure.auth.session.ports.transport import AuthSessionTransport
+from app.infrastructure.auth.session.timer_utc import UtcAuthSessionTimer
 from app.infrastructure.exceptions.gateway import DataMapperError
 
 log = logging.getLogger(__name__)

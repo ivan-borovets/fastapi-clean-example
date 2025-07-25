@@ -1,7 +1,7 @@
 import logging
 
 from app.application.common.services.current_user import CurrentUserService
-from app.infrastructure.auth_session.service import AuthSessionService
+from app.infrastructure.auth.session.service import AuthSessionService
 
 log = logging.getLogger(__name__)
 

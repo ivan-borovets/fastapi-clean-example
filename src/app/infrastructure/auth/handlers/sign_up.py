@@ -10,10 +10,12 @@ from app.domain.exceptions.user import UsernameAlreadyExistsError
 from app.domain.services.user import UserService
 from app.domain.value_objects.raw_password.raw_password import RawPassword
 from app.domain.value_objects.username.username import Username
-from app.infrastructure.constants import AUTH_ALREADY_AUTHENTICATED
-from app.infrastructure.exceptions.authentication import (
+from app.infrastructure.auth.exceptions import (
     AlreadyAuthenticatedError,
     AuthenticationError,
+)
+from app.infrastructure.auth.handlers.constants import (
+    AUTH_ALREADY_AUTHENTICATED,
 )
 
 log = logging.getLogger(__name__)

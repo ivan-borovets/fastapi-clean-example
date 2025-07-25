@@ -1,6 +1,6 @@
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.domain.value_objects.user_id import UserId
-from app.infrastructure.auth_session.service import AuthSessionService
+from app.infrastructure.auth.session.service import AuthSessionService
 
 
 class AuthSessionIdentityProvider(IdentityProvider):

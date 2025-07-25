@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from app.infrastructure.auth_session.model import AuthSession
+from app.infrastructure.auth.session.model import AuthSession
 
 
 class AuthSessionTransport(Protocol):

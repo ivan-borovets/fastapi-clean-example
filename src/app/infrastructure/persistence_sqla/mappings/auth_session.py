@@ -2,7 +2,7 @@ from sqlalchemy import UUID, Column, DateTime, String, Table
 from sqlalchemy.orm import composite
 
 from app.domain.value_objects.user_id import UserId
-from app.infrastructure.auth_session.model import AuthSession
+from app.infrastructure.auth.session.model import AuthSession
 from app.infrastructure.persistence_sqla.registry import mapping_registry
 
 auth_sessions_table = Table(

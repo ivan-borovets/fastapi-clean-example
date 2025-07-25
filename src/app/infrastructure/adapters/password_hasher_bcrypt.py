@@ -24,6 +24,7 @@ class BcryptPasswordHasher(PasswordHasher):
         This issue can be resolved by applying `base64` encoding to the digest.
         The resulting `base64(hmac-sha256(password, pepper))` string is then ready for bcrypt hashing.
         Salt is added to this string before passing it to `bcrypt` for the final hashing step.
+        Inspired by: https://blog.ircmaxell.com/2015/03/security-issue-combining-bcrypt-with.html
         """
         base64_hmac_password: bytes = self._add_pepper(raw_password, self._pepper)
         salt: bytes = bcrypt.gensalt()

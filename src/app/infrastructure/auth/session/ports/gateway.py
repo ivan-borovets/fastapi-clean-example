@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Protocol
 
 from app.domain.value_objects.user_id import UserId
-from app.infrastructure.auth_session.model import AuthSession
+from app.infrastructure.auth.session.model import AuthSession
 
 
 class AuthSessionGateway(Protocol):
