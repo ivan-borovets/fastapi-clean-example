@@ -50,13 +50,13 @@ class LogInHandler:
 
     def __init__(
         self,
-        user_command_gateway: UserCommandGateway,
         current_user_service: CurrentUserService,
+        user_command_gateway: UserCommandGateway,
         user_service: UserService,
         auth_session_service: AuthSessionService,
     ):
-        self._user_command_gateway = user_command_gateway
         self._current_user_service = current_user_service
+        self._user_command_gateway = user_command_gateway
         self._user_service = user_service
         self._auth_session_service = auth_session_service
 

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID
 
+from app.application.common.ports.flusher import Flusher
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
 )
@@ -52,13 +53,15 @@ class CreateUserInteractor:
     def __init__(
         self,
         current_user_service: CurrentUserService,
-        user_command_gateway: UserCommandGateway,
         user_service: UserService,
+        user_command_gateway: UserCommandGateway,
+        flusher: Flusher,
         transaction_manager: TransactionManager,
     ):
         self._current_user_service = current_user_service
-        self._user_command_gateway = user_command_gateway
         self._user_service = user_service
+        self._user_command_gateway = user_command_gateway
+        self._flusher = flusher
         self._transaction_manager = transaction_manager
 
     async def __call__(self, request_data: CreateUserRequest) -> CreateUserResponse:
@@ -84,7 +87,7 @@ class CreateUserInteractor:
         self._user_command_gateway.add(user)
 
         try:
-            await self._transaction_manager.flush()
+            await self._flusher.flush()
         except UsernameAlreadyExistsError:
             raise
 
