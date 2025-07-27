@@ -1,5 +1,3 @@
-__all__ = ("setup_handlers",)
-
 import logging
 from typing import Any, cast
 
@@ -30,6 +28,10 @@ def setup_handlers(app: FastAPI) -> None:
 
 
 async def handle_exception(_: Request, exc: Exception) -> ORJSONResponse:
+    """
+    Async as recommended by FastAPI for exception handlers.
+    https://fastapi.tiangolo.com/tutorial/handling-errors/
+    """
     status_code = resolve_status_code(exc)
     response = build_exception_response(exc, status_code)
     log_exception(exc, status_code)
