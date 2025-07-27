@@ -1,10 +1,12 @@
+from typing import Annotated
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, Path, Security, status
 
-from app.application.commands.reactivate_user import (
-    ReactivateUserInteractor,
-    ReactivateUserRequest,
+from app.application.commands.deactivate_user import (
+    DeactivateUserInteractor,
+    DeactivateUserRequest,
 )
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
 from app.presentation.http.exceptions.schemas import (
@@ -12,11 +14,11 @@ from app.presentation.http.exceptions.schemas import (
     ExceptionSchemaDetailed,
 )
 
-reactivate_user_router = APIRouter()
+deactivate_user_router = APIRouter()
 
 
-@reactivate_user_router.patch(
-    "/reactivate",
+@deactivate_user_router.patch(
+    "/{username}/deactivate",
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -30,9 +32,9 @@ reactivate_user_router = APIRouter()
     dependencies=[Security(cookie_scheme)],
 )
 @inject
-async def reactivate_user(
-    request_data: ReactivateUserRequest,
-    interactor: FromDishka[ReactivateUserInteractor],
+async def deactivate_user(
+    username: Annotated[str, Path()],
+    interactor: FromDishka[DeactivateUserInteractor],
 ) -> None:
     # :raises AuthenticationError 401:
     # :raises DataMapperError 503:
@@ -40,4 +42,5 @@ async def reactivate_user(
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
     # :raises ActivationChangeNotPermitted 403:
+    request_data = DeactivateUserRequest(username)
     await interactor(request_data)

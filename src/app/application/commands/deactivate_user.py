@@ -26,16 +26,16 @@ log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
-class InactivateUserRequest:
+class DeactivateUserRequest:
     username: str
 
 
-class InactivateUserInteractor:
+class DeactivateUserInteractor:
     """
     Open to admins.
     Soft-deletes an existing user, making that user inactive.
     Also deletes the user's sessions.
-    Only super admins can inactivate other admins.
+    Only super admins can deactivate other admins.
     Super admins cannot be soft-deleted.
 
     :raises AuthenticationError:
@@ -60,9 +60,9 @@ class InactivateUserInteractor:
         self._transaction_manager = transaction_manager
         self._access_revoker = access_revoker
 
-    async def __call__(self, request_data: InactivateUserRequest) -> None:
+    async def __call__(self, request_data: DeactivateUserRequest) -> None:
         log.info(
-            "Inactivate user: started. Username: '%s'.",
+            "Deactivate user: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -97,6 +97,6 @@ class InactivateUserInteractor:
         await self._access_revoker.remove_all_user_access(user.id_)
 
         log.info(
-            "Inactivate user: done. Username: '%s'.",
+            "Deactivate user: done. Username: '%s'.",
             user.username.value,
         )

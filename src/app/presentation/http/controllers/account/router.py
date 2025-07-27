@@ -9,9 +9,9 @@ account_router = APIRouter(
     tags=["Account"],
 )
 account_sub_routers: tuple[APIRouter, ...] = (
+    sign_up_router,
     log_in_router,
     log_out_router,
-    sign_up_router,
 )
 
 for router in account_sub_routers:

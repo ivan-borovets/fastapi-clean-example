@@ -480,7 +480,7 @@ natural.
 ### General
 
 - `/`: Open to **everyone**.
-    - Redirects to Swagger Documentation.
+    - Redirects to Swagger documentation.
 - `/api/v1/`: Open to **everyone**.
     - Returns `200 OK` if the API is alive.
 
@@ -505,25 +505,24 @@ natural.
     - Only super admins can create new admins.
 - `/` (GET): Open to **admins**.
     - Retrieves a paginated list of existing users with relevant information.
-- `/inactivate`: Open to **admins**.
-    - Soft-deletes an existing user, making that user inactive.
-    - Also deletes the user's sessions.
-    - Only super admins can inactivate other admins.
-    - Super admins cannot be soft-deleted.
-- `/reactivate`: Open to **admins**.
-    - Restores a previously soft-deleted user.
-    - Only super admins can reactivate other admins.
-    - Super admins cannot be soft-deleted.
-- `/grant`: Open to **super admins**.
-    - Grants admin rights to a specified user.
-    - Super admin rights can not be changed.
-- `/revoke`: Open to **super admins**.
-    - Revokes admin rights from a specified user.
-    - Super admin rights can not be changed.
-- `/change_password`: Open to **authenticated users**.
+- `/{username}/password`: Open to **authenticated users**.
     - Changes the user's password.
     - The current user can change their own password.
     - Admins can change passwords of subordinate users.
+- `/{username}/grant-admin`: Open to **super admins**.
+    - Grants admin rights to a specified user.
+    - Super admin rights can not be changed.
+- `/{username}/revoke-admin`: Open to **super admins**.
+    - Revokes admin rights from a specified user.
+    - Super admin rights can not be changed.
+- `/{username}/activate`: Open to **admins**.
+    - Restores a previously soft-deleted user.
+    - Only super admins can activate other admins.
+- `/{username}/deactivate`: Open to **admins**.
+    - Soft-deletes an existing user, making that user inactive.
+    - Also deletes the user's sessions.
+    - Only super admins can deactivate other admins.
+    - Super admins cannot be soft-deleted.
 
 > [!NOTE]
 > - Super admin privileges must be initially granted manually (e.g., directly in the database), though the user

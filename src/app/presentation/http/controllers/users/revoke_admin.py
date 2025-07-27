@@ -1,6 +1,8 @@
+from typing import Annotated
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, Path, Security, status
 
 from app.application.commands.revoke_admin import (
     RevokeAdminInteractor,
@@ -16,7 +18,7 @@ revoke_admin_router = APIRouter()
 
 
 @revoke_admin_router.patch(
-    "/revoke",
+    "/{username}/revoke-admin",
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -31,7 +33,7 @@ revoke_admin_router = APIRouter()
 )
 @inject
 async def revoke_admin(
-    request_data: RevokeAdminRequest,
+    username: Annotated[str, Path()],
     interactor: FromDishka[RevokeAdminInteractor],
 ) -> None:
     # :raises AuthenticationError 401:
@@ -40,4 +42,5 @@ async def revoke_admin(
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
     # :raises RoleChangeNotPermitted 403:
+    request_data = RevokeAdminRequest(username)
     await interactor(request_data)
