@@ -32,18 +32,11 @@ class DeactivateUserRequest:
 
 class DeactivateUserInteractor:
     """
-    Open to admins.
-    Soft-deletes an existing user, making that user inactive.
-    Also deletes the user's sessions.
-    Only super admins can deactivate other admins.
-    Super admins cannot be soft-deleted.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises DomainFieldError:
-    :raises UserNotFoundByUsername:
-    :raises ActivationChangeNotPermitted:
+    - Open to admins.
+    - Soft-deletes an existing user, making that user inactive.
+    - Also deletes the user's sessions.
+    - Only super admins can deactivate other admins.
+    - Super admins cannot be soft-deleted.
     """
 
     def __init__(
@@ -60,7 +53,15 @@ class DeactivateUserInteractor:
         self._transaction_manager = transaction_manager
         self._access_revoker = access_revoker
 
-    async def __call__(self, request_data: DeactivateUserRequest) -> None:
+    async def execute(self, request_data: DeactivateUserRequest) -> None:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises DomainFieldError:
+        :raises UserNotFoundByUsername:
+        :raises ActivationChangeNotPermitted:
+        """
         log.info(
             "Deactivate user: started. Username: '%s'.",
             request_data.username,

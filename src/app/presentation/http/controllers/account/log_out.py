@@ -1,3 +1,5 @@
+from inspect import getdoc
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
@@ -14,6 +16,7 @@ log_out_router = APIRouter()
 
 @log_out_router.delete(
     "/logout",
+    description=getdoc(LogOutHandler),
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
@@ -26,9 +29,9 @@ log_out_router = APIRouter()
 )
 @inject
 async def logout(
-    interactor: FromDishka[LogOutHandler],
+    handler: FromDishka[LogOutHandler],
 ) -> None:
     # :raises AuthenticationError 401:
     # :raises AuthorizationError 403:
     # :raises DataMapperError 503:
-    await interactor()
+    await handler.execute()

@@ -1,3 +1,4 @@
+from inspect import getdoc
 from typing import Annotated
 
 from dishka import FromDishka
@@ -19,6 +20,7 @@ change_password_router = APIRouter()
 
 @change_password_router.patch(
     "/{username}/password",
+    description=getdoc(ChangePasswordInteractor),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -46,4 +48,4 @@ async def change_password(
         username=username,
         password=password,
     )
-    await interactor(request_data)
+    await interactor.execute(request_data)

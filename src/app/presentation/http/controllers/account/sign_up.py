@@ -1,3 +1,5 @@
+from inspect import getdoc
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
@@ -17,6 +19,7 @@ sign_up_router = APIRouter()
 
 @sign_up_router.post(
     "/signup",
+    description=getdoc(SignUpHandler),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -31,7 +34,7 @@ sign_up_router = APIRouter()
 @inject
 async def sign_up(
     request_data: SignUpRequest,
-    interactor: FromDishka[SignUpHandler],
+    handler: FromDishka[SignUpHandler],
 ) -> SignUpResponse:
     # :raises AlreadyAuthenticatedError 401:
     # :raises AuthorizationError 403:
@@ -39,4 +42,4 @@ async def sign_up(
     # :raises DomainFieldError 400:
     # :raises RoleAssignmentNotPermittedError 422:
     # :raises UsernameAlreadyExists 409:
-    return await interactor(request_data)
+    return await handler.execute(request_data)

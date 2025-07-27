@@ -1,3 +1,4 @@
+from inspect import getdoc
 from typing import Annotated
 
 from dishka import FromDishka
@@ -19,6 +20,7 @@ deactivate_user_router = APIRouter()
 
 @deactivate_user_router.patch(
     "/{username}/deactivate",
+    description=getdoc(DeactivateUserInteractor),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -43,4 +45,4 @@ async def deactivate_user(
     # :raises UserNotFoundByUsername 404:
     # :raises ActivationChangeNotPermitted 403:
     request_data = DeactivateUserRequest(username)
-    await interactor(request_data)
+    await interactor.execute(request_data)

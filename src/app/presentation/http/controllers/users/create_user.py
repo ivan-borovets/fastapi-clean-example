@@ -1,3 +1,5 @@
+from inspect import getdoc
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Security, status
@@ -33,6 +35,7 @@ class CreateUserRequestPydantic(BaseModel):
 
 @create_user_router.post(
     "/",
+    description=getdoc(CreateUserInteractor),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -61,4 +64,4 @@ async def create_user(
         password=request_data_pydantic.password,
         role=request_data_pydantic.role,
     )
-    return await interactor(request_data)
+    return await interactor.execute(request_data)

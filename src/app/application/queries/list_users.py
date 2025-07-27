@@ -38,15 +38,8 @@ class ListUsersResponse(TypedDict):
 
 class ListUsersQueryService:
     """
-    Open to admins.
-    Retrieves a paginated list of existing users with relevant information.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises ReaderError:
-    :raises PaginationError:
-    :raises SortingError:
+    - Open to admins.
+    - Retrieves a paginated list of existing users with relevant information.
     """
 
     def __init__(
@@ -57,7 +50,15 @@ class ListUsersQueryService:
         self._current_user_service = current_user_service
         self._user_query_gateway = user_query_gateway
 
-    async def __call__(self, request_data: ListUsersRequest) -> ListUsersResponse:
+    async def execute(self, request_data: ListUsersRequest) -> ListUsersResponse:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises ReaderError:
+        :raises PaginationError:
+        :raises SortingError:
+        """
         log.info("List users: started.")
 
         current_user = await self._current_user_service.get_current_user()

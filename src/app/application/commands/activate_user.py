@@ -31,16 +31,9 @@ class ActivateUserRequest:
 
 class ActivateUserInteractor:
     """
-    Open to admins.
-    Restores a previously soft-deleted user.
-    Only super admins can activate other admins.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises DomainFieldError:
-    :raises UserNotFoundByUsername:
-    :raises ActivationChangeNotPermitted:
+    - Open to admins.
+    - Restores a previously soft-deleted user.
+    - Only super admins can activate other admins.
     """
 
     def __init__(
@@ -55,7 +48,15 @@ class ActivateUserInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: ActivateUserRequest) -> None:
+    async def execute(self, request_data: ActivateUserRequest) -> None:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises DomainFieldError:
+        :raises UserNotFoundByUsername:
+        :raises ActivationChangeNotPermitted:
+        """
         log.info(
             "Activate user: started. Username: '%s'.",
             request_data.username,

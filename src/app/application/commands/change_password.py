@@ -32,16 +32,10 @@ class ChangePasswordRequest:
 
 class ChangePasswordInteractor:
     """
-    Open to authenticated users.
-    Changes the user's password.
-    The current user can change their own password.
-    Admins can change passwords of subordinate users.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises DomainFieldError:
-    :raises UserNotFoundByUsername:
+    - Open to authenticated users.
+    - Changes the user's password.
+    - The current user can change their own password.
+    - Admins can change passwords of subordinate users.
     """
 
     def __init__(
@@ -56,7 +50,14 @@ class ChangePasswordInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: ChangePasswordRequest) -> None:
+    async def execute(self, request_data: ChangePasswordRequest) -> None:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises DomainFieldError:
+        :raises UserNotFoundByUsername:
+        """
         log.info("Change password: started.")
 
         current_user = await self._current_user_service.get_current_user()

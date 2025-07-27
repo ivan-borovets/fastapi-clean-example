@@ -1,3 +1,4 @@
+from inspect import getdoc
 from typing import Annotated
 
 from dishka import FromDishka
@@ -19,6 +20,7 @@ revoke_admin_router = APIRouter()
 
 @revoke_admin_router.patch(
     "/{username}/revoke-admin",
+    description=getdoc(RevokeAdminInteractor),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -43,4 +45,4 @@ async def revoke_admin(
     # :raises UserNotFoundByUsername 404:
     # :raises RoleChangeNotPermitted 403:
     request_data = RevokeAdminRequest(username)
-    await interactor(request_data)
+    await interactor.execute(request_data)
