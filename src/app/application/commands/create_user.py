@@ -38,16 +38,9 @@ class CreateUserResponse(TypedDict):
 
 class CreateUserInteractor:
     """
-    Open to admins.
-    Creates a new user, including admins, if the username is unique.
-    Only super admins can create new admins.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises DomainFieldError:
-    :raises RoleAssignmentNotPermittedError:
-    :raises UsernameAlreadyExists:
+    - Open to admins.
+    - Creates a new user, including admins, if the username is unique.
+    - Only super admins can create new admins.
     """
 
     def __init__(
@@ -64,7 +57,15 @@ class CreateUserInteractor:
         self._flusher = flusher
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: CreateUserRequest) -> CreateUserResponse:
+    async def execute(self, request_data: CreateUserRequest) -> CreateUserResponse:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises DomainFieldError:
+        :raises RoleAssignmentNotPermittedError:
+        :raises UsernameAlreadyExists:
+        """
         log.info(
             "Create user: started. Username: '%s'.",
             request_data.username,

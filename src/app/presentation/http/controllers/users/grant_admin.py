@@ -1,6 +1,9 @@
+from inspect import getdoc
+from typing import Annotated
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, Path, Security, status
 
 from app.application.commands.grant_admin import (
     GrantAdminInteractor,
@@ -16,7 +19,8 @@ grant_admin_router = APIRouter()
 
 
 @grant_admin_router.patch(
-    "/grant",
+    "/{username}/grant-admin",
+    description=getdoc(GrantAdminInteractor),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -31,7 +35,7 @@ grant_admin_router = APIRouter()
 )
 @inject
 async def grant_admin(
-    request_data: GrantAdminRequest,
+    username: Annotated[str, Path()],
     interactor: FromDishka[GrantAdminInteractor],
 ) -> None:
     # :raises AuthenticationError 401:
@@ -40,4 +44,5 @@ async def grant_admin(
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
     # :raises RoleChangeNotPermitted 403:
-    await interactor(request_data)
+    request_data = GrantAdminRequest(username)
+    await interactor.execute(request_data)

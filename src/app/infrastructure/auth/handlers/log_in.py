@@ -30,22 +30,16 @@ class LogInRequest:
 
 class LogInHandler:
     """
-    Open to everyone.
-    Authenticates registered user,
+    - Open to everyone.
+    - Authenticates registered user,
     sets a JWT access token with a session ID in cookies,
     and creates a session.
-    A logged-in user cannot log in again
+    - A logged-in user cannot log in again
     until the session expires or is terminated.
-    Authentication renews automatically
+    - Authentication renews automatically
     when accessing protected routes before expiration.
-    If the JWT is invalid, expired, or the session is terminated,
+    - If the JWT is invalid, expired, or the session is terminated,
     the user loses authentication.
-
-    :raises AlreadyAuthenticatedError:
-    :raises AuthorizationError:
-    :raises DataMapperError:
-    :raises DomainFieldError:
-    :raises UserNotFoundByUsername:
     """
 
     def __init__(
@@ -60,7 +54,14 @@ class LogInHandler:
         self._user_service = user_service
         self._auth_session_service = auth_session_service
 
-    async def __call__(self, request_data: LogInRequest) -> None:
+    async def execute(self, request_data: LogInRequest) -> None:
+        """
+        :raises AlreadyAuthenticatedError:
+        :raises AuthorizationError:
+        :raises DataMapperError:
+        :raises DomainFieldError:
+        :raises UserNotFoundByUsername:
+        """
         log.info("Log in: started. Username: '%s'.", request_data.username)
 
         try:

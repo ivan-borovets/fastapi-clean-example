@@ -1,3 +1,4 @@
+from inspect import getdoc
 from typing import Annotated
 
 from dishka import FromDishka
@@ -36,6 +37,7 @@ class ListUsersRequestPydantic(BaseModel):
 
 @list_users_router.get(
     "/",
+    description=getdoc(ListUsersQueryService),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -64,4 +66,4 @@ async def list_users(
         sorting_field=request_data_pydantic.sorting_field,
         sorting_order=request_data_pydantic.sorting_order,
     )
-    return await interactor(request_data)
+    return await interactor.execute(request_data)

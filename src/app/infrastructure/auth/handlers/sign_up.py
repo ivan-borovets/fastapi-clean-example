@@ -34,17 +34,10 @@ class SignUpResponse(TypedDict):
 
 class SignUpHandler:
     """
-    Open to everyone.
-    Registers a new user with validation and uniqueness checks.
-    Passwords are peppered, salted, and stored as hashes.
-    A logged-in user cannot sign up until the session expires or is terminated.
-
-    :raises AlreadyAuthenticatedError:
-    :raises AuthorizationError:
-    :raises DataMapperError:
-    :raises DomainFieldError:
-    :raises RoleAssignmentNotPermittedError:
-    :raises UsernameAlreadyExists:
+    - Open to everyone.
+    - Registers a new user with validation and uniqueness checks.
+    - Passwords are peppered, salted, and stored as hashes.
+    - A logged-in user cannot sign up until the session expires or is terminated.
     """
 
     def __init__(
@@ -61,7 +54,15 @@ class SignUpHandler:
         self._flusher = flusher
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: SignUpRequest) -> SignUpResponse:
+    async def execute(self, request_data: SignUpRequest) -> SignUpResponse:
+        """
+        :raises AlreadyAuthenticatedError:
+        :raises AuthorizationError:
+        :raises DataMapperError:
+        :raises DomainFieldError:
+        :raises RoleAssignmentNotPermittedError:
+        :raises UsernameAlreadyExists:
+        """
         log.info("Sign up: started. Username: '%s'.", request_data.username)
 
         try:

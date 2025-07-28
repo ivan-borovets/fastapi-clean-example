@@ -25,23 +25,15 @@ log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
-class ReactivateUserRequest:
+class ActivateUserRequest:
     username: str
 
 
-class ReactivateUserInteractor:
+class ActivateUserInteractor:
     """
-    Open to admins.
-    Restores a previously soft-deleted user.
-    Only super admins can reactivate other admins.
-    Super admins cannot be soft-deleted.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises DomainFieldError:
-    :raises UserNotFoundByUsername:
-    :raises ActivationChangeNotPermitted:
+    - Open to admins.
+    - Restores a previously soft-deleted user.
+    - Only super admins can activate other admins.
     """
 
     def __init__(
@@ -56,9 +48,17 @@ class ReactivateUserInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: ReactivateUserRequest) -> None:
+    async def execute(self, request_data: ActivateUserRequest) -> None:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises DomainFieldError:
+        :raises UserNotFoundByUsername:
+        :raises ActivationChangeNotPermitted:
+        """
         log.info(
-            "Reactivate user: started. Username: '%s'.",
+            "Activate user: started. Username: '%s'.",
             request_data.username,
         )
 
@@ -92,6 +92,6 @@ class ReactivateUserInteractor:
         await self._transaction_manager.commit()
 
         log.info(
-            "Reactivate user: done. Username: '%s'.",
+            "Activate user: done. Username: '%s'.",
             user.username.value,
         )

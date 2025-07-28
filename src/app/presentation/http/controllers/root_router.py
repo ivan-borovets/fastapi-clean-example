@@ -8,6 +8,10 @@ root_router = APIRouter()
 
 @root_router.get("/", tags=["General"])
 async def redirect_to_docs() -> RedirectResponse:
+    """
+    - Open to everyone.
+    - Redirects to Swagger documentation.
+    """
     return RedirectResponse(url="docs/")
 
 

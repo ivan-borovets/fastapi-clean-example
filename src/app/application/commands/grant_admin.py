@@ -29,16 +29,9 @@ class GrantAdminRequest:
 
 class GrantAdminInteractor:
     """
-    Open to super admins.
-    Grants admin rights to a specified user.
-    Super admin rights can not be changed.
-
-    :raises AuthenticationError:
-    :raises DataMapperError:
-    :raises AuthorizationError:
-    :raises DomainFieldError:
-    :raises UserNotFoundByUsername:
-    :raises RoleChangeNotPermitted:
+    - Open to super admins.
+    - Grants admin rights to a specified user.
+    - Super admin rights can not be changed.
     """
 
     def __init__(
@@ -53,7 +46,15 @@ class GrantAdminInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def __call__(self, request_data: GrantAdminRequest) -> None:
+    async def execute(self, request_data: GrantAdminRequest) -> None:
+        """
+        :raises AuthenticationError:
+        :raises DataMapperError:
+        :raises AuthorizationError:
+        :raises DomainFieldError:
+        :raises UserNotFoundByUsername:
+        :raises RoleChangeNotPermitted:
+        """
         log.info(
             "Grant admin: started. Username: '%s'.",
             request_data.username,

@@ -1,6 +1,9 @@
+from inspect import getdoc
+from typing import Annotated
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, Body, Path, Security, status
 
 from app.application.commands.change_password import (
     ChangePasswordInteractor,
@@ -16,7 +19,8 @@ change_password_router = APIRouter()
 
 
 @change_password_router.patch(
-    "/change-password",
+    "/{username}/password",
+    description=getdoc(ChangePasswordInteractor),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -31,7 +35,8 @@ change_password_router = APIRouter()
 )
 @inject
 async def change_password(
-    request_data: ChangePasswordRequest,
+    username: Annotated[str, Path()],
+    password: Annotated[str, Body()],
     interactor: FromDishka[ChangePasswordInteractor],
 ) -> None:
     # :raises AuthenticationError 401:
@@ -39,4 +44,8 @@ async def change_password(
     # :raises AuthorizationError 403:
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
-    await interactor(request_data)
+    request_data = ChangePasswordRequest(
+        username=username,
+        password=password,
+    )
+    await interactor.execute(request_data)

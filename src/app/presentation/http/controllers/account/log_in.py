@@ -1,3 +1,5 @@
+from inspect import getdoc
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
@@ -13,6 +15,7 @@ log_in_router = APIRouter()
 
 @log_in_router.post(
     "/login",
+    description=getdoc(LogInHandler),
     responses={
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
@@ -27,11 +30,11 @@ log_in_router = APIRouter()
 @inject
 async def login(
     request_data: LogInRequest,
-    interactor: FromDishka[LogInHandler],
+    handler: FromDishka[LogInHandler],
 ) -> None:
     # :raises AlreadyAuthenticatedError 401:
     # :raises AuthorizationError 403:
     # :raises DataMapperError 503:
     # :raises DomainFieldError 400:
     # :raises UserNotFoundByUsername 404:
-    await interactor(request_data)
+    await handler.execute(request_data)
