@@ -695,6 +695,9 @@ Makefile commands.
 If you find this project useful, please give it a star or share it!
 Your support means a lot.
 
+👉 Check out the amazing [fastapi-error-map](https://github.com/ivan-borovets/fastapi-error-map), used here to enable
+contextual, per-route error handling with automatic OpenAPI schema generation.
+
 💬 Feel free to open issues, ask questions, or submit pull requests.
 
 # Acknowledgements
