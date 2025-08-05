@@ -58,7 +58,7 @@ class UserService:
 
     def toggle_user_activation(self, user: User, *, is_active: bool) -> None:
         """
-        :raises ActivationChangeNotPermitted:
+        :raises ActivationChangeNotPermittedError:
         """
         if not user.role.is_changeable:
             raise ActivationChangeNotPermittedError(user.username, user.role)
@@ -66,7 +66,7 @@ class UserService:
 
     def toggle_user_admin_role(self, user: User, *, is_admin: bool) -> None:
         """
-        :raises RoleChangeNotPermitted:
+        :raises RoleChangeNotPermittedError:
         """
         if not user.role.is_changeable:
             raise RoleChangeNotPermittedError(user.username, user.role)

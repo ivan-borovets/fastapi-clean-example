@@ -1,19 +1,22 @@
 from fastapi import APIRouter
 
-from app.presentation.http.controllers.account.router import account_router
-from app.presentation.http.controllers.general.router import general_router
-from app.presentation.http.controllers.users.router import users_router
-
-api_v1_router = APIRouter(
-    prefix="/api/v1",
-)
+from app.presentation.http.controllers.account.router import create_account_router
+from app.presentation.http.controllers.general.router import create_general_router
+from app.presentation.http.controllers.users.router import create_users_router
 
 
-api_v1_sub_routers: tuple[APIRouter, ...] = (
-    account_router,
-    general_router,
-    users_router,
-)
+def create_api_v1_router() -> APIRouter:
+    router = APIRouter(
+        prefix="/api/v1",
+    )
 
-for router in api_v1_sub_routers:
-    api_v1_router.include_router(router)
+    sub_routers = (
+        create_account_router(),
+        create_general_router(),
+        create_users_router(),
+    )
+
+    for sub_router in sub_routers:
+        router.include_router(sub_router)
+
+    return router

@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools == 80.0.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.13"]
+build-backend = "hatchling.build"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
+[tool.hatch.build]
+sources = ["src"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/app"]
 
 [project]
 name = "fastapi-clean-example"
@@ -23,6 +23,7 @@ dependencies = [
     "alembic-postgresql-enum==1.8.0",
     "bcrypt==4.3.0",
     "dishka==1.6.0",
+    "fastapi-error-map==0.9.2",
     "fastapi==0.116.1",
     "orjson==3.11.0",
     "psycopg[binary]==3.2.9",
@@ -49,6 +50,33 @@ test = [
     "pytest-asyncio==1.1.0"
 ]
 
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+exclude_also = [
+    "if __name__ == .__main__.:",
+    '@(abc\.)?abstractmethod',
+    "pass",
+    '\.\.\.',
+    "from .*",
+    "import .*",
+    'logging\..*',
+    'log\..*',
+]
+
+[tool.coverage.run]
+source = ["src", ]
+omit = [
+    "**/__init__.py",
+    "**/alembic/**",
+]
+concurrency = [
+    "multiprocessing",
+    "thread",
+]
+parallel = true
+branch = true
+
 [tool.mypy]
 files = [
     "config",
@@ -66,9 +94,18 @@ plugins = [
     "sqlalchemy.ext.mypy.plugin",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests", ]
+markers = ["slow", ]
+addopts = "-m 'not slow'"
+asyncio_default_fixture_loop_scope = "function"
+
 [tool.ruff]
 line-length = 88
 preview = true  # experimental
+
+[tool.ruff.format]
+skip-magic-trailing-comma = false
 
 [tool.ruff.lint]
 select = [
@@ -120,6 +157,11 @@ ignore = [
     "UP015", # redundant-open-modes
 ]
 
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+split-on-trailing-comma = true
+
 [tool.ruff.lint.per-file-ignores]
 "src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL", ]
 "tests/**" = [
@@ -139,49 +181,8 @@ ignore = [
 "src/app/presentation/http/exceptions/handlers.py" = ["RUF029", ]            # unused-async
 "scripts/dishka/plot_dependencies_data.py" = ["T201", ]                      # print
 
-[tool.ruff.format]
-skip-magic-trailing-comma = false
-
-[tool.ruff.lint.isort]
-combine-as-imports = true
-force-wrap-aliases = true
-split-on-trailing-comma = true
-
 [tool.slotscheck]
 strict-imports = true
 exclude-modules = '''
 ^app\.infrastructure\.persistence_sqla\.alembic
 '''
-
-[tool.pytest.ini_options]
-testpaths = ["tests", ]
-markers = ["slow", ]
-addopts = "-m 'not slow'"
-asyncio_default_fixture_loop_scope = "function"
-
-[tool.coverage.run]
-source = ["src", ]
-omit = [
-    "**/__init__.py",
-    "**/alembic/**",
-]
-concurrency = [
-    "multiprocessing",
-    "thread",
-]
-parallel = true
-branch = true
-
-[tool.coverage.report]
-show_missing = true
-skip_empty = true
-exclude_also = [
-    "if __name__ == .__main__.:",
-    '@(abc\.)?abstractmethod',
-    "pass",
-    '\.\.\.',
-    "from .*",
-    "import .*",
-    'logging\..*',
-    'log\..*',
-]

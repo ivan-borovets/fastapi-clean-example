@@ -452,7 +452,7 @@ natural.
         │   └── http/                            # http interface
         │       ├── auth/...                     # web auth logic
         │       ├── controllers/...              # controllers and routers
-        │       └── exceptions/...               # exception schemas and handlers
+        │       └── errors/...                   # error handling helpers
         │
         ├── setup/
         │   ├── ioc/...                          # dependency injection setup
@@ -465,8 +465,8 @@ natural.
 ## Technology Stack
 
 - **Python**: `3.12`
-- **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi`, `orjson`, `psycopg3[binary]`,
-  `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
+- **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi-error-map`, `fastapi`, `orjson`,
+  `psycopg3[binary]`, `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
 - **Development**: `mypy`, `pre-commit`, `ruff`, `slotscheck`
 - **Testing**: `coverage`, `line-profiler`, `pytest`, `pytest-asyncio`
 
@@ -694,6 +694,9 @@ Makefile commands.
 
 If you find this project useful, please give it a star or share it!
 Your support means a lot.
+
+👉 Check out the amazing [fastapi-error-map](https://github.com/ivan-borovets/fastapi-error-map), used here to enable
+contextual, per-route error handling with automatic OpenAPI schema generation.
 
 💬 Feel free to open issues, ask questions, or submit pull requests.
 

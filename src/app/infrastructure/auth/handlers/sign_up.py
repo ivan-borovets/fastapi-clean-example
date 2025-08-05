@@ -61,7 +61,7 @@ class SignUpHandler:
         :raises DataMapperError:
         :raises DomainFieldError:
         :raises RoleAssignmentNotPermittedError:
-        :raises UsernameAlreadyExists:
+        :raises UsernameAlreadyExistsError:
         """
         log.info("Sign up: started. Username: '%s'.", request_data.username)
 

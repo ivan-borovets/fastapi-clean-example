@@ -59,8 +59,8 @@ class DeactivateUserInteractor:
         :raises DataMapperError:
         :raises AuthorizationError:
         :raises DomainFieldError:
-        :raises UserNotFoundByUsername:
-        :raises ActivationChangeNotPermitted:
+        :raises UserNotFoundByUsernameError:
+        :raises ActivationChangeNotPermittedError:
         """
         log.info(
             "Deactivate user: started. Username: '%s'.",

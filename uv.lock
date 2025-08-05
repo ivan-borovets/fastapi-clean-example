@@ -258,6 +258,7 @@ dependencies = [
     { name = "bcrypt" },
     { name = "dishka" },
     { name = "fastapi" },
+    { name = "fastapi-error-map" },
     { name = "orjson" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic", extra = ["email"] },
@@ -291,6 +292,7 @@ requires-dist = [
     { name = "coverage", marker = "extra == 'test'", specifier = "==7.10.0" },
     { name = "dishka", specifier = "==1.6.0" },
     { name = "fastapi", specifier = "==0.116.1" },
+    { name = "fastapi-error-map", specifier = "==0.9.2" },
     { name = "line-profiler", marker = "extra == 'test'", specifier = "==5.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = "==1.17.0" },
     { name = "orjson", specifier = "==3.11.0" },
@@ -307,6 +309,19 @@ requires-dist = [
     { name = "uuid6", specifier = "==2025.0.1" },
     { name = "uvicorn", specifier = "==0.35.0" },
     { name = "uvloop", specifier = "==0.21.0" },
+]
+
+[[package]]
+name = "fastapi-error-map"
+version = "0.9.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "orjson" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/39/73/0d56f328395e6dc0fe7ce2375f65e9f3560ce19bf33a62936b3675bd04af/fastapi_error_map-0.9.2.tar.gz", hash = "sha256:4b105cd5fafb6099c24440f65c70f5529953a639c0ad7b605e32334205f71def", size = 376268 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/05/3d52dc1153659f5eee026bc3b793dae61cfecbcf8a9433cf0d37ca9bf3b4/fastapi_error_map-0.9.2-py3-none-any.whl", hash = "sha256:226ea0688c582c26efb8f5f857c1a4cd99f35f5a8eaa0f414c91a71491b81d15", size = 19217 },
 ]
 
 [[package]]

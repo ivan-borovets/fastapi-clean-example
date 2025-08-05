@@ -56,7 +56,7 @@ class ChangePasswordInteractor:
         :raises DataMapperError:
         :raises AuthorizationError:
         :raises DomainFieldError:
-        :raises UserNotFoundByUsername:
+        :raises UserNotFoundByUsernameError:
         """
         log.info("Change password: started.")
 
