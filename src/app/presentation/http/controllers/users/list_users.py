@@ -4,21 +4,24 @@ from typing import Annotated
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, Security, status
+from fastapi_error_map import ErrorAwareRouter, rule
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.application.common.exceptions.authorization import AuthorizationError
+from app.application.common.exceptions.query import PaginationError, SortingError
 from app.application.common.query_params.sorting import SortingOrder
 from app.application.queries.list_users import (
     ListUsersQueryService,
     ListUsersRequest,
     ListUsersResponse,
 )
+from app.infrastructure.auth.exceptions import AuthenticationError
+from app.infrastructure.exceptions.gateway import DataMapperError, ReaderError
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
-from app.presentation.http.exceptions.schemas import (
-    ExceptionSchema,
-    ExceptionSchemaDetailed,
+from app.presentation.http.errors.callbacks import log_error, log_info
+from app.presentation.http.errors.translators import (
+    ServiceUnavailableTranslator,
 )
-
-list_users_router = APIRouter()
 
 
 class ListUsersRequestPydantic(BaseModel):
@@ -35,35 +38,43 @@ class ListUsersRequestPydantic(BaseModel):
     sorting_order: Annotated[SortingOrder, Field()] = SortingOrder.ASC
 
 
-@list_users_router.get(
-    "/",
-    description=getdoc(ListUsersQueryService),
-    responses={
-        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
-        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
-        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ExceptionSchemaDetailed},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
-        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ExceptionSchema},
-    },
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(cookie_scheme)],
-)
-@inject
-async def list_users(
-    request_data_pydantic: Annotated[ListUsersRequestPydantic, Depends()],
-    interactor: FromDishka[ListUsersQueryService],
-) -> ListUsersResponse:
-    # :raises AuthenticationError 401:
-    # :raises DataMapperError 503:
-    # :raises AuthorizationError 403:
-    # :raises ReaderError 503:
-    # :raises PaginationError 500:
-    # :raises SortingError 400:
-    request_data = ListUsersRequest(
-        limit=request_data_pydantic.limit,
-        offset=request_data_pydantic.offset,
-        sorting_field=request_data_pydantic.sorting_field,
-        sorting_order=request_data_pydantic.sorting_order,
+def create_list_users_router() -> APIRouter:
+    router = ErrorAwareRouter()
+
+    @router.get(
+        "/",
+        description=getdoc(ListUsersQueryService),
+        error_map={
+            AuthenticationError: status.HTTP_401_UNAUTHORIZED,
+            DataMapperError: rule(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                translator=ServiceUnavailableTranslator(),
+                on_error=log_error,
+            ),
+            AuthorizationError: status.HTTP_403_FORBIDDEN,
+            ReaderError: rule(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                translator=ServiceUnavailableTranslator(),
+                on_error=log_error,
+            ),
+            PaginationError: status.HTTP_400_BAD_REQUEST,
+            SortingError: status.HTTP_400_BAD_REQUEST,
+        },
+        default_on_error=log_info,
+        status_code=status.HTTP_200_OK,
+        dependencies=[Security(cookie_scheme)],
     )
-    return await interactor.execute(request_data)
+    @inject
+    async def list_users(
+        request_data_pydantic: Annotated[ListUsersRequestPydantic, Depends()],
+        interactor: FromDishka[ListUsersQueryService],
+    ) -> ListUsersResponse:
+        request_data = ListUsersRequest(
+            limit=request_data_pydantic.limit,
+            offset=request_data_pydantic.offset,
+            sorting_field=request_data_pydantic.sorting_field,
+            sorting_order=request_data_pydantic.sorting_order,
+        )
+        return await interactor.execute(request_data)
+
+    return router

@@ -54,8 +54,8 @@ class ActivateUserInteractor:
         :raises DataMapperError:
         :raises AuthorizationError:
         :raises DomainFieldError:
-        :raises UserNotFoundByUsername:
-        :raises ActivationChangeNotPermitted:
+        :raises UserNotFoundByUsernameError:
+        :raises ActivationChangeNotPermittedError:
         """
         log.info(
             "Activate user: started. Username: '%s'.",

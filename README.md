@@ -452,7 +452,7 @@ natural.
         │   └── http/                            # http interface
         │       ├── auth/...                     # web auth logic
         │       ├── controllers/...              # controllers and routers
-        │       └── exceptions/...               # exception schemas and handlers
+        │       └── errors/...                   # error handling helpers
         │
         ├── setup/
         │   ├── ioc/...                          # dependency injection setup
@@ -465,8 +465,8 @@ natural.
 ## Technology Stack
 
 - **Python**: `3.12`
-- **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi`, `orjson`, `psycopg3[binary]`,
-  `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
+- **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi-error-map`, `fastapi`, `orjson`,
+  `psycopg3[binary]`, `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
 - **Development**: `mypy`, `pre-commit`, `ruff`, `slotscheck`
 - **Testing**: `coverage`, `line-profiler`, `pytest`, `pytest-asyncio`
 

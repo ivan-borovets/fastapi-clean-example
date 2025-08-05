@@ -64,7 +64,7 @@ class CreateUserInteractor:
         :raises AuthorizationError:
         :raises DomainFieldError:
         :raises RoleAssignmentNotPermittedError:
-        :raises UsernameAlreadyExists:
+        :raises UsernameAlreadyExistsError:
         """
         log.info(
             "Create user: started. Username: '%s'.",

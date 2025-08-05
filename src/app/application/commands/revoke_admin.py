@@ -50,8 +50,8 @@ class RevokeAdminInteractor:
         :raises DataMapperError:
         :raises AuthorizationError:
         :raises DomainFieldError:
-        :raises UserNotFoundByUsername:
-        :raises RoleChangeNotPermitted:
+        :raises UserNotFoundByUsernameError:
+        :raises RoleChangeNotPermittedError:
         """
         log.info(
             "Revoke admin: started. Username: '%s'.",

@@ -1,11 +1,18 @@
 from fastapi import APIRouter
 
-from app.presentation.http.controllers.general.healthcheck import healthcheck_router
-
-general_router = APIRouter(
-    tags=["General"],
+from app.presentation.http.controllers.general.healthcheck import (
+    create_healthcheck_router,
 )
-general_sub_routers: tuple[APIRouter, ...] = (healthcheck_router,)
 
-for router in general_sub_routers:
-    general_router.include_router(router)
+
+def create_general_router() -> APIRouter:
+    router = APIRouter(
+        tags=["General"],
+    )
+
+    sub_routers = (create_healthcheck_router(),)
+
+    for sub_router in sub_routers:
+        router.include_router(sub_router)
+
+    return router
