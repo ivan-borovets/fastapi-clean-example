@@ -23,7 +23,7 @@ dependencies = [
     "alembic-postgresql-enum==1.8.0",
     "bcrypt==4.3.0",
     "dishka==1.6.0",
-    "fastapi-error-map==0.9.3",
+    "fastapi-error-map==0.9.4",
     "fastapi==0.116.1",
     "orjson==3.11.0",
     "psycopg[binary]==3.2.9",
@@ -174,12 +174,12 @@ split-on-trailing-comma = true
     "S107", # hardcoded-password-default
 ]
 #
-"src/app/domain/value_objects/base.py" = ["B024", ]                          # abstract-base-class-without-abstract-method
-"src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501"]       # line-too-long
-"src/app/infrastructure/auth/session/constants.py" = ["S105"]                # hardcoded-password-string
-"src/app/presentation/http/auth/constants.py" = ["S105"]                     # hardcoded-password-string
-"src/app/presentation/http/exceptions/handlers.py" = ["RUF029", ]            # unused-async
-"scripts/dishka/plot_dependencies_data.py" = ["T201", ]                      # print
+"src/app/domain/value_objects/base.py" = ["B024", ]                       # abstract-base-class-without-abstract-method
+"src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501", ]  # line-too-long
+"src/app/infrastructure/auth/session/constants.py" = ["S105", ]           # hardcoded-password-string
+"src/app/presentation/http/auth/constants.py" = ["S105", ]                # hardcoded-password-string
+"src/app/presentation/http/errors/translators.py" = ["ARG002", ]          # unused-method-argument
+"scripts/dishka/plot_dependencies_data.py" = ["T201", ]                   # print
 
 [tool.slotscheck]
 strict-imports = true
