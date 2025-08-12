@@ -6,7 +6,7 @@ class ServiceUnavailableTranslator(ErrorTranslator[SimpleErrorResponseModel]):
     def error_response_model_cls(self) -> type[SimpleErrorResponseModel]:
         return SimpleErrorResponseModel
 
-    def from_error(self, _err: Exception) -> SimpleErrorResponseModel:
+    def from_error(self, err: Exception) -> SimpleErrorResponseModel:
         return SimpleErrorResponseModel(
             error="Service temporarily unavailable. Please try again later."
         )
