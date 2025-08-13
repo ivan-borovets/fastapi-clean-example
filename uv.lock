@@ -292,7 +292,7 @@ requires-dist = [
     { name = "coverage", marker = "extra == 'test'", specifier = "==7.10.0" },
     { name = "dishka", specifier = "==1.6.0" },
     { name = "fastapi", specifier = "==0.116.1" },
-    { name = "fastapi-error-map", specifier = "==0.9.4" },
+    { name = "fastapi-error-map", specifier = "==0.9.5" },
     { name = "line-profiler", marker = "extra == 'test'", specifier = "==5.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = "==1.17.0" },
     { name = "orjson", specifier = "==3.11.0" },
@@ -313,15 +313,15 @@ requires-dist = [
 
 [[package]]
 name = "fastapi-error-map"
-version = "0.9.4"
+version = "0.9.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
     { name = "orjson" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/96/69/b014ea6d40aa73b7ec63fd11543e841f1172f3b483e8fa4361454b2fe786/fastapi_error_map-0.9.4.tar.gz", hash = "sha256:c13a86fe26dea5fb294d9e7d0d302b1885de4b39eaa059ef571cc114eb9fde00", size = 377142 }
+sdist = { url = "https://files.pythonhosted.org/packages/97/88/d73521255bba74105cd3a33510602e12dd50efdb0784a6804c296d178e92/fastapi_error_map-0.9.5.tar.gz", hash = "sha256:885adde46b92caa59473f7a6753002cceafe69c92d64702d1f61667878495d7b", size = 377153 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/84/1a84c3fa0c87893a567230886f856289f9d9eec64913b4e46051ceb67eb0/fastapi_error_map-0.9.4-py3-none-any.whl", hash = "sha256:4471b58e5a5d7bb0d3932e5616b4d21015f1506073d89148ba888ef1435bfcb4", size = 20304 },
+    { url = "https://files.pythonhosted.org/packages/18/ac/eae9ec77c79a8a1b573c2a93720849c966811aa81278fc017aeb4f48fc64/fastapi_error_map-0.9.5-py3-none-any.whl", hash = "sha256:578ff9f94df1ead7cedac4126ab9e06d29895493606e35d820a77b6f6983636d", size = 20318 },
 ]
 
 [[package]]

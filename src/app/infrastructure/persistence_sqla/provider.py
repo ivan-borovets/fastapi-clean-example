@@ -54,6 +54,7 @@ def get_async_session_factory(
 async def get_main_async_session(
     async_session_factory: async_sessionmaker[AsyncSession],
 ) -> AsyncIterator[MainAsyncSession]:
+    """Provides UoW (AsyncSession) for the main context."""
     log.debug("Starting Main async session...")
     async with async_session_factory() as session:
         log.debug("Main async session started.")
@@ -65,6 +66,7 @@ async def get_main_async_session(
 async def get_auth_async_session(
     async_session_factory: async_sessionmaker[AsyncSession],
 ) -> AsyncIterator[AuthAsyncSession]:
+    """Provides UoW (AsyncSession) for the auth context."""
     log.debug("Starting Auth async session...")
     async with async_session_factory() as session:
         log.debug("Async session started for Auth.")
