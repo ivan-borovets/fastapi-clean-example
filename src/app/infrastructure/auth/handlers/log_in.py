@@ -61,6 +61,7 @@ class LogInHandler:
         :raises DataMapperError:
         :raises DomainFieldError:
         :raises UserNotFoundByUsernameError:
+        :raises AuthenticationError:
         """
         log.info("Log in: started. Username: '%s'.", request_data.username)
 
