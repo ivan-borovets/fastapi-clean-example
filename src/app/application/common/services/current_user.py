@@ -32,7 +32,7 @@ class CurrentUserService:
         """
         current_user_id = await self._identity_provider.get_current_user_id()
         user: User | None = await self._user_command_gateway.read_by_id(current_user_id)
-        if user is None:
+        if user is None or not user.is_active:
             log.warning("%s ID: %s.", AUTHZ_NO_CURRENT_USER, current_user_id)
             await self._access_revoker.remove_all_user_access(current_user_id)
             raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)
