@@ -14,4 +14,4 @@ class AuthSessionAccessRevoker(AccessRevoker):
         """
         :raises DataMapperError:
         """
-        await self._auth_session_service.invalidate_all_sessions_for_user(user_id)
+        await self._auth_session_service.terminate_all_sessions_for_user(user_id)

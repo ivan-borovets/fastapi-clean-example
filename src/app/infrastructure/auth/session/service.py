@@ -44,11 +44,11 @@ class AuthSessionService:
         self._auth_session_timer = auth_session_timer
         self._cached_auth_session: AuthSession | None = None
 
-    async def create_session(self, user_id: UserId) -> None:
+    async def issue_session(self, user_id: UserId) -> None:
         """
         :raises AuthenticationError:
         """
-        log.debug("Create auth session: started. User ID: '%s'.", user_id.value)
+        log.debug("Issue auth session: started. User ID: '%s'.", user_id.value)
 
         auth_session_id: str = self._auth_session_id_generator()
         expiration: datetime = self._auth_session_timer.auth_session_expiration
@@ -68,7 +68,7 @@ class AuthSessionService:
         self._auth_session_transport.deliver(auth_session)
 
         log.debug(
-            "Create auth session: done. User ID: '%s', Auth session id: '%s'.",
+            "Issue auth session: done. User ID: '%s', Auth session ID: '%s'.",
             user_id.value,
             auth_session.id_,
         )
@@ -79,94 +79,97 @@ class AuthSessionService:
         """
         log.debug("Get authenticated user ID: started.")
 
-        raw_auth_session = await self._load_current_session()
+        raw_auth_session = await self._get_current_auth_session()
         valid_auth_session = await self._validate_and_extend_session(raw_auth_session)
+        self._cached_auth_session = valid_auth_session
 
         log.debug(
-            "Get authenticated user ID: done. Auth session ID: %s. User ID: %s.",
+            "Get authenticated user ID: done. Auth session ID: '%s'. User ID: '%s'.",
             valid_auth_session.id_,
             valid_auth_session.user_id.value,
         )
         return valid_auth_session.user_id
 
-    async def invalidate_current_session(self) -> None:
-        log.debug("Invalidate current session: started. Auth session ID: unknown.")
+    async def terminate_current_session(self) -> None:
+        log.debug("Terminate current session: started. Auth session ID: unknown.")
 
-        auth_session_id: str | None = self._auth_session_transport.extract_id()
-        if auth_session_id is None:
-            log.warning(
-                "Invalidate current session failed: partially failed. "
-                "Session ID can't be extracted from transport. "
-                "Auth session can't be identified.",
+        auth_session_id: str | None
+        if self._cached_auth_session is not None:
+            auth_session_id = self._cached_auth_session.id_
+            log.debug(
+                "Terminate current session: using ID from cache. "
+                "Auth session ID: '%s'.",
+                auth_session_id,
             )
-            return
-
-        log.debug(
-            "Invalidate current session: in progress. Auth session id: %s.",
-            auth_session_id,
-        )
+        else:
+            auth_session_id = self._auth_session_transport.extract_id()
+            if auth_session_id is None:
+                log.warning(
+                    "Terminate current session failed: partially failed. "
+                    "Session ID can't be extracted from transport. "
+                    "Auth session can't be identified.",
+                )
+                return
+            log.debug(
+                "Terminate current session: using ID from transport. "
+                "Auth session ID: '%s'.",
+                auth_session_id,
+            )
 
         self._auth_session_transport.remove_current()
 
-        auth_session: AuthSession | None = None
         try:
-            auth_session = await self._auth_session_gateway.read_by_id(auth_session_id)
-
-        except DataMapperError as error:
-            log.error("%s: '%s'", AUTH_SESSION_EXTRACTION_FAILED, error)
-
-        if auth_session is None:
-            log.warning(
-                "Invalidate current session failed: partially failed. "
-                "Session ID was removed from transport, "
-                "but auth session was not found in storage.",
-            )
-            return
-
-        try:
-            await self._auth_session_gateway.delete(auth_session.id_)
+            await self._auth_session_gateway.delete(auth_session_id)
             await self._auth_transaction_manager.commit()
+            log.debug(
+                "Terminate current session: done (transport cleared, storage deleted). "
+                "Auth session ID: '%s'.",
+                auth_session_id,
+            )
 
         except DataMapperError:
             log.warning(
-                (
-                    "Invalidate current session failed: partially failed. "
-                    "Session ID was removed from transport, "
-                    "but auth session was not deleted from storage. "
-                    "Auth session ID: '%s'."
-                ),
-                auth_session.id_,
+                "Terminate current session: partially failed "
+                "(transport cleared, storage delete failed). "
+                "Auth session ID: '%s'.",
+                auth_session_id,
             )
 
-    async def invalidate_all_sessions_for_user(self, user_id: UserId) -> None:
+        self._cached_auth_session = None
+
+    async def terminate_all_sessions_for_user(self, user_id: UserId) -> None:
         """
         :raises DataMapperError:
         """
         log.debug(
-            "Invalidate all sessions for user: started. User id: '%s'.",
+            "Terminate all sessions for user: started. User ID: '%s'.",
             user_id.value,
         )
 
         await self._auth_session_gateway.delete_all_for_user(user_id)
         await self._auth_transaction_manager.commit()
 
+        if self._cached_auth_session and self._cached_auth_session.user_id == user_id:
+            self._auth_session_transport.remove_current()
+            self._cached_auth_session = None
+
         log.debug(
-            "Invalidate all sessions for user: done. User id: '%s'.",
+            "Terminate all sessions for user: done. User ID: '%s'.",
             user_id.value,
         )
 
-    async def _load_current_session(self) -> AuthSession:
+    async def _get_current_auth_session(self) -> AuthSession:
         """
         :raises AuthenticationError:
         """
-        log.debug("Load current auth session: started. Auth session id: unknown.")
+        log.debug("Get current auth session: started. Auth session ID: unknown.")
+
         if self._cached_auth_session is not None:
-            cached_auth_session = self._cached_auth_session
             log.debug(
-                "Load current auth session: done (from cache). Auth session id: %s.",
-                cached_auth_session.id_,
+                "Get current auth session: done (from cache). Auth session ID: '%s'.",
+                self._cached_auth_session.id_,
             )
-            return cached_auth_session
+            return self._cached_auth_session
 
         auth_session_id: str | None = self._auth_session_transport.extract_id()
         if auth_session_id is None:
@@ -174,16 +177,15 @@ class AuthSessionService:
             raise AuthenticationError(AUTH_NOT_AUTHENTICATED)
 
         log.debug(
-            "Load current auth session: in progress. Auth session id: %s.",
+            "Get current auth session: reading from storage. Auth session ID: '%s'.",
             auth_session_id,
         )
 
         try:
             auth_session: (
                 AuthSession | None
-            ) = await self._auth_session_gateway.read_by_id(
-                auth_session_id,
-            )
+            ) = await self._auth_session_gateway.read_by_id(auth_session_id)
+
         except DataMapperError as error:
             log.error("%s: '%s'", AUTH_SESSION_EXTRACTION_FAILED, error)
             raise AuthenticationError(AUTH_NOT_AUTHENTICATED) from error
@@ -192,11 +194,8 @@ class AuthSessionService:
             log.debug(AUTH_SESSION_NOT_FOUND)
             raise AuthenticationError(AUTH_NOT_AUTHENTICATED)
 
-        self._cached_auth_session = auth_session
-
         log.debug(
-            "Load current auth session: done. Auth session id: %s.",
-            auth_session.id_,
+            "Get current auth session: done. Auth session ID: '%s'.", auth_session.id_
         )
         return auth_session
 
@@ -208,7 +207,7 @@ class AuthSessionService:
         :raises AuthenticationError:
         """
         log.debug(
-            "Validate and extend auth session: started. Auth session id: %s.",
+            "Validate and extend auth session: started. Auth session ID: '%s'.",
             auth_session.id_,
         )
 
@@ -223,7 +222,7 @@ class AuthSessionService:
         ):
             log.debug(
                 "Validate and extend auth session: validated without extension. "
-                "Auth session id: %s.",
+                "Auth session ID: '%s'.",
                 auth_session.id_,
             )
             return auth_session
@@ -242,10 +241,10 @@ class AuthSessionService:
 
         self._auth_session_transport.deliver(auth_session)
 
-        self._cached_auth_session = auth_session
-
         log.debug(
-            "Validate and extend auth session: done. Auth session id: %s.",
+            "Validate and extend auth session: done. "
+            "Auth session ID: '%s'. New expiration: '%s'.",
             auth_session.id_,
+            auth_session.expiration.isoformat(),
         )
         return auth_session
