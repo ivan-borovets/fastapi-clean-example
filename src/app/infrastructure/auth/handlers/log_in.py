@@ -83,7 +83,7 @@ class LogInHandler:
         if not user.is_active:
             raise AuthenticationError(AUTH_ACCOUNT_INACTIVE)
 
-        await self._auth_session_service.create_session(user.id_)
+        await self._auth_session_service.issue_session(user.id_)
 
         log.info(
             "Log in: done. User, ID: '%s', username '%s', role '%s'.",

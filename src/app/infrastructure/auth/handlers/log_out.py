@@ -33,6 +33,6 @@ class LogOutHandler:
 
         log.info("Log out: user identified. User ID: '%s'.", current_user.id_)
 
-        await self._auth_session_service.invalidate_current_session()
+        await self._auth_session_service.terminate_current_session()
 
         log.info("Log out: done. User ID: '%s'.", current_user.id_)

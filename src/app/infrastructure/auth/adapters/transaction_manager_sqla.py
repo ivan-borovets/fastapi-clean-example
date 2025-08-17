@@ -26,7 +26,7 @@ class SqlaAuthSessionTransactionManager(AuthSessionTransactionManager):
         """
         try:
             await self._session.commit()
-            log.debug("%s. Auth session.", DB_COMMIT_DONE)
+            log.debug("%s Auth session.", DB_COMMIT_DONE)
 
         except SQLAlchemyError as error:
             raise DataMapperError(f"{DB_QUERY_FAILED} {DB_COMMIT_FAILED}") from error

@@ -59,7 +59,7 @@ async def get_main_async_session(
     async with async_session_factory() as session:
         log.debug("Main async session started.")
         yield cast(MainAsyncSession, session)
-        log.debug("Closing async session.")
+        log.debug("Closing Main async session.")
     log.debug("Main async session closed.")
 
 
@@ -69,7 +69,7 @@ async def get_auth_async_session(
     """Provides UoW (AsyncSession) for the auth context."""
     log.debug("Starting Auth async session...")
     async with async_session_factory() as session:
-        log.debug("Async session started for Auth.")
+        log.debug("Auth async session started.")
         yield cast(AuthAsyncSession, session)
-        log.debug("Closing async session.")
-    log.debug("Async session closed for Auth.")
+        log.debug("Closing Auth async session.")
+    log.debug("Auth async session closed.")
