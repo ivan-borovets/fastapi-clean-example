@@ -562,9 +562,12 @@ from the structured TOML files. More details are available at https://github.com
 
 1. Configure local environment
 
-* Create `.secrets.toml` in `config/local` following `.secrets.toml.example`
-* Edit TOML files in `config/local` according to your project requirements
-* When using Docker Compose, remember to pass `APP_ENV` to your service:
+* In this project, local configuration is already prepared in `config/local/`.  
+  Nothing needs to be created — adjust files only if you want to change defaults.
+* If you want to adjust settings, edit the existing TOML files in `config/local/` directly.  
+  `.env.local` will be generated automatically — **don’t** create or edit it manually.
+* Docker Compose in this project is already configured with `APP_ENV`.  
+  Just keep in mind this variable if you change the setup:
 
 ```yaml
 services:
@@ -573,8 +576,6 @@ services:
     environment:
       APP_ENV: ${APP_ENV}
 ```
-
-* `.env.local` will be generated later — **don't** create it manually
 
 2. Set environment variable
 
@@ -690,6 +691,10 @@ Makefile commands.
 
 - [Martin Fowler. Patterns of Enterprise Application Architecture. 2002](https://www.amazon.com/Patterns-Enterprise-Application-Architecture-Martin/dp/0321127420)
 
+## Adjacent
+
+- [Vladimir Khorikov. Unit Testing Principles. 2020](https://www.amazon.com/Unit-Testing-Principles-Practices-Patterns/dp/1617296279)
+
 # ⭐ Support the Project
 
 If you find this project useful, please give it a star or share it!
@@ -724,7 +729,7 @@ frequent and lively communication challenges, as well as the ⚗️ Reagento (ad
 - [x] simplify settings
 - [x] simplify annotations
 - [ ] add integration tests
-- [ ] explain code
+- [ ] explain design choices
 
 [^1]: Session and token share the same expiry time, avoiding database reads if the token is expired.
 This scheme of using JWT **is not** related to OAuth 2.0 and is a custom micro-optimization.
