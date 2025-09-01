@@ -1,10 +1,20 @@
 """
-- Flat (non-nested) models are best kept anemic (without methods).
-  The behavior of such models is described in the domain service.
+- In the early stages of development
+  when the domain model is not yet clearly defined,
+  it is wiser to keep entities
+  flat (non-nested) and anemic (without behavior).
+  Their behavior resides in separate domain services,
+  even though this weakens encapsulation.
 
-- When working with non-flat models, such as aggregates, it makes sense
-  to have rich models (with methods). The behavior of these models is
-  described within the models themselves.
+- Once the core logic is well established,
+  some entities can, as aggregate roots,
+  become non-flat and rich (with behavior).
+  This best enforces invariants
+  but can be tricky to design once and for all.
+
+- Prefer rich value objects early,
+  freeing entities and services
+  from an excessive burden of local rules.
 """
 
 from dataclasses import dataclass
