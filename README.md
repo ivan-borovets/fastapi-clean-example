@@ -72,14 +72,10 @@ For now, we will focus on the purpose of the layers.
 ![#gold](https://placehold.co/15x15/gold/gold.svg) **Domain Layer**
 
 - **Domain model** is a set of concepts, rules and behaviors that define what business (context) is and how it operates.
-
   It is expressed in a **ubiquitous language** — a consistent terminology shared by developers and domain experts.
-
   Domain layer implements domain model in code; this implementation is often called domain model.
 - The strictest domain rules are **invariants** — conditions that must always hold true for the model.
-
   Enforcing invariants means maintaining data consistency in the model.
-
   This can be achieved through **encapsulation**, which hides internal state and couples data with behavior.
 - Building blocks of domain model are (not limited to these):
     - **value objects** — smart business types (no identity, immutable, equal by value).
@@ -87,27 +83,19 @@ For now, we will focus on the purpose of the layers.
     - **domain services** — containers for behavior that has no place in the components above.
 - Other domain model building blocks, unused in this project but important for deeper DDD:
     - **aggregates** — clusters of entities (1+) that must change together as a single unit,
-
       managed exclusively through their root, defining boundaries of transactional consistency.
     - **repositories** — abstractions emulating collections of aggregate roots.
 - Domain model lies on a spectrum from anemic to rich.
     - **anemic** — simple data types, entities are just data holders, rules and behaviors live outside.
     - **rich** — value objects and entities encapsulate data and rules;
-
       invariants are enforced internally, so the model itself prevents invalid states.
-
       For components: anemic means no behavior within, rich — the contrary.
 - Domain services originally represent operations that don't naturally belong to a specific entity or value object.
-
   But in projects with anemic entities, they can also contain logic that would otherwise be in those entities.
 - In the early stages of development when the domain model is not yet clearly defined, 
-
   I'd recommend keeping entities flat and anemic, even though the latter weakens encapsulation.
-
   Once the core logic is well established, some entities can, as aggregate roots, become non-flat and rich.
-
   This best enforces invariants but can be tricky to design once and for all.
-  
 - Prefer rich value objects early, freeing entities and services from an excessive burden of local rules.
 - Consider domain layer the most important, stable, and independent part of a system.
 
