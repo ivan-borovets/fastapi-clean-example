@@ -1,4 +1,3 @@
-from abc import ABC
 from dataclasses import dataclass
 from typing import Any, TypeVar
 
@@ -9,7 +8,7 @@ T = TypeVar("T", bound=ValueObject)
 
 
 @dataclass(eq=False)
-class Entity[T: ValueObject](ABC):
+class Entity[T: ValueObject]:
     """
     raises DomainError
 
@@ -21,6 +20,21 @@ class Entity[T: ValueObject](ABC):
     """
 
     id_: T
+
+    def __post_init__(self) -> None:
+        """
+        :raises DomainError:
+
+        Hook for additional initialization and ensuring invariants.
+        Subclasses can override this method to implement custom logic, while
+        still calling `super().__post_init__()` to preserve base checks.
+        """
+        self.__forbid_base_class_instantiation()
+
+    def __forbid_base_class_instantiation(self) -> None:
+        """:raises DomainError:"""
+        if type(self) is Entity:
+            raise DomainError("Base Entity cannot be instantiated directly.")
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
