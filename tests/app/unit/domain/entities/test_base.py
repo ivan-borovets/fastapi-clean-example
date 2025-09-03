@@ -1,5 +1,6 @@
 import pytest
 
+from app.domain.entities.base import Entity
 from app.domain.exceptions.base import DomainError
 from tests.app.unit.factories.named_entity import (
     create_named_entity,
@@ -7,6 +8,14 @@ from tests.app.unit.factories.named_entity import (
     create_named_entity_subclass,
 )
 from tests.app.unit.factories.tagged_entity import create_tagged_entity
+from tests.app.unit.factories.value_objects import create_single_field_vo
+
+
+def test_cannot_init() -> None:
+    vo = create_single_field_vo()
+
+    with pytest.raises(DomainError):
+        Entity(id_=vo)
 
 
 @pytest.mark.parametrize(
