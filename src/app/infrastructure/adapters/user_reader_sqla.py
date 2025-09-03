@@ -26,9 +26,7 @@ class SqlaUserReader(UserQueryGateway):
         self,
         user_read_all_params: UserListParams,
     ) -> list[UserQueryModel] | None:
-        """
-        :raises ReaderError:
-        """
+        """:raises ReaderError:"""
         table_sorting_field: ColumnElement[UUID | str | UserRole | bool] | None = (
             users_table.c.get(user_read_all_params.sorting.sorting_field)
         )

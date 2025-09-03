@@ -13,6 +13,7 @@ class Pagination:
     offset: int
 
     def __post_init__(self):
+        """:raises PaginationError:"""
         if self.limit <= 0:
             raise PaginationError(f"Limit must be greater than 0, got {self.limit}")
         if self.offset < 0:

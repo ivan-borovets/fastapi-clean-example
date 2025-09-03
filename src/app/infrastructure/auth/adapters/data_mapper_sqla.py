@@ -16,9 +16,7 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
         self._session = session
 
     def add(self, auth_session: AuthSession) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         try:
             self._session.add(auth_session)
 
@@ -30,9 +28,7 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
         auth_session_id: str,
         for_update: bool = False,
     ) -> AuthSession | None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         try:
             auth_session: AuthSession | None = await self._session.get(
                 AuthSession,
@@ -46,9 +42,7 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
             raise DataMapperError(DB_QUERY_FAILED) from error
 
     async def update(self, auth_session: AuthSession) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         try:
             await self._session.merge(auth_session)
 
@@ -56,9 +50,7 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
             raise DataMapperError(DB_QUERY_FAILED) from error
 
     async def delete(self, auth_session_id: str) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         delete_stmt: Delete = delete(AuthSession).where(
             AuthSession.id_ == auth_session_id,  # type: ignore
         )
@@ -70,9 +62,7 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
             raise DataMapperError(DB_QUERY_FAILED) from error
 
     async def delete_all_for_user(self, user_id: UserId) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         delete_stmt: Delete = delete(AuthSession).where(
             AuthSession.user_id == user_id,  # type: ignore
         )

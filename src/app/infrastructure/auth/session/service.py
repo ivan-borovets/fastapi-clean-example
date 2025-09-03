@@ -45,9 +45,7 @@ class AuthSessionService:
         self._cached_auth_session: AuthSession | None = None
 
     async def issue_session(self, user_id: UserId) -> None:
-        """
-        :raises AuthenticationError:
-        """
+        """:raises AuthenticationError:"""
         log.debug("Issue auth session: started. User ID: '%s'.", user_id.value)
 
         auth_session_id: str = self._auth_session_id_generator()
@@ -74,9 +72,7 @@ class AuthSessionService:
         )
 
     async def get_authenticated_user_id(self) -> UserId:
-        """
-        :raises AuthenticationError:
-        """
+        """:raises AuthenticationError:"""
         log.debug("Get authenticated user ID: started.")
 
         raw_auth_session = await self._get_current_auth_session()
@@ -138,9 +134,7 @@ class AuthSessionService:
         self._cached_auth_session = None
 
     async def terminate_all_sessions_for_user(self, user_id: UserId) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         log.debug(
             "Terminate all sessions for user: started. User ID: '%s'.",
             user_id.value,
@@ -159,9 +153,7 @@ class AuthSessionService:
         )
 
     async def _get_current_auth_session(self) -> AuthSession:
-        """
-        :raises AuthenticationError:
-        """
+        """:raises AuthenticationError:"""
         log.debug("Get current auth session: started. Auth session ID: unknown.")
 
         if self._cached_auth_session is not None:
@@ -203,9 +195,7 @@ class AuthSessionService:
         self,
         auth_session: AuthSession,
     ) -> AuthSession:
-        """
-        :raises AuthenticationError:
-        """
+        """:raises AuthenticationError:"""
         log.debug(
             "Validate and extend auth session: started. Auth session ID: '%s'.",
             auth_session.id_,

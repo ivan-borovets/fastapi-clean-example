@@ -15,9 +15,7 @@ class SqlaUserDataMapper(UserCommandGateway):
         self._session = session
 
     def add(self, user: User) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         try:
             self._session.add(user)
 
@@ -25,9 +23,7 @@ class SqlaUserDataMapper(UserCommandGateway):
             raise DataMapperError(DB_QUERY_FAILED) from error
 
     async def read_by_id(self, user_id: UserId) -> User | None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         select_stmt: Select[tuple[User]] = select(User).where(User.id_ == user_id)  # type: ignore
 
         try:
@@ -45,9 +41,7 @@ class SqlaUserDataMapper(UserCommandGateway):
         username: Username,
         for_update: bool = False,
     ) -> User | None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         select_stmt: Select[tuple[User]] = select(User).where(User.username == username)  # type: ignore
 
         if for_update:

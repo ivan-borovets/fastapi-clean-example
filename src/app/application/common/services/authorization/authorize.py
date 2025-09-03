@@ -11,8 +11,6 @@ def authorize[PC: PermissionContext](
     *,
     context: PC,
 ) -> None:
-    """
-    :raises AuthorizationError:
-    """
+    """:raises AuthorizationError:"""
     if not permission.is_satisfied_by(context):
         raise AuthorizationError(AUTHZ_NOT_AUTHORIZED)
