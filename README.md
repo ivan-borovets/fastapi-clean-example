@@ -472,7 +472,7 @@ natural.
 
 ## Technology Stack
 
-- **Python**: `3.12`
+- **Python**: `3.13`
 - **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi-error-map`, `fastapi`, `orjson`,
   `psycopg3[binary]`, `pydantic[email]`, `pyjwt[crypto]`, `rtoml`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
 - **Development**: `mypy`, `pre-commit`, `ruff`, `slotscheck`
@@ -596,7 +596,7 @@ export APP_ENV=local
 3. Check it and generate `.env`
 
 ```shell
-# Probably you'll need Python 3.12 installed on your system to run these commands. 
+# Probably you'll need Python 3.13 installed on your system to run these commands. 
 # The next code section provides commands for its fast installation.
 make env  # should print APP_ENV=local
 make dotenv  # should tell you where .env.local was generated
@@ -609,7 +609,7 @@ make dotenv  # should tell you where .env.local was generated
 # sudo apt install pipx
 # pipx ensurepath
 # pipx install uv
-# uv python install 3.12
+# uv python install 3.13
 uv v
 source .venv/bin/activate
 # .venv\Scripts\activate  # Windows
