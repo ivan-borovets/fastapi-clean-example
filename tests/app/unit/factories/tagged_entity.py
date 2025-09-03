@@ -9,19 +9,15 @@ class TaggedEntityId(ValueObject):
     value: int
 
 
-@dataclass(eq=False)
 class TaggedEntity(Entity[TaggedEntityId]):
-    tag: str
+    def __init__(self, *, id_: TaggedEntityId, tag: str) -> None:
+        super().__init__(id_=id_)
+        self.tag = tag
 
 
-def create_tagged_entity_id(
-    id_: int = 54,
-) -> TaggedEntityId:
+def create_tagged_entity_id(id_: int = 54) -> TaggedEntityId:
     return TaggedEntityId(id_)
 
 
-def create_tagged_entity(
-    id_: int = 54,
-    tag: str = "tag",
-) -> TaggedEntity:
-    return TaggedEntity(TaggedEntityId(id_), tag)
+def create_tagged_entity(id_: int = 54, tag: str = "tag") -> TaggedEntity:
+    return TaggedEntity(id_=TaggedEntityId(id_), tag=tag)
