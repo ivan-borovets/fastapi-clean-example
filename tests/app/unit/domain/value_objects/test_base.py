@@ -1,4 +1,5 @@
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, dataclass
+from typing import ClassVar, Final
 
 import pytest
 
@@ -10,12 +11,28 @@ from tests.app.unit.factories.value_objects import (
 )
 
 
-def test_is_not_empty() -> None:
-    class EmptyValueObject(ValueObject):
+def test_cannot_init() -> None:
+    with pytest.raises(DomainFieldError):
+        ValueObject()
+
+
+def test_child_cannot_init_with_no_instance_fields() -> None:
+    @dataclass(frozen=True)
+    class EmptyVO(ValueObject):
         pass
 
     with pytest.raises(DomainFieldError):
-        EmptyValueObject()
+        EmptyVO()
+
+
+def test_child_cannot_init_with_only_class_fields() -> None:
+    @dataclass(frozen=True)
+    class EmptyVO(ValueObject):
+        foo: Final[ClassVar[int]] = 0
+        bar: ClassVar[str] = "baz"
+
+    with pytest.raises(DomainFieldError):
+        EmptyVO()
 
 
 def test_is_immutable() -> None:
@@ -51,3 +68,15 @@ def test_multi_field_vo_repr() -> None:
     sut = create_multi_field_vo(value1=123, value2="abc")
 
     assert repr(sut) == "MultiFieldVO(value1=123, value2='abc')"
+
+
+def test_class_var_not_in_repr() -> None:
+    @dataclass(frozen=True, repr=False)
+    class ClassVarVO(ValueObject):
+        baz: int
+        foo: Final[ClassVar[int]] = 0
+        bar: ClassVar[str] = "baz"
+
+    sut = ClassVarVO(baz=1)
+
+    assert repr(sut) == "ClassVarVO(1)"
