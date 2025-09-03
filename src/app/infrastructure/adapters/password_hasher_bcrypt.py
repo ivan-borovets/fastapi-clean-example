@@ -6,7 +6,7 @@ from typing import NewType
 import bcrypt
 
 from app.domain.ports.password_hasher import PasswordHasher
-from app.domain.value_objects.raw_password.raw_password import RawPassword
+from app.domain.value_objects.raw_password import RawPassword
 
 PasswordPepper = NewType("PasswordPepper", str)
 

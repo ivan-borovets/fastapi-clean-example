@@ -5,15 +5,14 @@ from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
 from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.user_password_hash import UserPasswordHash
-from app.domain.value_objects.username.constants import USERNAME_MAX_LEN
-from app.domain.value_objects.username.username import Username
+from app.domain.value_objects.username import Username
 from app.infrastructure.persistence_sqla.registry import mapping_registry
 
 users_table = Table(
     "users",
     mapping_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
-    Column("username", String(USERNAME_MAX_LEN), nullable=False, unique=True),
+    Column("username", String(Username.MAX_LEN), nullable=False, unique=True),
     Column("password_hash", LargeBinary, nullable=False),
     Column(
         "role",

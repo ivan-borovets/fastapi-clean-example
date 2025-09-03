@@ -3,7 +3,7 @@ from typing import Protocol
 
 from app.domain.entities.user import User
 from app.domain.value_objects.user_id import UserId
-from app.domain.value_objects.username.username import Username
+from app.domain.value_objects.username import Username
 
 
 class UserCommandGateway(Protocol):

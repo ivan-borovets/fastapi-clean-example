@@ -2,7 +2,7 @@ from typing import Any
 
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.base import DomainError
-from app.domain.value_objects.username.username import Username
+from app.domain.value_objects.username import Username
 
 
 class UsernameAlreadyExistsError(DomainError):
