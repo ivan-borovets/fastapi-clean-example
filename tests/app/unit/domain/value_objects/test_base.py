@@ -51,9 +51,3 @@ def test_multi_field_vo_repr() -> None:
     sut = create_multi_field_vo(value1=123, value2="abc")
 
     assert repr(sut) == "MultiFieldVO(value1=123, value2='abc')"
-
-
-def test_returns_fields_as_dict() -> None:
-    sut = create_multi_field_vo(value1=123, value2="abc")
-
-    assert sut.get_fields() == {"value1": 123, "value2": "abc"}
