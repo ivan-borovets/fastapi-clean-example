@@ -9,9 +9,24 @@ from app.domain.exceptions.base import DomainFieldError
 class ValueObject:
     """
     Base class for immutable value objects (VO) in domain.
-    Defined by its attributes, which must themselves be immutable.
+    Defined by its instance attributes, which must themselves be immutable.
     For simple cases where only type distinction is required,
     consider using `typing.NewType` instead of subclassing this class.
+
+    Warning: due to mismatch between typing rules and runtime behavior
+    for `Final[ClassVar[T]]`, using `__slots__` in subclasses is not
+    recommended — such class constants are turned into `member_descriptor`
+    at runtime instead of preserving their declared values.
+
+    Note: I considered using plain `ClassVar[T]` for class constants
+    (as `ClassVar[Final[T]]` currently has no semantic meaning anyway)
+    which would immediately resolve the slots compatibility and `fields()`
+    behavior issues. However, I chose to prioritize correct typing
+    semantics with `Final[ClassVar[T]]` and observe how this inconsistency
+    between typing rules and runtime behavior gets resolved.
+
+    https://github.com/python/cpython/issues/89547
+    https://github.com/python/mypy/issues/19607
     """
 
     def __post_init__(self) -> None:
