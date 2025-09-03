@@ -11,6 +11,4 @@ class UserQueryGateway(Protocol):
         self,
         user_read_all_params: UserListParams,
     ) -> list[UserQueryModel] | None:
-        """
-        :raises ReaderError:
-        """
+        """:raises ReaderError:"""

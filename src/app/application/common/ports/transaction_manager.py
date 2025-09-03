@@ -12,7 +12,7 @@ class TransactionManager(Protocol):
     @abstractmethod
     async def commit(self) -> None:
         """
-        Commit the successful outcome of a business transaction.
-
         :raises DataMapperError:
+
+        Commit the successful outcome of a business transaction.
         """

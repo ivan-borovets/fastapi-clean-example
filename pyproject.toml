@@ -174,7 +174,6 @@ split-on-trailing-comma = true
     "S107", # hardcoded-password-default
 ]
 #
-"src/app/domain/value_objects/base.py" = ["B024", ]                       # abstract-base-class-without-abstract-method
 "src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501", ]  # line-too-long
 "src/app/infrastructure/auth/session/constants.py" = ["S105", ]           # hardcoded-password-string
 "src/app/presentation/http/auth/constants.py" = ["S105", ]                # hardcoded-password-string

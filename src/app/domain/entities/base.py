@@ -11,6 +11,8 @@ T = TypeVar("T", bound=ValueObject)
 @dataclass(eq=False)
 class Entity[T: ValueObject](ABC):
     """
+    raises DomainError
+
     Base class for domain entities, defined by a unique identity (`id`).
     - `id`: Identity that remains constant throughout the entity's lifecycle.
     - Entities are mutable, but are compared solely by their `id`.
@@ -22,6 +24,8 @@ class Entity[T: ValueObject](ABC):
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
+        :raises DomainError:
+
         Prevents modifying the `id` after it's set.
         Other attributes can be changed as usual.
         """

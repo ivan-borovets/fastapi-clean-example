@@ -21,9 +21,7 @@ class SqlaMainTransactionManager(TransactionManager):
         self._session = session
 
     async def commit(self) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         try:
             await self._session.commit()
             log.debug("%s Main session.", DB_COMMIT_DONE)

@@ -9,15 +9,11 @@ from app.domain.value_objects.username import Username
 class UserCommandGateway(Protocol):
     @abstractmethod
     def add(self, user: User) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
 
     @abstractmethod
     async def read_by_id(self, user_id: UserId) -> User | None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
 
     @abstractmethod
     async def read_by_username(
@@ -25,6 +21,4 @@ class UserCommandGateway(Protocol):
         username: Username,
         for_update: bool = False,
     ) -> User | None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""

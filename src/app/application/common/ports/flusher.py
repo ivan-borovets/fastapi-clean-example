@@ -10,8 +10,8 @@ class Flusher(Protocol):
     @abstractmethod
     async def flush(self) -> None:
         """
-        Flush pending changes to validate constraints or trigger side effects.
-
         :raises DataMapperError:
         :raises UsernameAlreadyExists:
+
+        Flush pending changes to validate constraints or trigger side effects.
         """

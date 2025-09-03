@@ -21,9 +21,7 @@ class SqlaAuthSessionTransactionManager(AuthSessionTransactionManager):
         self._session = session
 
     async def commit(self) -> None:
-        """
-        :raises DataMapperError:
-        """
+        """:raises DataMapperError:"""
         try:
             await self._session.commit()
             log.debug("%s Auth session.", DB_COMMIT_DONE)
