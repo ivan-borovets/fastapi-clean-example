@@ -1,50 +1,76 @@
-from abc import ABC
-from dataclasses import dataclass, fields
+from dataclasses import Field, dataclass, fields
+from typing import Any, ClassVar, Final, get_args, get_origin
 
 from app.domain.exceptions.base import DomainFieldError
 
 
 @dataclass(frozen=True, repr=False)
-class ValueObject(ABC):
+class ValueObject:
     """
-    Base class for immutable value objects (VO) in the domain.
-    - Defined by its attributes, which must also be immutable.
-    - Subclasses should set `repr=False` to use the custom `__repr__` implementation
-     from this class.
-
-    For simple cases where immutability and additional behavior aren't required,
-    consider using `NewType` from `typing` as a lightweight alternative
-    to inheriting from this class.
+    Base class for immutable value objects (VO) in domain.
+    Defined by its attributes, which must themselves be immutable.
+    For simple cases where only type distinction is required,
+    consider using `typing.NewType` instead of subclassing this class.
     """
 
     def __post_init__(self) -> None:
         """
-        Hook for additional initialization and ensuring invariants.
+        :raises DomainFieldError:
 
+        Hook for additional initialization and ensuring invariants.
         Subclasses can override this method to implement custom logic, while
         still calling `super().__post_init__()` to preserve base checks.
         """
-        if not fields(self):
+        self.__forbid_base_class_instantiation()
+        self.__check_field_existence()
+
+    def __forbid_base_class_instantiation(self) -> None:
+        """:raises DomainFieldError:"""
+        if type(self) is ValueObject:
+            raise DomainFieldError("Base ValueObject cannot be instantiated directly.")
+
+    def __check_field_existence(self) -> None:
+        """:raises DomainFieldError:"""
+        if not self.__instance_fields:
             raise DomainFieldError(
                 f"{type(self).__name__} must have at least one field!",
             )
 
+    @property
+    def __instance_fields(self) -> tuple[Field[Any], ...]:
+        """
+        Return only instance fields, exclude `Final[ClassVar[T]]`.
+
+        Since Python 3.13 `Final[ClassVar[T]]` is valid for class constants.
+        By typing rules `Final` must wrap `ClassVar`. However, dataclass
+        implementation erroneously reports such class variables via
+        `fields()`, unlike plain `ClassVar`. We drop them to avoid treating
+        class constants as instance attributes.
+        """
+        instance_fields: list[Field[Any]] = []
+        for f in fields(self):
+            tp = f.type
+            if get_origin(tp) is Final and get_origin(get_args(tp)[0]) is ClassVar:
+                continue
+            instance_fields.append(f)
+        return tuple(instance_fields)
+
     def __repr__(self) -> str:
         """
-        Returns a string representation of the value object.
+        Return string representation of value object.
         - With 1 field: outputs the value only.
         - With 2+ fields: outputs in `name=value` format.
-        Subclasses must set `repr=False` in @dataclass for this to work.
+        Subclasses must set `repr=False` for this to take effect.
         """
-        return f"{type(self).__name__}({self._repr_value()})"
+        return f"{type(self).__name__}({self.__repr_value()})"
 
-    def _repr_value(self) -> str:
+    def __repr_value(self) -> str:
         """
-        Helper to build a string representation of the value object.
-        - If there is one field, returns the value of that field.
-        - Otherwise, returns a comma-separated list of `name=value` pairs.
+        Build string representation of value object.
+        - If one field, returns its value.
+        - Otherwise, returns comma-separated list of `name=value` pairs.
         """
-        all_fields = fields(self)
-        if len(all_fields) == 1:
-            return f"{getattr(self, all_fields[0].name)!r}"
-        return ", ".join(f"{f.name}={getattr(self, f.name)!r}" for f in all_fields)
+        items = self.__instance_fields
+        if len(items) == 1:
+            return f"{getattr(self, items[0].name)!r}"
+        return ", ".join(f"{f.name}={getattr(self, f.name)!r}" for f in items)
