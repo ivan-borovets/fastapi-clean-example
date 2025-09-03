@@ -1,4 +1,5 @@
 from dataclasses import Field, dataclass, fields
+from functools import cached_property
 from typing import Any, ClassVar, Final, get_args, get_origin
 
 from app.domain.exceptions.base import DomainFieldError
@@ -36,7 +37,7 @@ class ValueObject:
                 f"{type(self).__name__} must have at least one field!",
             )
 
-    @property
+    @cached_property
     def __instance_fields(self) -> tuple[Field[Any], ...]:
         """
         Return only instance fields, exclude `Final[ClassVar[T]]`.
