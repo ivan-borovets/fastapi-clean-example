@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from app.domain.exceptions.base import DomainError
@@ -7,7 +6,6 @@ from app.domain.value_objects.base import ValueObject
 T = TypeVar("T", bound=ValueObject)
 
 
-@dataclass(eq=False)
 class Entity[T: ValueObject]:
     """
     raises DomainError
@@ -15,21 +13,12 @@ class Entity[T: ValueObject]:
     Base class for domain entities, defined by a unique identity (`id`).
     - `id`: Identity that remains constant throughout the entity's lifecycle.
     - Entities are mutable, but are compared solely by their `id`.
-    - Subclasses must set `eq=False` to inherit the equality behavior.
-    - Add `kw_only=True` in subclasses to enforce named arguments for clarity & safety.
     """
 
-    id_: T
-
-    def __post_init__(self) -> None:
-        """
-        :raises DomainError:
-
-        Hook for additional initialization and ensuring invariants.
-        Subclasses can override this method to implement custom logic, while
-        still calling `super().__post_init__()` to preserve base checks.
-        """
+    def __init__(self, *, id_: T) -> None:
+        """:raises DomainError:"""
         self.__forbid_base_class_instantiation()
+        self.id_ = id_
 
     def __forbid_base_class_instantiation(self) -> None:
         """:raises DomainError:"""
