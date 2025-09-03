@@ -7,10 +7,10 @@ from app.domain.exceptions.user import (
 )
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
-from app.domain.value_objects.raw_password.raw_password import RawPassword
+from app.domain.value_objects.raw_password import RawPassword
 from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.user_password_hash import UserPasswordHash
-from app.domain.value_objects.username.username import Username
+from app.domain.value_objects.username import Username
 
 
 class UserService:

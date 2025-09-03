@@ -18,8 +18,8 @@ from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.exceptions.user import UserNotFoundByUsernameError
 from app.domain.services.user import UserService
-from app.domain.value_objects.raw_password.raw_password import RawPassword
-from app.domain.value_objects.username.username import Username
+from app.domain.value_objects.raw_password import RawPassword
+from app.domain.value_objects.username import Username
 
 log = logging.getLogger(__name__)
 
