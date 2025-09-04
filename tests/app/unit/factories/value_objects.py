@@ -9,12 +9,12 @@ from app.domain.value_objects.user_password_hash import UserPasswordHash
 from app.domain.value_objects.username import Username
 
 
-@dataclass(frozen=True, repr=False)
+@dataclass(frozen=True, slots=True, repr=False)
 class SingleFieldVO(ValueObject):
     value: int
 
 
-@dataclass(frozen=True, repr=False)
+@dataclass(frozen=True, slots=True, repr=False)
 class MultiFieldVO(ValueObject):
     value1: int
     value2: str
