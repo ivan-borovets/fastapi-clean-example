@@ -10,28 +10,28 @@ from app.domain.value_objects.base import ValueObject
 class Username(ValueObject):
     """raises DomainFieldError"""
 
-    value: str
-
-    MIN_LEN: Final[ClassVar[int]] = 5
-    MAX_LEN: Final[ClassVar[int]] = 20
+    MIN_LEN: ClassVar[Final[int]] = 5
+    MAX_LEN: ClassVar[Final[int]] = 20
 
     # Pattern for validating a username:
     # - starts with a letter (A-Z, a-z) or a digit (0-9)
-    PATTERN_START: Final[ClassVar[re.Pattern[str]]] = re.compile(
+    PATTERN_START: ClassVar[Final[re.Pattern[str]]] = re.compile(
         r"^[a-zA-Z0-9]",
     )
     # - can contain multiple special characters . - _ between letters and digits,
-    PATTERN_ALLOWED_CHARS: Final[ClassVar[re.Pattern[str]]] = re.compile(
+    PATTERN_ALLOWED_CHARS: ClassVar[Final[re.Pattern[str]]] = re.compile(
         r"[a-zA-Z0-9._-]*",
     )
     #   but only one special character can appear consecutively
-    PATTERN_NO_CONSECUTIVE_SPECIALS: Final[ClassVar[re.Pattern[str]]] = re.compile(
+    PATTERN_NO_CONSECUTIVE_SPECIALS: ClassVar[Final[re.Pattern[str]]] = re.compile(
         r"^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*[._-]?$",
     )
     # - ends with a letter (A-Z, a-z) or a digit (0-9)
-    PATTERN_END: Final[ClassVar[re.Pattern[str]]] = re.compile(
+    PATTERN_END: ClassVar[Final[re.Pattern[str]]] = re.compile(
         r".*[a-zA-Z0-9]$",
     )
+
+    value: str
 
     def __post_init__(self) -> None:
         """:raises DomainFieldError:"""
