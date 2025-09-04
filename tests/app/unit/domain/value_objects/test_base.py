@@ -1,4 +1,4 @@
-from dataclasses import FrozenInstanceError, dataclass
+from dataclasses import FrozenInstanceError, dataclass, fields
 from typing import ClassVar, Final
 
 import pytest
@@ -27,12 +27,48 @@ def test_child_cannot_init_with_no_instance_fields() -> None:
 
 def test_child_cannot_init_with_only_class_fields() -> None:
     @dataclass(frozen=True)
-    class EmptyVO(ValueObject):
-        foo: Final[ClassVar[int]] = 0
-        bar: ClassVar[str] = "baz"
+    class ClassFieldsVO(ValueObject):
+        foo: ClassVar[int] = 0
+        bar: ClassVar[Final[str]] = "baz"
 
     with pytest.raises(DomainFieldError):
-        EmptyVO()
+        ClassFieldsVO()
+
+
+def test_class_field_not_in_dataclass_fields() -> None:
+    @dataclass(frozen=True)
+    class MixedFieldsVO(ValueObject):
+        foo: ClassVar[int] = 0
+        bar: str
+
+    sut = MixedFieldsVO(bar="baz")
+    sut_fields = fields(sut)
+
+    assert len(sut_fields) == 1
+    assert sut_fields[0].name == "bar"
+    assert sut_fields[0].type is str
+    assert getattr(sut, sut_fields[0].name) == "baz"
+
+
+def test_class_field_not_broken_by_slots() -> None:
+    @dataclass(frozen=True, slots=True)
+    class MixedFieldsVO(ValueObject):
+        foo: ClassVar[int] = 0
+        bar: str
+
+    assert MixedFieldsVO.foo == 0
+
+
+def test_class_field_final_equivalence() -> None:
+    @dataclass(frozen=True)
+    class MixedFieldsVO:
+        a: ClassVar[int] = 1
+        b: ClassVar[Final[str]] = "bar"
+        c: str = "baz"
+
+    sut_field_names = [f.name for f in fields(MixedFieldsVO)]
+
+    assert sut_field_names == ["c"]
 
 
 def test_is_immutable() -> None:
@@ -70,13 +106,13 @@ def test_multi_field_vo_repr() -> None:
     assert repr(sut) == "MultiFieldVO(value1=123, value2='abc')"
 
 
-def test_class_var_not_in_repr() -> None:
+def test_class_field_not_in_repr() -> None:
     @dataclass(frozen=True, repr=False)
-    class ClassVarVO(ValueObject):
+    class MixedFieldsVO(ValueObject):
         baz: int
-        foo: Final[ClassVar[int]] = 0
-        bar: ClassVar[str] = "baz"
+        foo: ClassVar[int] = 0
+        bar: ClassVar[Final[str]] = "baz"
 
-    sut = ClassVarVO(baz=1)
+    sut = MixedFieldsVO(baz=1)
 
-    assert repr(sut) == "ClassVarVO(1)"
+    assert repr(sut) == "MixedFieldsVO(1)"

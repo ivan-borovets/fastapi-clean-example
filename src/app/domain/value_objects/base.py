@@ -1,30 +1,27 @@
-from dataclasses import Field, dataclass, fields
-from functools import cached_property
-from typing import Any, ClassVar, Final, get_args, get_origin
+from dataclasses import dataclass, fields
 
 from app.domain.exceptions.base import DomainFieldError
 
 
-@dataclass(frozen=True, repr=False)
+@dataclass(frozen=True, slots=True, repr=False)
 class ValueObject:
     """
     Base class for immutable value objects (VO) in domain.
-    Defined by its instance attributes, which must themselves be immutable.
-    For simple cases where only type distinction is required,
-    consider using `typing.NewType` instead of subclassing this class.
+    Defined by instance attributes only; these must be immutable.
+    For simple type tagging, consider `typing.NewType` instead of subclassing.
 
-    Warning: due to mismatch between typing rules and runtime behavior
-    for `Final[ClassVar[T]]`, using `__slots__` in subclasses is not
-    recommended — such class constants are turned into `member_descriptor`
-    at runtime instead of preserving their declared values.
+    Typing/runtime mismatch:
+    By current typing rules, `Final` should wrap `ClassVar` → `Final[ClassVar[T]]`.
+    At runtime, `dataclasses.fields()` includes it as an instance field (and with
+    `__slots__` it becomes a `member_descriptor`). Use `ClassVar[Final[T]]`
+    (or `ClassVar[T]`) so class constants are not treated as instance attributes.
 
-    Note: I considered using plain `ClassVar[T]` for class constants
-    (as `ClassVar[Final[T]]` currently has no semantic meaning anyway)
-    which would immediately resolve the slots compatibility and `fields()`
-    behavior issues. However, I chose to prioritize correct typing
-    semantics with `Final[ClassVar[T]]` and observe how this inconsistency
-    between typing rules and runtime behavior gets resolved.
+    Type-checking status:
+    As of now, mypy does not enforce `Final` inside `ClassVar`; reassignment is
+    allowed, so `ClassVar[Final[T]]` is effectively `ClassVar[T]`. We keep `Final`
+    for forward-compatibility, expecting future enforcement.
 
+    References:
     https://github.com/python/cpython/issues/89547
     https://github.com/python/mypy/issues/19607
     """
@@ -47,29 +44,10 @@ class ValueObject:
 
     def __check_field_existence(self) -> None:
         """:raises DomainFieldError:"""
-        if not self.__instance_fields:
+        if not fields(self):
             raise DomainFieldError(
                 f"{type(self).__name__} must have at least one field!",
             )
-
-    @cached_property
-    def __instance_fields(self) -> tuple[Field[Any], ...]:
-        """
-        Return only instance fields, exclude `Final[ClassVar[T]]`.
-
-        Since Python 3.13 `Final[ClassVar[T]]` is valid for class constants.
-        By typing rules `Final` must wrap `ClassVar`. However, dataclass
-        implementation erroneously reports such class variables via
-        `fields()`, unlike plain `ClassVar`. We drop them to avoid treating
-        class constants as instance attributes.
-        """
-        instance_fields: list[Field[Any]] = []
-        for f in fields(self):
-            tp = f.type
-            if get_origin(tp) is Final and get_origin(get_args(tp)[0]) is ClassVar:
-                continue
-            instance_fields.append(f)
-        return tuple(instance_fields)
 
     def __repr__(self) -> str:
         """
@@ -86,7 +64,7 @@ class ValueObject:
         - If one field, returns its value.
         - Otherwise, returns comma-separated list of `name=value` pairs.
         """
-        items = self.__instance_fields
+        items = fields(self)
         if len(items) == 1:
             return f"{getattr(self, items[0].name)!r}"
         return ", ".join(f"{f.name}={getattr(self, f.name)!r}" for f in items)
