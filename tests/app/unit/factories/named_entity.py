@@ -4,7 +4,7 @@ from app.domain.entities.base import Entity
 from app.domain.value_objects.base import ValueObject
 
 
-@dataclass(frozen=True, repr=False)
+@dataclass(frozen=True, slots=True, repr=False)
 class NamedEntityId(ValueObject):
     value: int
 

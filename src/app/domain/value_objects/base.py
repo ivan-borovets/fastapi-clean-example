@@ -33,6 +33,15 @@ class ValueObject:
         Hook for additional initialization and ensuring invariants.
         Subclasses can override this method to implement custom logic, while
         still calling `super().__post_init__()` to preserve base checks.
+
+        Note on slotted dataclasses:
+        With `slots=True`, the dataclass transformation may replace the class
+        object; a zero-arg `super()` in a subclass `__post_init__` can then raise
+        `TypeError`. In such cases, call the base with two-arg super, e.g.:
+            `super(Username, self).__post_init__()`
+        (or invoke directly: `ValueObject.__post_init__(self)`).
+
+        Reference: https://github.com/python/cpython/issues/90562
         """
         self.__forbid_base_class_instantiation()
         self.__check_field_existence()

@@ -6,7 +6,7 @@ from app.domain.exceptions.base import DomainFieldError
 from app.domain.value_objects.base import ValueObject
 
 
-@dataclass(frozen=True, repr=False)
+@dataclass(frozen=True, slots=True, repr=False)
 class Username(ValueObject):
     """raises DomainFieldError"""
 
@@ -35,7 +35,7 @@ class Username(ValueObject):
 
     def __post_init__(self) -> None:
         """:raises DomainFieldError:"""
-        super().__post_init__()
+        super(Username, self).__post_init__()
         self._validate_username_length(self.value)
         self._validate_username_pattern(self.value)
 
