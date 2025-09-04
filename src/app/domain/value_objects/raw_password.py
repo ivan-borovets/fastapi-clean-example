@@ -9,9 +9,9 @@ from app.domain.value_objects.base import ValueObject
 class RawPassword(ValueObject):
     """raises DomainFieldError"""
 
-    value: str
+    MIN_LEN: ClassVar[Final[int]] = 6
 
-    MIN_LEN: Final[ClassVar[int]] = 6
+    value: str
 
     def __post_init__(self) -> None:
         """:raises DomainFieldError:"""
