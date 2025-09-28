@@ -176,20 +176,29 @@ def test_preserves_super_admin_activation_state(
 
 
 @pytest.mark.parametrize(
-    "is_admin",
-    [True, False],
+    ("initial_role", "target_is_admin", "expected_role", "expected_result"),
+    [
+        (UserRole.USER, True, UserRole.ADMIN, True),  # promote user to admin
+        (UserRole.ADMIN, False, UserRole.USER, True),  # demote admin to user
+        (UserRole.USER, False, UserRole.USER, False),  # try to demote already user
+        (UserRole.ADMIN, True, UserRole.ADMIN, False),  # try to promote already admin
+    ],
 )
 def test_toggles_role(
-    is_admin: bool,
+    initial_role: UserRole,
+    target_is_admin: bool,
+    expected_role: UserRole,
+    expected_result: bool,
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
-    user = create_user()
+    user = create_user(role=initial_role)
     sut = UserService(user_id_generator, password_hasher)
 
-    sut.toggle_user_admin_role(user, is_admin=is_admin)
+    result = sut.toggle_user_admin_role(user, is_admin=target_is_admin)
 
-    assert user.role == UserRole.ADMIN if is_admin else UserRole.USER
+    assert result is expected_result
+    assert user.role == expected_role
 
 
 @pytest.mark.parametrize(

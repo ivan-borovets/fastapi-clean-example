@@ -78,7 +78,7 @@ class GrantAdminInteractor:
         if user is None:
             raise UserNotFoundByIdError(user_id)
 
-        self._user_service.toggle_user_admin_role(user, is_admin=True)
-        await self._transaction_manager.commit()
+        if self._user_service.toggle_user_admin_role(user, is_admin=True):
+            await self._transaction_manager.commit()
 
         log.info("Grant admin: done. Target user ID: '%s'.", user.id_.value)
