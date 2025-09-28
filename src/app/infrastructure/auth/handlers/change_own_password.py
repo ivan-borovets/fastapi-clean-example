@@ -46,8 +46,9 @@ class ChangeOwnPasswordHandler:
         """
         log.info("Change own password: started.")
 
-        current_user = await self._current_user_service.get_current_user()
-        # TODO: for update = True
+        current_user = await self._current_user_service.get_current_user(
+            for_update=True
+        )
         # TODO: switch to ids
         # TODO: update docs
 

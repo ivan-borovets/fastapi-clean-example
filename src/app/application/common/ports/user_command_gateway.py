@@ -12,7 +12,11 @@ class UserCommandGateway(Protocol):
         """:raises DataMapperError:"""
 
     @abstractmethod
-    async def read_by_id(self, user_id: UserId) -> User | None:
+    async def read_by_id(
+        self,
+        user_id: UserId,
+        for_update: bool = False,
+    ) -> User | None:
         """:raises DataMapperError:"""
 
     @abstractmethod
