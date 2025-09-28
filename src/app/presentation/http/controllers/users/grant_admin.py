@@ -28,8 +28,8 @@ from app.presentation.http.errors.translators import (
 def create_grant_admin_router() -> APIRouter:
     router = ErrorAwareRouter()
 
-    @router.patch(
-        "/{username}/grant-admin",
+    @router.put(
+        "/{username}/roles/admin",
         description=getdoc(GrantAdminInteractor),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,

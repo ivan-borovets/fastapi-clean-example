@@ -28,8 +28,8 @@ from app.presentation.http.errors.translators import (
 def create_revoke_admin_router() -> APIRouter:
     router = ErrorAwareRouter()
 
-    @router.patch(
-        "/{username}/revoke-admin",
+    @router.delete(
+        "/{username}/roles/admin",
         description=getdoc(RevokeAdminInteractor),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,

@@ -25,7 +25,7 @@ from app.presentation.http.errors.translators import (
 def create_change_password_router() -> APIRouter:
     router = ErrorAwareRouter()
 
-    @router.patch(
+    @router.put(
         "/{username}/password",
         description=getdoc(ChangePasswordInteractor),
         error_map={

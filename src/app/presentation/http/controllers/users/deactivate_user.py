@@ -28,8 +28,8 @@ from app.presentation.http.errors.translators import (
 def create_deactivate_user_router() -> APIRouter:
     router = ErrorAwareRouter()
 
-    @router.patch(
-        "/{username}/deactivate",
+    @router.delete(
+        "/{username}/activation",
         description=getdoc(DeactivateUserInteractor),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
