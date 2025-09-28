@@ -8,7 +8,7 @@ from app.domain.value_objects.username import Username
 
 class UsernameAlreadyExistsError(DomainError):
     def __init__(self, username: Any):
-        message = f"User with username {username!r} already exists."
+        message = f"User with {username!r} already exists."
         super().__init__(message)
 
 
@@ -20,7 +20,7 @@ class UserNotFoundByIdError(DomainError):
 
 class UserNotFoundByUsernameError(DomainError):
     def __init__(self, username: Username):
-        message = f"User with username {username.value!r} is not found."
+        message = f"User with {username.value!r} is not found."
         super().__init__(message)
 
 
