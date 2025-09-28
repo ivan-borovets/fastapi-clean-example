@@ -2,11 +2,11 @@ from fastapi import APIRouter
 from starlette.requests import Request
 
 
-def create_healthcheck_router() -> APIRouter:
+def create_health_router() -> APIRouter:
     router = APIRouter()
 
-    @router.get("/")
-    async def healthcheck(_: Request) -> dict[str, str]:
+    @router.get("/health")
+    async def health(_: Request) -> dict[str, str]:
         """
         - Open to everyone.
         - Returns `200 OK` if the API is alive.
