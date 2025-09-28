@@ -9,6 +9,7 @@ from fastapi_error_map import ErrorAwareRouter, rule
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.exceptions.base import DomainFieldError
 from app.infrastructure.auth.exceptions import (
+    AuthenticationChangeError,
     AuthenticationError,
     ReAuthenticationError,
 )
@@ -39,6 +40,7 @@ def create_change_password_router() -> APIRouter:
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            AuthenticationChangeError: status.HTTP_400_BAD_REQUEST,
             ReAuthenticationError: status.HTTP_403_FORBIDDEN,
         },
         default_on_error=log_info,

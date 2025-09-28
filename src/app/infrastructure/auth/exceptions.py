@@ -11,3 +11,7 @@ class AlreadyAuthenticatedError(InfrastructureError):
 
 class ReAuthenticationError(InfrastructureError):
     pass
+
+
+class AuthenticationChangeError(InfrastructureError):
+    pass
