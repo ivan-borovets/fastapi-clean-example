@@ -88,7 +88,7 @@ class ActivateUserInteractor:
             ),
         )
 
-        self._user_service.toggle_user_activation(user, is_active=True)
-        await self._transaction_manager.commit()
+        if self._user_service.toggle_user_activation(user, is_active=True):
+            await self._transaction_manager.commit()
 
         log.info("Activate user: done. Target user ID: '%s'.", user.id_.value)

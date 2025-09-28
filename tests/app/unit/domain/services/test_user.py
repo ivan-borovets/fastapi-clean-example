@@ -133,20 +133,28 @@ def test_changes_password(
 
 
 @pytest.mark.parametrize(
-    "is_active",
-    [True, False],
+    ("initial_state", "target_state", "expected_result"),
+    [
+        (True, False, True),  # deactivate active user
+        (False, True, True),  # activate inactive user
+        (True, True, False),  # try to activate already active user
+        (False, False, False),  # try to deactivate already inactive user
+    ],
 )
 def test_toggles_activation_state(
-    is_active: bool,
+    initial_state: bool,
+    target_state: bool,
+    expected_result: bool,
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
-    user = create_user(is_active=not is_active)
+    user = create_user(is_active=initial_state)
     sut = UserService(user_id_generator, password_hasher)
 
-    sut.toggle_user_activation(user, is_active=is_active)
+    result = sut.toggle_user_activation(user, is_active=target_state)
 
-    assert user.is_active is is_active
+    assert result is expected_result
+    assert user.is_active is target_state
 
 
 @pytest.mark.parametrize(
