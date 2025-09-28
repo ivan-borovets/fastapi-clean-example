@@ -60,7 +60,7 @@ class ActivateUserInteractor:
         :raises UserNotFoundByIdError:
         :raises ActivationChangeNotPermittedError:
         """
-        log.info("Activate user: started. User ID: '%s'.", request_data.user_id)
+        log.info("Activate user: started. Target user ID: '%s'.", request_data.user_id)
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -91,4 +91,4 @@ class ActivateUserInteractor:
         self._user_service.toggle_user_activation(user, is_active=True)
         await self._transaction_manager.commit()
 
-        log.info("Activate user: done. User ID: '%s'.", user.id_.value)
+        log.info("Activate user: done. Target user ID: '%s'.", user.id_.value)

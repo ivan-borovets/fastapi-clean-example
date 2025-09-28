@@ -56,7 +56,7 @@ class RevokeAdminInteractor:
         :raises UserNotFoundByIdError:
         :raises RoleChangeNotPermittedError:
         """
-        log.info("Revoke admin: started. User ID: '%s'.", request_data.user_id)
+        log.info("Revoke admin: started. Target user ID: '%s'.", request_data.user_id)
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -79,4 +79,4 @@ class RevokeAdminInteractor:
         self._user_service.toggle_user_admin_role(user, is_admin=False)
         await self._transaction_manager.commit()
 
-        log.info("Revoke admin: done. User ID: '%s'.", user.id_.value)
+        log.info("Revoke admin: done. Target user ID: '%s'.", user.id_.value)

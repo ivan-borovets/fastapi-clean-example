@@ -64,4 +64,4 @@ class ChangePasswordHandler:
         self._user_service.change_password(current_user, new_password)
         await self._transaction_manager.commit()
 
-        log.info("Change password: done.")
+        log.info("Change password: done. User ID: '%s'.", current_user.id_.value)

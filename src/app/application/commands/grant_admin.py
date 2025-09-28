@@ -58,7 +58,7 @@ class GrantAdminInteractor:
         :raises UserNotFoundByIdError:
         :raises RoleChangeNotPermittedError:
         """
-        log.info("Grant admin: started. User ID: '%s'.", request_data.user_id)
+        log.info("Grant admin: started. Target user ID: '%s'.", request_data.user_id)
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -81,4 +81,4 @@ class GrantAdminInteractor:
         self._user_service.toggle_user_admin_role(user, is_admin=True)
         await self._transaction_manager.commit()
 
-        log.info("Grant admin: done. User ID: '%s'.", user.id_.value)
+        log.info("Grant admin: done. Target user ID: '%s'.", user.id_.value)

@@ -57,7 +57,10 @@ class SetUserPasswordInteractor:
         :raises DomainFieldError:
         :raises UserNotFoundByIdError:
         """
-        log.info("Set user password: started. User ID: '%s'.", request_data.user_id)
+        log.info(
+            "Set user password: started. Target user ID: '%s'.",
+            request_data.user_id,
+        )
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -81,4 +84,4 @@ class SetUserPasswordInteractor:
         self._user_service.change_password(user, password)
         await self._transaction_manager.commit()
 
-        log.info("Set user password: done. User ID: '%s'.", user.id_.value)
+        log.info("Set user password: done. Target user ID: '%s'.", user.id_.value)
