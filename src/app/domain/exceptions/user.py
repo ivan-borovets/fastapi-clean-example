@@ -2,12 +2,19 @@ from typing import Any
 
 from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.base import DomainError
+from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.username import Username
 
 
 class UsernameAlreadyExistsError(DomainError):
     def __init__(self, username: Any):
         message = f"User with username {username!r} already exists."
+        super().__init__(message)
+
+
+class UserNotFoundByIdError(DomainError):
+    def __init__(self, user_id: UserId):
+        message = f"User with user ID {user_id.value!r} is not found."
         super().__init__(message)
 
 

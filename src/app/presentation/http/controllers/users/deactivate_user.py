@@ -1,5 +1,6 @@
 from inspect import getdoc
 from typing import Annotated
+from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
@@ -14,7 +15,7 @@ from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.exceptions.base import DomainFieldError
 from app.domain.exceptions.user import (
     ActivationChangeNotPermittedError,
-    UserNotFoundByUsernameError,
+    UserNotFoundByIdError,
 )
 from app.infrastructure.auth.exceptions import AuthenticationError
 from app.infrastructure.exceptions.gateway import DataMapperError
@@ -29,7 +30,7 @@ def create_deactivate_user_router() -> APIRouter:
     router = ErrorAwareRouter()
 
     @router.delete(
-        "/{username}/activation",
+        "/{user_id}/activation",
         description=getdoc(DeactivateUserInteractor),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
@@ -40,7 +41,7 @@ def create_deactivate_user_router() -> APIRouter:
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
-            UserNotFoundByUsernameError: status.HTTP_404_NOT_FOUND,
+            UserNotFoundByIdError: status.HTTP_404_NOT_FOUND,
             ActivationChangeNotPermittedError: status.HTTP_403_FORBIDDEN,
         },
         default_on_error=log_info,
@@ -49,10 +50,10 @@ def create_deactivate_user_router() -> APIRouter:
     )
     @inject
     async def deactivate_user(
-        username: Annotated[str, Path()],
+        user_id: Annotated[UUID, Path()],
         interactor: FromDishka[DeactivateUserInteractor],
     ) -> None:
-        request_data = DeactivateUserRequest(username)
+        request_data = DeactivateUserRequest(user_id)
         await interactor.execute(request_data)
 
     return router
