@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from uuid import UUID
 
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
@@ -13,16 +14,18 @@ from app.application.common.services.authorization.permissions import (
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
 from app.domain.enums.user_role import UserRole
-from app.domain.exceptions.user import UserNotFoundByUsernameError
+from app.domain.exceptions.user import (
+    UserNotFoundByIdError,
+)
 from app.domain.services.user import UserService
-from app.domain.value_objects.username import Username
+from app.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
 class RevokeAdminRequest:
-    username: str
+    user_id: UUID
 
 
 class RevokeAdminInteractor:
@@ -50,13 +53,10 @@ class RevokeAdminInteractor:
         :raises DataMapperError:
         :raises AuthorizationError:
         :raises DomainFieldError:
-        :raises UserNotFoundByUsernameError:
+        :raises UserNotFoundByIdError:
         :raises RoleChangeNotPermittedError:
         """
-        log.info(
-            "Revoke admin: started. Username: '%s'.",
-            request_data.username,
-        )
+        log.info("Revoke admin: started. User ID: '%s'.", request_data.user_id)
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -68,18 +68,15 @@ class RevokeAdminInteractor:
             ),
         )
 
-        username = Username(request_data.username)
-        user: User | None = await self._user_command_gateway.read_by_username(
-            username,
+        user_id = UserId(request_data.user_id)
+        user: User | None = await self._user_command_gateway.read_by_id(
+            user_id,
             for_update=True,
         )
         if user is None:
-            raise UserNotFoundByUsernameError(username)
+            raise UserNotFoundByIdError(user_id)
 
         self._user_service.toggle_user_admin_role(user, is_admin=False)
         await self._transaction_manager.commit()
 
-        log.info(
-            "Revoke admin: done. Username: '%s'.",
-            user.username.value,
-        )
+        log.info("Revoke admin: done. User ID: '%s'.", user.id_.value)
