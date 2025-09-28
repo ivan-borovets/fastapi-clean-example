@@ -34,7 +34,7 @@ class GrantAdminInteractor:
     """
     - Open to super admins.
     - Grants admin rights to a specified user.
-    - Super admin rights can not be changed.
+    - Super admin rights cannot be changed.
     """
 
     def __init__(

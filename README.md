@@ -40,12 +40,12 @@ If they're new to you, refer to the [Useful Resources](#useful-resources) sectio
 
 ## Introduction
 
-This repository may be helpful for those seeking a backend implementation in Python that is both framework-agnostic
+This repository may be helpful for those seeking backend implementation in Python that is both framework-agnostic
 and storage-agnostic (unlike Django).
 Such flexibility can be achieved by using a web framework that doesn't impose strict software design (like FastAPI) and
 applying a layered architecture patterned after the one proposed by Robert Martin, which we'll explore further.
 
-The original explanation of the Clean Architecture concepts can be
+The original explanation of Clean Architecture concepts can be
 found [here](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 If you're still wondering why Clean Architecture matters, read the article — it only takes about 5 minutes.
 In essence, it’s about making your application independent of external systems and highly testable.
@@ -64,7 +64,7 @@ Being closer to implementation details, less abstract policies are more likely t
 **Layer** represents a collection of components expressing policies at the same level of abstraction.
 
 Concentric circles represent boundaries between different layers.
-The meaning of the arrows in the diagram will be discussed [later](#dependency-rule).
+The meaning of arrows in the diagram will be discussed [later](#dependency-rule).
 For now, we will focus on the purpose of the layers.
 
 ## Layered Approach
@@ -72,7 +72,7 @@ For now, we will focus on the purpose of the layers.
 ![#gold](https://placehold.co/15x15/gold/gold.svg) **Domain Layer**
 
 - **Domain model** is a set of concepts, rules and behaviors that define what business (context) is and how it operates.
-  It is expressed in a **ubiquitous language** — a consistent terminology shared by developers and domain experts.
+  It is expressed in **ubiquitous language** — consistent terminology shared by developers and domain experts.
   Domain layer implements domain model in code; this implementation is often called domain model.
 - The strictest domain rules are **invariants** — conditions that must always hold true for the model.
   Enforcing invariants means maintaining data consistency in the model.
@@ -92,16 +92,16 @@ For now, we will focus on the purpose of the layers.
       For components: anemic means no behavior within, rich — the contrary.
 - Domain services originally represent operations that don't naturally belong to a specific entity or value object.
   But in projects with anemic entities, they can also contain logic that would otherwise be in those entities.
-- In the early stages of development when the domain model is not yet clearly defined, 
+- In early stages of development when the domain model is not yet clearly defined,
   I'd recommend keeping entities flat and anemic, even though the latter weakens encapsulation.
-  Once the core logic is well established, some entities can, as aggregate roots, become non-flat and rich.
+  Once core logic is well established, some entities can, as aggregate roots, become non-flat and rich.
   This best enforces invariants but can be tricky to design once and for all.
 - Prefer rich value objects early, freeing entities and services from an excessive burden of local rules.
 - Consider domain layer the most important, stable, and independent part of a system.
 
 ![#red](https://placehold.co/15x15/red/red.svg) **Application Layer**
 
-- This layer implements the application-specific business logic by realizing steps of business-defined _**use cases**_.
+- This layer implements application-specific business logic by realizing steps of business-defined _**use cases**_.
 - Its main components are **interactors** — each handles a single business operation matching a step within a use case.
 - An interactor **orchestrates** domain logic and external calls needed to perform the operation.
 - Interactors are stateless, isolated, and do not call each other. Each is invoked independently — typically by external
@@ -167,7 +167,7 @@ In other words, dependencies must never point outwards within the application's 
 
 ### Note on Adapters
 
-The **Infrastructure layer** in the Clean Architecture acts as the adapter layer — connecting the application to
+The **Infrastructure layer** in Clean Architecture acts as the adapter layer — connecting the application to
 external systems.
 In this project, we treat both **Infrastructure** and **Presentation** as adapters, since both adapt the application to
 the outside world.
@@ -181,7 +181,7 @@ It doesn't strictly follow R. Martin's original concept but avoids introducing e
 implementations outside the application's boundaries.
 Pursuing purity on the outermost layer is more likely to result in overengineering than in practical gains.
 
-My approach retains nearly all the advantages of Clean Architecture while simplifying real-world development.
+My approach retains nearly all advantages of Clean Architecture while simplifying real-world development.
 When needed, adapters can be removed along with the external components they're written for, which isn't a
 significant issue.
 
@@ -207,7 +207,7 @@ Let's agree, for this project, that Dependency Rule **does not apply to adapters
 > external compared to typical adapters.
 
 - This layer handles external requests and includes **controllers** that validate inputs and pass them to the
-  interactors in the Application layer. The more abstract layers of the program assume that request data is already
+  interactors in the Application layer. More abstract layers of the program assume that request data is already
   validated, allowing them to focus solely on their core logic.
 - Controllers must be as thin as possible, containing no logic beyond basic input validation and routing. Their
   role is to act as an intermediary between the application and external systems (e.g., FastAPI).
@@ -230,8 +230,8 @@ Let's agree, for this project, that Dependency Rule **does not apply to adapters
 ![#gray](https://placehold.co/15x15/gray/gray.svg) **External Layer**
 
 > [!NOTE]
-> In the original diagram, the external components are included in the blue layer (Frameworks & Drivers).
-> I've marked them in gray to clearly distinguish them from the layers within the application's boundaries.
+> In the original diagram, external components are included in the blue layer (Frameworks & Drivers).
+> I've marked them in gray to clearly distinguish them from layers within the application's boundaries.
 
 - This layer represents fully external components such as web frameworks (e.g. FastAPI itself), databases, third-party
   APIs, and other services.
@@ -246,7 +246,7 @@ Let's agree, for this project, that Dependency Rule **does not apply to adapters
 ## Dependency Inversion
 
 The **dependency inversion** technique enables reversing dependencies **by introducing an interface** between
-components, allowing the inner layer to communicate with the outer layer while adhering to the Dependency Rule.
+components, allowing an inner layer to communicate with an outer layer while adhering to the Dependency Rule.
 
 <p align="center">
   <img src="docs/dep_graph_inv_corrupted.svg" alt="Corrupted Dependency" />
@@ -265,10 +265,10 @@ affect the Application layer.
 
 In the correct design, the Application layer component depends on an **abstraction (port)**, and the Infrastructure
 layer component **implements** the corresponding interface.
-This makes the Infrastructure component an adapter for the port, effectively turning it into a plugin for the
+This makes the Infrastructure component an adapter for the port, effectively turning it into a plugin for
 Application layer.
 Such a design adheres to the **Dependency Inversion Principle (DIP)**, minimizing the impact of infrastructure changes
-on the core business logic.
+on core business logic.
 
 ## Dependency Injection
 
@@ -279,7 +279,7 @@ From this definition, it's clear that one common way to implement DI is by passi
 
 But how exactly should these dependencies be initialized (and finalized)?
 
-**DI frameworks** offer an elegant solution by automatically creating the necessary objects (while managing their
+**DI frameworks** offer an elegant solution by automatically creating necessary objects (while managing their
 **lifecycle**) and injecting them where needed.
 This makes the process of dependency injection much cleaner and easier to manage.
 
@@ -487,23 +487,26 @@ natural.
 
 ### General
 
-- `/`: Open to **everyone**.
+- `/` (GET): Open to **everyone**.
     - Redirects to Swagger documentation.
-- `/api/v1/`: Open to **everyone**.
+- `/api/v1/health` (GET): Open to **everyone**.
     - Returns `200 OK` if the API is alive.
 
 ### Account (`/api/v1/account`)
 
-- `/signup`: Open to **everyone**.
+- `/signup` (POST): Open to **everyone**.
     - Registers a new user with validation and uniqueness checks.
     - Passwords are peppered, salted, and stored as hashes.
     - A logged-in user cannot sign up until the session expires or is terminated.
-- `/login`: Open to **everyone**.
+- `/login` (POST): Open to **everyone**.
     - Authenticates registered user, sets a JWT access token with a session ID in cookies, and creates a session.
     - A logged-in user cannot log in again until the session expires or is terminated.
     - Authentication renews automatically when accessing protected routes before expiration.
     - If the JWT is invalid, expired, or the session is terminated, the user loses authentication. [^1]
-- `/logout`: Open to **authenticated users**.
+- `/password` (PUT): Open to **authenticated users**.
+    - The current user can change their password.
+    - New password must differ from current password.
+- `/logout` (DELETE): Open to **authenticated users**.
     - Logs the user out by deleting the JWT access token from cookies and removing the session from the database.
 
 ### Users (`/api/v1/users`)
@@ -513,20 +516,18 @@ natural.
     - Only super admins can create new admins.
 - `/` (GET): Open to **admins**.
     - Retrieves a paginated list of existing users with relevant information.
-- `/{username}/password`: Open to **authenticated users**.
-    - Changes the user's password.
-    - The current user can change their own password.
-    - Admins can change passwords of subordinate users.
-- `/{username}/grant-admin`: Open to **super admins**.
+- `/{user_id}/password` (PUT): Open to **admins**.
+    - Admins can set passwords of subordinate users.
+- `/{user_id}/roles/admin` (PUT): Open to **super admins**.
     - Grants admin rights to a specified user.
-    - Super admin rights can not be changed.
-- `/{username}/revoke-admin`: Open to **super admins**.
+    - Super admin rights cannot be changed.
+- `/{user_id}/roles/admin` (DELETE): Open to **super admins**.
     - Revokes admin rights from a specified user.
-    - Super admin rights can not be changed.
-- `/{username}/activate`: Open to **admins**.
+    - Super admin rights cannot be changed.
+- `/{user_id}/activation` (PUT): Open to **admins**.
     - Restores a previously soft-deleted user.
     - Only super admins can activate other admins.
-- `/{username}/deactivate`: Open to **admins**.
+- `/{user_id}/activation` (DELETE): Open to **admins**.
     - Soft-deletes an existing user, making that user inactive.
     - Also deletes the user's sessions.
     - Only super admins can deactivate other admins.

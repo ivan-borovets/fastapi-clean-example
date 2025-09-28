@@ -32,7 +32,7 @@ class RevokeAdminInteractor:
     """
     - Open to super admins.
     - Revokes admin rights from a specified user.
-    - Super admin rights can not be changed
+    - Super admin rights cannot be changed
     """
 
     def __init__(

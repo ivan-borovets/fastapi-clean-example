@@ -56,7 +56,6 @@ class ChangePasswordHandler:
         current_user = await self._current_user_service.get_current_user(
             for_update=True
         )
-        # TODO: update docs
 
         current_password = RawPassword(request_data.current_password)
         new_password = RawPassword(request_data.new_password)
