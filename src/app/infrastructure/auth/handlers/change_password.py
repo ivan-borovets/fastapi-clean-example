@@ -11,7 +11,10 @@ from app.infrastructure.auth.exceptions import (
     AuthenticationChangeError,
     ReAuthenticationError,
 )
-from app.infrastructure.auth.session.constants import AUTH_INVALID_PASSWORD
+from app.infrastructure.auth.handlers.constants import (
+    AUTH_PASSWORD_INVALID,
+    AUTH_PASSWORD_NEW_SAME_AS_CURRENT,
+)
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +29,7 @@ class ChangePasswordHandler:
     """
     - Open to authenticated users.
     - The current user can change their password.
+    - New password must differ from current password.
     """
 
     def __init__(
@@ -57,10 +61,10 @@ class ChangePasswordHandler:
         current_password = RawPassword(request_data.current_password)
         new_password = RawPassword(request_data.new_password)
         if current_password == new_password:
-            raise AuthenticationChangeError("New password must differ from current.")
+            raise AuthenticationChangeError(AUTH_PASSWORD_NEW_SAME_AS_CURRENT)
 
         if not self._user_service.is_password_valid(current_user, current_password):
-            raise ReAuthenticationError(AUTH_INVALID_PASSWORD)
+            raise ReAuthenticationError(AUTH_PASSWORD_INVALID)
 
         self._user_service.change_password(current_user, new_password)
         await self._transaction_manager.commit()
