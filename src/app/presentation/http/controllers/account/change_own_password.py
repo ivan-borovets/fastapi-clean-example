@@ -3,17 +3,19 @@ from typing import Annotated
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Body, Path, Security, status
+from fastapi import APIRouter, Body, Security, status
 from fastapi_error_map import ErrorAwareRouter, rule
 
-from app.application.commands.change_password import (
-    ChangePasswordInteractor,
-    ChangePasswordRequest,
-)
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.exceptions.base import DomainFieldError
-from app.domain.exceptions.user import UserNotFoundByUsernameError
-from app.infrastructure.auth.exceptions import AuthenticationError
+from app.infrastructure.auth.exceptions import (
+    AuthenticationError,
+    ReAuthenticationError,
+)
+from app.infrastructure.auth.handlers.change_own_password import (
+    ChangeOwnPasswordHandler,
+    ChangeOwnPasswordRequest,
+)
 from app.infrastructure.exceptions.gateway import DataMapperError
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
 from app.presentation.http.errors.callbacks import log_error, log_info
@@ -22,12 +24,12 @@ from app.presentation.http.errors.translators import (
 )
 
 
-def create_change_password_router() -> APIRouter:
+def create_change_own_password_router() -> APIRouter:
     router = ErrorAwareRouter()
 
     @router.put(
-        "/{username}/password",
-        description=getdoc(ChangePasswordInteractor),
+        "/password",
+        description=getdoc(ChangeOwnPasswordHandler),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
             DataMapperError: rule(
@@ -37,22 +39,22 @@ def create_change_password_router() -> APIRouter:
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
-            UserNotFoundByUsernameError: status.HTTP_404_NOT_FOUND,
+            ReAuthenticationError: status.HTTP_403_FORBIDDEN,
         },
         default_on_error=log_info,
         status_code=status.HTTP_204_NO_CONTENT,
         dependencies=[Security(cookie_scheme)],
     )
     @inject
-    async def change_password(
-        username: Annotated[str, Path()],
-        password: Annotated[str, Body()],
-        interactor: FromDishka[ChangePasswordInteractor],
+    async def change_own_password(
+        current_password: Annotated[str, Body()],
+        new_password: Annotated[str, Body()],
+        handler: FromDishka[ChangeOwnPasswordHandler],
     ) -> None:
-        request_data = ChangePasswordRequest(
-            username=username,
-            password=password,
+        request_data = ChangeOwnPasswordRequest(
+            current_password=current_password,
+            new_password=new_password,
         )
-        await interactor.execute(request_data)
+        await handler.execute(request_data)
 
     return router

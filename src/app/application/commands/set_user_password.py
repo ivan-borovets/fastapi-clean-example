@@ -8,9 +8,7 @@ from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.services.authorization.authorize import (
     authorize,
 )
-from app.application.common.services.authorization.composite import AnyOf
 from app.application.common.services.authorization.permissions import (
-    CanManageSelf,
     CanManageSubordinate,
     UserManagementContext,
 )
@@ -25,17 +23,15 @@ log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class ChangePasswordRequest:
+class SetUserPasswordRequest:
     username: str
     password: str
 
 
-class ChangePasswordInteractor:
+class SetUserPasswordInteractor:
     """
     - Open to authenticated users.
-    - Changes the user's password.
-    - The current user can change their own password.
-    - Admins can change passwords of subordinate users.
+    - Admins can set passwords of subordinate users.
     """
 
     def __init__(
@@ -50,7 +46,7 @@ class ChangePasswordInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def execute(self, request_data: ChangePasswordRequest) -> None:
+    async def execute(self, request_data: SetUserPasswordRequest) -> None:
         """
         :raises AuthenticationError:
         :raises DataMapperError:
@@ -58,7 +54,7 @@ class ChangePasswordInteractor:
         :raises DomainFieldError:
         :raises UserNotFoundByUsernameError:
         """
-        log.info("Change password: started.")
+        log.info("Set user password: started.")
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -72,10 +68,7 @@ class ChangePasswordInteractor:
             raise UserNotFoundByUsernameError(username)
 
         authorize(
-            AnyOf(
-                CanManageSelf(),
-                CanManageSubordinate(),
-            ),
+            CanManageSubordinate(),
             context=UserManagementContext(
                 subject=current_user,
                 target=user,
@@ -85,4 +78,4 @@ class ChangePasswordInteractor:
         self._user_service.change_password(user, password)
         await self._transaction_manager.commit()
 
-        log.info("Change password: done.")
+        log.info("Set user password: done.")
