@@ -14,7 +14,7 @@ class UsernameAlreadyExistsError(DomainError):
 
 class UserNotFoundByIdError(DomainError):
     def __init__(self, user_id: UserId):
-        message = f"User with user ID {user_id.value!r} is not found."
+        message = f"User with {user_id.value!r} is not found."
         super().__init__(message)
 
 
