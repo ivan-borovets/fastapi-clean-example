@@ -65,10 +65,7 @@ class DeactivateUserInteractor:
         :raises UserNotFoundByIdError:
         :raises ActivationChangeNotPermittedError:
         """
-        log.info(
-            "Deactivate user: started. User ID: '%s'.",
-            request_data.user_id,
-        )
+        log.info("Deactivate user: started. User ID: '%s'.", request_data.user_id)
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -100,7 +97,4 @@ class DeactivateUserInteractor:
         await self._transaction_manager.commit()
         await self._access_revoker.remove_all_user_access(user.id_)
 
-        log.info(
-            "Deactivate user: done. User ID: '%s'.",
-            user.id_.value,
-        )
+        log.info("Deactivate user: done. User ID: '%s'.", user.id_.value)
