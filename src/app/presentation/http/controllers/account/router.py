@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.presentation.http.controllers.account.change_own_password import (
-    create_change_own_password_router,
+from app.presentation.http.controllers.account.change_password import (
+    create_change_password_router,
 )
 from app.presentation.http.controllers.account.log_in import create_log_in_router
 from app.presentation.http.controllers.account.log_out import (
@@ -21,7 +21,7 @@ def create_account_router() -> APIRouter:
     sub_routers = (
         create_sign_up_router(),
         create_log_in_router(),
-        create_change_own_password_router(),
+        create_change_password_router(),
         create_log_out_router(),
     )
 

@@ -15,15 +15,15 @@ log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class ChangeOwnPasswordRequest:
+class ChangePasswordRequest:
     current_password: str
     new_password: str
 
 
-class ChangeOwnPasswordHandler:
+class ChangePasswordHandler:
     """
     - Open to authenticated users.
-    - The current user can change their own password.
+    - The current user can change their password.
     """
 
     def __init__(
@@ -36,7 +36,7 @@ class ChangeOwnPasswordHandler:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def execute(self, request_data: ChangeOwnPasswordRequest) -> None:
+    async def execute(self, request_data: ChangePasswordRequest) -> None:
         """
         :raises AuthenticationError:
         :raises DataMapperError:
@@ -44,7 +44,7 @@ class ChangeOwnPasswordHandler:
         :raises DomainFieldError:
         :raises ReAuthenticationError:
         """
-        log.info("Change own password: started.")
+        log.info("Change password: started.")
 
         current_user = await self._current_user_service.get_current_user(
             for_update=True
@@ -64,4 +64,4 @@ class ChangeOwnPasswordHandler:
         self._user_service.change_password(current_user, new_password)
         await self._transaction_manager.commit()
 
-        log.info("Change own password: done.")
+        log.info("Change password: done.")

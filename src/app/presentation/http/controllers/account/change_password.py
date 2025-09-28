@@ -12,9 +12,9 @@ from app.infrastructure.auth.exceptions import (
     AuthenticationError,
     ReAuthenticationError,
 )
-from app.infrastructure.auth.handlers.change_own_password import (
-    ChangeOwnPasswordHandler,
-    ChangeOwnPasswordRequest,
+from app.infrastructure.auth.handlers.change_password import (
+    ChangePasswordHandler,
+    ChangePasswordRequest,
 )
 from app.infrastructure.exceptions.gateway import DataMapperError
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
@@ -24,12 +24,12 @@ from app.presentation.http.errors.translators import (
 )
 
 
-def create_change_own_password_router() -> APIRouter:
+def create_change_password_router() -> APIRouter:
     router = ErrorAwareRouter()
 
     @router.put(
         "/password",
-        description=getdoc(ChangeOwnPasswordHandler),
+        description=getdoc(ChangePasswordHandler),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
             DataMapperError: rule(
@@ -46,12 +46,12 @@ def create_change_own_password_router() -> APIRouter:
         dependencies=[Security(cookie_scheme)],
     )
     @inject
-    async def change_own_password(
+    async def change_password(
         current_password: Annotated[str, Body()],
         new_password: Annotated[str, Body()],
-        handler: FromDishka[ChangeOwnPasswordHandler],
+        handler: FromDishka[ChangePasswordHandler],
     ) -> None:
-        request_data = ChangeOwnPasswordRequest(
+        request_data = ChangePasswordRequest(
             current_password=current_password,
             new_password=new_password,
         )

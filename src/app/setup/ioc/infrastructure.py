@@ -16,8 +16,8 @@ from app.infrastructure.auth.adapters.identity_provider import (
 from app.infrastructure.auth.adapters.transaction_manager_sqla import (
     SqlaAuthSessionTransactionManager,
 )
-from app.infrastructure.auth.handlers.change_own_password import (
-    ChangeOwnPasswordHandler,
+from app.infrastructure.auth.handlers.change_password import (
+    ChangePasswordHandler,
 )
 from app.infrastructure.auth.handlers.log_in import LogInHandler
 from app.infrastructure.auth.handlers.log_out import LogOutHandler
@@ -69,7 +69,7 @@ class InfrastructureProvider(Provider):
     infra_handlers = provide_all(
         SignUpHandler,
         LogInHandler,
-        ChangeOwnPasswordHandler,
+        ChangePasswordHandler,
         LogOutHandler,
     )
 
