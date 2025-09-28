@@ -10,11 +10,14 @@ from app.application.common.services.authorization.authorize import (
     authorize,
 )
 from app.application.common.services.authorization.permissions import (
+    CanManageRole,
     CanManageSubordinate,
+    RoleManagementContext,
     UserManagementContext,
 )
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
+from app.domain.enums.user_role import UserRole
 from app.domain.exceptions.user import (
     UserNotFoundByIdError,
 )
@@ -33,7 +36,7 @@ class SetUserPasswordRequest:
 
 class SetUserPasswordInteractor:
     """
-    - Open to authenticated users.
+    - Open to admins.
     - Admins can set passwords of subordinate users.
     """
 
@@ -63,6 +66,14 @@ class SetUserPasswordInteractor:
         )
 
         current_user = await self._current_user_service.get_current_user()
+
+        authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=UserRole.USER,
+            ),
+        )
 
         user_id = UserId(request_data.user_id)
         password = RawPassword(request_data.password)
