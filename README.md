@@ -101,28 +101,32 @@ For now, we will focus on the purpose of the layers.
 
 ![#red](https://placehold.co/15x15/red/red.svg) **Application Layer**
 
-- This layer implements application-specific business logic by realizing steps of business-defined _**use cases**_.
-- Its main components are **interactors** — each handles a single business operation matching a step within a use case.
-- An interactor **orchestrates** domain logic and external calls needed to perform the operation.
-- Interactors are stateless, isolated, and do not call each other. Each is invoked independently — typically by external
-  drivers such as HTTP controllers, message consumers, or scheduled jobs.
-- To access external systems, interactors rely on **interfaces (ports)** that abstract infrastructure details.
-- In some cases, **application services** may group related interactors under a common business context.
-- The layer may also include standalone services for non-orchestration logic, such as authorization.
-
-> [!NOTE]
-> Domain and Application layers may import external tools and libraries to the extent necessary for describing business
-> logic — such as utilities for numerical computations, timezone management, or object modeling that extend the
-> language's capabilities.
-> However, they should avoid any ties to specific frameworks, databases, or external systems.
+- Business defines **use case** as specification of observable behavior that delivers value by achieving a goal.
+- Within use case, the behavior is enacted by **actor** — possibly a client of the software system.
+- Actor performs use case in steps, some of which require interaction with the system.
+  These stepwise interactions with the system are handled at the application layer by **interactors**.
+  In other words, each interactor handles a single business operation matching a step within use case.
+- Interactors are stateless and cannot call each other, unlike use cases.
+  Each is invoked independently - typically by external drivers such as HTTP controllers, message consumers, or
+  scheduled jobs.
+- Interactor orchestrates domain logic and external calls needed to perform the operation.
+  Its primary responsibilities include permission verification and transaction management.
+  To access external systems, interactors rely on **interfaces (ports)** that abstract infrastructure details.
+- Interactor uses **DTOs (Data Transfer Objects)** to exchange serializable data with external layers.
+  These are simple, behavior-free carriers - the cross-layer transport for external contracts.
+- If logic is reused across interactors: extract an application service when it falls under typical interactor
+  responsibilities; otherwise, consider evolving the domain model to include it.
+  Such evolution is a normal enrichment step.
+- Together, domain and application layers form the **core** of the system.
 
 ![#green](https://placehold.co/15x15/green/green.svg) **Infrastructure Layer**
 
-- This layer is responsible for _**adapting**_ the application to external systems.
-- It provides **implementations (adapters)** for the interfaces (ports) defined in the Application layer,
-  allowing the application to interact with external systems like databases, APIs, and file systems while keeping the
-  business logic decoupled from them.
-- Related adapter logic can be grouped into an **infrastructure service**.
+- This layer is responsible for adapting the core to external systems.
+- It consists of **adapters**: driving and driven.
+  Driving adapters call into the core, translating external requests into interactor calls.
+  Driven adapters (port implementations) are called by the core via ports, allowing the core to interact with external
+  systems (databases, APIs, file systems, etc.) while keeping the business logic decoupled.
+- Related adapter logic can be grouped into **infrastructure service**.
 
 > [!IMPORTANT]
 > - Clean Architecture doesn't prescribe any particular number of layers.
@@ -132,16 +136,23 @@ For now, we will focus on the purpose of the layers.
 
 A dependency occurs when one software component relies on another to operate.
 If you were to split all blocks of code into separate modules, dependencies would manifest as imports between those
-modules. Typically, dependencies are graphically depicted in UML style in such a way that
+modules.
+Typically, dependencies are graphically depicted in UML style in such a way that
 
 > [!IMPORTANT]
 > - `A -> B` (**A points to B**) means **A depends on B**.
 
 The key principle of Clean Architecture is the **Dependency Rule**.
 This rule states that **more abstract software components must not depend on more concrete ones.**
-In other words, dependencies must never point outwards within the application's boundaries.
+In other words, dependencies must never point outwards.
 
 > [!IMPORTANT]
+> - Domain and application layers may import external tools and libraries to the extent necessary for describing
+    business logic - those that extend the programming language's capabilities (math/numeric utilities, time zone
+    conversion, object modeling, etc.). This trades some core stability for clarity and expressiveness. What is not
+    acceptable are dependencies that bind business logic to implementation details (including frameworks) or to
+    out-of-process systems (databases, brokers, file systems, cloud SDKs, etc.).
+>
 > - Components within the same layer **can depend on each other.** For example, components in the Infrastructure layer
     can interact with one another without crossing into other layers.
 >
@@ -172,7 +183,7 @@ external systems.
 In this project, we treat both **Infrastructure** and **Presentation** as adapters, since both adapt the application to
 the outside world.
 Speaking of dependencies direction, the diagram by R. Martin in Figure 1 can, without significant loss, be replaced by a
-more concise and pragmatic one — where the adapter layer serves as a bridge, depending both on the internal layers of
+more concise and pragmatic one — where the adapter layer serves as a "bridge", depending both on the internal layers of
 the application and external components.
 This adjustment implies **reversing** the arrow from the blue layer to the green layer in R. Martin's diagram.
 
@@ -185,14 +196,20 @@ My approach retains nearly all advantages of Clean Architecture while simplifyin
 When needed, adapters can be removed along with the external components they're written for, which isn't a
 significant issue.
 
-Let's agree, for this project, that Dependency Rule **does not apply to adapters**.
+Let’s agree, for this project, to revise the principle:
+
+Original:
+> "Dependencies must never point outwards."
+
+Revised:
+> "Dependencies must never point outwards **within the core**."
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 10px; justify-items: center;">
-  <img src="docs/onion_1.svg" alt="My Interpretation of CA-D" style="width: 400px; height: auto;" />
-  <img src="docs/onion_2.svg" alt="My Interpretation of CA-D, alternative" style="width: 400px; height: auto;" />
+  <img src="docs/onion_1.svg" alt="Revised Interpretation of CA-D" style="width: 400px; height: auto;" />
+  <img src="docs/onion_2.svg" alt="Revised Interpretation of CA-D, alternative" style="width: 400px; height: auto;" />
 </div>
 <p align="center" style="font-size: 14px;">
-  <em>Figure 2: <b>My Pragmatic Interpretation</b> of Clean Architecture<br>
+  <em>Figure 2: <b>Revised Interpretation</b> of Clean Architecture<br>
   (diagrammed — original and alternative representation)
   </em>
 </p>
@@ -724,6 +741,7 @@ satisfying my curiosity throughout the development of this project:
 [PlzTrustMe](https://github.com/PlzTrustMe),
 [Krak3nDev](https://github.com/Krak3nDev),
 [Ivankirpichnikov](https://github.com/Ivankirpichnikov),
+[SamWarden](https://github.com/SamWarden),
 [nkhitrov](https://github.com/nkhitrov),
 [ApostolFet](https://github.com/ApostolFet),
 Lancetnik, Sehat1137, Maclovi.
