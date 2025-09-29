@@ -54,7 +54,6 @@ class GrantAdminInteractor:
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises DomainFieldError:
         :raises UserNotFoundByIdError:
         :raises RoleChangeNotPermittedError:
         """

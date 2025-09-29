@@ -12,7 +12,6 @@ from app.application.commands.activate_user import (
     ActivateUserRequest,
 )
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.exceptions.base import DomainFieldError
 from app.domain.exceptions.user import (
     ActivationChangeNotPermittedError,
     UserNotFoundByIdError,
@@ -40,7 +39,6 @@ def create_activate_user_router() -> APIRouter:
                 on_error=log_error,
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            DomainFieldError: status.HTTP_400_BAD_REQUEST,
             UserNotFoundByIdError: status.HTTP_404_NOT_FOUND,
             ActivationChangeNotPermittedError: status.HTTP_403_FORBIDDEN,
         },
