@@ -3,9 +3,6 @@ from fastapi import APIRouter
 from app.presentation.http.controllers.users.activate_user import (
     create_activate_user_router,
 )
-from app.presentation.http.controllers.users.change_password import (
-    create_change_password_router,
-)
 from app.presentation.http.controllers.users.create_user import (
     create_create_user_router,
 )
@@ -19,6 +16,9 @@ from app.presentation.http.controllers.users.list_users import create_list_users
 from app.presentation.http.controllers.users.revoke_admin import (
     create_revoke_admin_router,
 )
+from app.presentation.http.controllers.users.set_user_password import (
+    create_set_user_password_router,
+)
 
 
 def create_users_router() -> APIRouter:
@@ -30,7 +30,7 @@ def create_users_router() -> APIRouter:
     sub_routers = (
         create_create_user_router(),
         create_list_users_router(),
-        create_change_password_router(),
+        create_set_user_password_router(),
         create_grant_admin_router(),
         create_revoke_admin_router(),
         create_activate_user_router(),

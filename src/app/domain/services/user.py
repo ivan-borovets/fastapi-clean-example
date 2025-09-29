@@ -56,14 +56,21 @@ class UserService:
         hashed_password = UserPasswordHash(self._password_hasher.hash(raw_password))
         user.password_hash = hashed_password
 
-    def toggle_user_activation(self, user: User, *, is_active: bool) -> None:
+    def toggle_user_activation(self, user: User, *, is_active: bool) -> bool:
         """:raises ActivationChangeNotPermittedError:"""
         if not user.role.is_changeable:
             raise ActivationChangeNotPermittedError(user.username, user.role)
+        if user.is_active == is_active:
+            return False
         user.is_active = is_active
+        return True
 
-    def toggle_user_admin_role(self, user: User, *, is_admin: bool) -> None:
+    def toggle_user_admin_role(self, user: User, *, is_admin: bool) -> bool:
         """:raises RoleChangeNotPermittedError:"""
         if not user.role.is_changeable:
             raise RoleChangeNotPermittedError(user.username, user.role)
-        user.role = UserRole.ADMIN if is_admin else UserRole.USER
+        target_role = UserRole.ADMIN if is_admin else UserRole.USER
+        if user.role == target_role:
+            return False
+        user.role = target_role
+        return True

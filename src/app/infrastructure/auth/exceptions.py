@@ -7,3 +7,11 @@ class AuthenticationError(InfrastructureError):
 
 class AlreadyAuthenticatedError(InfrastructureError):
     pass
+
+
+class ReAuthenticationError(InfrastructureError):
+    pass
+
+
+class AuthenticationChangeError(InfrastructureError):
+    pass

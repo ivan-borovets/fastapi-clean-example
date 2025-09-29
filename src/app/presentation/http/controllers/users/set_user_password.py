@@ -1,18 +1,21 @@
 from inspect import getdoc
 from typing import Annotated
+from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Body, Path, Security, status
 from fastapi_error_map import ErrorAwareRouter, rule
 
-from app.application.commands.change_password import (
-    ChangePasswordInteractor,
-    ChangePasswordRequest,
+from app.application.commands.set_user_password import (
+    SetUserPasswordInteractor,
+    SetUserPasswordRequest,
 )
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.exceptions.base import DomainFieldError
-from app.domain.exceptions.user import UserNotFoundByUsernameError
+from app.domain.exceptions.user import (
+    UserNotFoundByIdError,
+)
 from app.infrastructure.auth.exceptions import AuthenticationError
 from app.infrastructure.exceptions.gateway import DataMapperError
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
@@ -22,12 +25,12 @@ from app.presentation.http.errors.translators import (
 )
 
 
-def create_change_password_router() -> APIRouter:
+def create_set_user_password_router() -> APIRouter:
     router = ErrorAwareRouter()
 
-    @router.patch(
-        "/{username}/password",
-        description=getdoc(ChangePasswordInteractor),
+    @router.put(
+        "/{user_id}/password",
+        description=getdoc(SetUserPasswordInteractor),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
             DataMapperError: rule(
@@ -37,20 +40,20 @@ def create_change_password_router() -> APIRouter:
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
-            UserNotFoundByUsernameError: status.HTTP_404_NOT_FOUND,
+            UserNotFoundByIdError: status.HTTP_404_NOT_FOUND,
         },
         default_on_error=log_info,
         status_code=status.HTTP_204_NO_CONTENT,
         dependencies=[Security(cookie_scheme)],
     )
     @inject
-    async def change_password(
-        username: Annotated[str, Path()],
+    async def set_user_password(
+        user_id: Annotated[UUID, Path()],
         password: Annotated[str, Body()],
-        interactor: FromDishka[ChangePasswordInteractor],
+        interactor: FromDishka[SetUserPasswordInteractor],
     ) -> None:
-        request_data = ChangePasswordRequest(
-            username=username,
+        request_data = SetUserPasswordRequest(
+            user_id=user_id,
             password=password,
         )
         await interactor.execute(request_data)

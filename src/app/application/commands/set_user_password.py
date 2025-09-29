@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from uuid import UUID
 
 from app.application.common.ports.transaction_manager import (
     TransactionManager,
@@ -8,34 +9,35 @@ from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.services.authorization.authorize import (
     authorize,
 )
-from app.application.common.services.authorization.composite import AnyOf
 from app.application.common.services.authorization.permissions import (
-    CanManageSelf,
+    CanManageRole,
     CanManageSubordinate,
+    RoleManagementContext,
     UserManagementContext,
 )
 from app.application.common.services.current_user import CurrentUserService
 from app.domain.entities.user import User
-from app.domain.exceptions.user import UserNotFoundByUsernameError
+from app.domain.enums.user_role import UserRole
+from app.domain.exceptions.user import (
+    UserNotFoundByIdError,
+)
 from app.domain.services.user import UserService
 from app.domain.value_objects.raw_password import RawPassword
-from app.domain.value_objects.username import Username
+from app.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class ChangePasswordRequest:
-    username: str
+class SetUserPasswordRequest:
+    user_id: UUID
     password: str
 
 
-class ChangePasswordInteractor:
+class SetUserPasswordInteractor:
     """
-    - Open to authenticated users.
-    - Changes the user's password.
-    - The current user can change their own password.
-    - Admins can change passwords of subordinate users.
+    - Open to admins.
+    - Admins can set passwords of subordinate users.
     """
 
     def __init__(
@@ -50,32 +52,40 @@ class ChangePasswordInteractor:
         self._user_service = user_service
         self._transaction_manager = transaction_manager
 
-    async def execute(self, request_data: ChangePasswordRequest) -> None:
+    async def execute(self, request_data: SetUserPasswordRequest) -> None:
         """
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
         :raises DomainFieldError:
-        :raises UserNotFoundByUsernameError:
+        :raises UserNotFoundByIdError:
         """
-        log.info("Change password: started.")
+        log.info(
+            "Set user password: started. Target user ID: '%s'.",
+            request_data.user_id,
+        )
 
         current_user = await self._current_user_service.get_current_user()
 
-        username = Username(request_data.username)
+        authorize(
+            CanManageRole(),
+            context=RoleManagementContext(
+                subject=current_user,
+                target_role=UserRole.USER,
+            ),
+        )
+
+        user_id = UserId(request_data.user_id)
         password = RawPassword(request_data.password)
-        user: User | None = await self._user_command_gateway.read_by_username(
-            username,
+        user: User | None = await self._user_command_gateway.read_by_id(
+            user_id,
             for_update=True,
         )
         if user is None:
-            raise UserNotFoundByUsernameError(username)
+            raise UserNotFoundByIdError(user_id)
 
         authorize(
-            AnyOf(
-                CanManageSelf(),
-                CanManageSubordinate(),
-            ),
+            CanManageSubordinate(),
             context=UserManagementContext(
                 subject=current_user,
                 target=user,
@@ -85,4 +95,4 @@ class ChangePasswordInteractor:
         self._user_service.change_password(user, password)
         await self._transaction_manager.commit()
 
-        log.info("Change password: done.")
+        log.info("Set user password: done. Target user ID: '%s'.", user.id_.value)

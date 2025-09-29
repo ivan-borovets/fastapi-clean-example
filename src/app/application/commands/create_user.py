@@ -66,10 +66,7 @@ class CreateUserInteractor:
         :raises RoleAssignmentNotPermittedError:
         :raises UsernameAlreadyExistsError:
         """
-        log.info(
-            "Create user: started. Username: '%s'.",
-            request_data.username,
-        )
+        log.info("Create user: started. Target username: '%s'.", request_data.username)
 
         current_user = await self._current_user_service.get_current_user()
 
@@ -94,5 +91,5 @@ class CreateUserInteractor:
 
         await self._transaction_manager.commit()
 
-        log.info("Create user: done. Username: '%s'.", user.username.value)
+        log.info("Create user: done. Target username: '%s'.", user.username.value)
         return CreateUserResponse(id=user.id_.value)

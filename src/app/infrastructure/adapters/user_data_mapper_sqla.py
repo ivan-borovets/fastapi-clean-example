@@ -22,9 +22,16 @@ class SqlaUserDataMapper(UserCommandGateway):
         except SQLAlchemyError as error:
             raise DataMapperError(DB_QUERY_FAILED) from error
 
-    async def read_by_id(self, user_id: UserId) -> User | None:
+    async def read_by_id(
+        self,
+        user_id: UserId,
+        for_update: bool = False,
+    ) -> User | None:
         """:raises DataMapperError:"""
         select_stmt: Select[tuple[User]] = select(User).where(User.id_ == user_id)  # type: ignore
+
+        if for_update:
+            select_stmt = select_stmt.with_for_update()
 
         try:
             user: User | None = (

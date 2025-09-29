@@ -1,5 +1,6 @@
 from inspect import getdoc
 from typing import Annotated
+from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
@@ -14,7 +15,7 @@ from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.exceptions.base import DomainFieldError
 from app.domain.exceptions.user import (
     RoleChangeNotPermittedError,
-    UserNotFoundByUsernameError,
+    UserNotFoundByIdError,
 )
 from app.infrastructure.auth.exceptions import AuthenticationError
 from app.infrastructure.exceptions.gateway import DataMapperError
@@ -28,8 +29,8 @@ from app.presentation.http.errors.translators import (
 def create_revoke_admin_router() -> APIRouter:
     router = ErrorAwareRouter()
 
-    @router.patch(
-        "/{username}/revoke-admin",
+    @router.delete(
+        "/{user_id}/roles/admin",
         description=getdoc(RevokeAdminInteractor),
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
@@ -40,7 +41,7 @@ def create_revoke_admin_router() -> APIRouter:
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
-            UserNotFoundByUsernameError: status.HTTP_404_NOT_FOUND,
+            UserNotFoundByIdError: status.HTTP_404_NOT_FOUND,
             RoleChangeNotPermittedError: status.HTTP_403_FORBIDDEN,
         },
         default_on_error=log_info,
@@ -49,10 +50,10 @@ def create_revoke_admin_router() -> APIRouter:
     )
     @inject
     async def revoke_admin(
-        username: Annotated[str, Path()],
+        user_id: Annotated[UUID, Path()],
         interactor: FromDishka[RevokeAdminInteractor],
     ) -> None:
-        request_data = RevokeAdminRequest(username)
+        request_data = RevokeAdminRequest(user_id)
         await interactor.execute(request_data)
 
     return router

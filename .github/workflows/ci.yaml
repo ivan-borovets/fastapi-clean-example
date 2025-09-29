@@ -28,30 +28,22 @@ jobs:
           export APP_ENV=local
           python config/toml_config_manager.py
           cd config/local
-          echo "Generated .env.local content:"
-          cat .env.local
           export COMPOSE_ENV_FILES=.env.local
           docker compose up -d --build
 
       - name: Verify Application Health
         run: |
-          timeout 10s bash -c '
-            while ! curl -sf http://0.0.0.0:9999/api/v1/; do
-              sleep 1
-            done
-          '
+          timeout 10s bash -s <<'BASH'
+          while ! curl -sf http://127.0.0.1:9999/api/v1/health; do
+            sleep 1
+          done
+          BASH
 
       - name: Test Signup Handler
         run: |
-          timeout 10s bash -c "
-            while ! curl -sf -X POST \
-              'http://0.0.0.0:9999/api/v1/account/signup' \
-              -H 'accept: application/json' \
-              -H 'Content-Type: application/json' \
-              -d '{
-              \"username\": \"string\",
-              \"password\": \"string\"
-            }'; do
-              sleep 1
-            done
-          "
+          curl -f --json @- http://127.0.0.1:9999/api/v1/account/signup <<'JSON'
+          {
+            "username": "string",
+            "password": "string"
+          }
+          JSON
