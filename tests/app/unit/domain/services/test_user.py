@@ -126,10 +126,10 @@ def test_changes_password(
 @pytest.mark.parametrize(
     ("initial_state", "target_state", "expected_result"),
     [
-        (True, False, True),  # deactivate active user
-        (False, True, True),  # activate inactive user
-        (True, True, False),  # try to activate already active user
-        (False, False, False),  # try to deactivate already inactive user
+        pytest.param(True, False, True, id="active_to_inactive"),
+        pytest.param(False, True, True, id="inactive_to_active"),
+        pytest.param(True, True, False, id="already_active"),
+        pytest.param(False, False, False, id="already_inactive"),
     ],
 )
 def test_toggles_activation_state(
@@ -169,10 +169,10 @@ def test_preserves_super_admin_activation_state(
 @pytest.mark.parametrize(
     ("initial_role", "target_is_admin", "expected_role", "expected_result"),
     [
-        (UserRole.USER, True, UserRole.ADMIN, True),  # promote user to admin
-        (UserRole.ADMIN, False, UserRole.USER, True),  # demote admin to user
-        (UserRole.USER, False, UserRole.USER, False),  # try to demote already user
-        (UserRole.ADMIN, True, UserRole.ADMIN, False),  # try to promote already admin
+        pytest.param(UserRole.USER, True, UserRole.ADMIN, True, id="user_to_admin"),
+        pytest.param(UserRole.ADMIN, False, UserRole.USER, True, id="admin_to_user"),
+        pytest.param(UserRole.USER, False, UserRole.USER, False, id="already_user"),
+        pytest.param(UserRole.ADMIN, True, UserRole.ADMIN, False, id="already_admin"),
     ],
 )
 def test_toggles_role(
