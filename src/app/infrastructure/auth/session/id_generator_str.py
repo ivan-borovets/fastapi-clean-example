@@ -2,5 +2,5 @@ import secrets
 
 
 class StrAuthSessionIdGenerator:
-    def __call__(self) -> str:
+    def generate(self) -> str:
         return secrets.token_urlsafe(32)

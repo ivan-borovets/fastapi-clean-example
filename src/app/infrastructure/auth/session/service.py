@@ -50,7 +50,7 @@ class AuthSessionService:
         """:raises AuthenticationError:"""
         log.debug("Issue auth session: started. User ID: '%s'.", user_id.value)
 
-        auth_session_id: str = self._auth_session_id_generator()
+        auth_session_id: str = self._auth_session_id_generator.generate()
         expiration: datetime = self._auth_session_timer.auth_session_expiration
         auth_session = AuthSession(
             id_=auth_session_id,

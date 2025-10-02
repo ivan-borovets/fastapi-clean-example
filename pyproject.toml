@@ -34,12 +34,13 @@ dependencies = [
     "uvloop==0.21.0",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "mypy==1.17.0",
     "pre-commit==4.2.0",
     "ruff==0.12.5",
     "slotscheck==0.19.1",
+    { include-group = "test" },
 ]
 test = [
     "coverage==7.10.0",
