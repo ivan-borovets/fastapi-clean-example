@@ -18,18 +18,18 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Install dependencies
-        run: uv pip install -e '.[dev,test]' --system
+        run: uv sync --locked --group dev
 
       - name: Check code
-        run: make code.check
+        run: uv run make code.check
 
       - name: Test Docker Compose setup
+        env:
+          APP_ENV: local
         run: |
-          export APP_ENV=local
-          python config/toml_config_manager.py
+          uv run config/toml_config_manager.py
           cd config/local
-          export COMPOSE_ENV_FILES=.env.local
-          docker compose up -d --build
+          docker compose --env-file .env.local up -d --build
 
       - name: Verify Application Health
         run: |

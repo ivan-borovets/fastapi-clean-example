@@ -620,19 +620,28 @@ make env  # should print APP_ENV=local
 make dotenv  # should tell you where .env.local was generated
 ```
 
-4. Set up virtual environment
+4. Install `uv`
 
 ```shell
 # sudo apt update
 # sudo apt install pipx
 # pipx ensurepath
 # pipx install uv
-# uv python install 3.13
-uv v
-source .venv/bin/activate
-# .venv\Scripts\activate  # Windows
 # https://docs.astral.sh/uv/getting-started/installation/#shell-autocompletion
-uv pip install -e '.[dev,test]'
+# uv python install 3.13  # To install Python
+```
+
+5. Set up virtual environment
+
+```shell
+uv sync --group dev
+source .venv/bin/activate
+
+# Alternatively,
+# uv v
+# source .venv/bin/activate  # on Unix
+# .venv\Scripts\activate  # on Windows
+# uv pip install -e . --group dev
 ```
 
 Don't forget to tell your IDE where the interpreter is located.
@@ -644,7 +653,7 @@ Install pre-commit hooks:
 pre-commit install
 ```
 
-5. Launch
+6. Launch
 
 - To run only the database in Docker and use the app locally, use the following command:
 
@@ -670,7 +679,7 @@ pre-commit install
 
   In this case, migrations will be applied automatically at startup.
 
-6. Shutdown
+7. Shutdown
 
 - To stop the containers, use:
     ```shell

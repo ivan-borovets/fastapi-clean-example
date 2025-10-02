@@ -38,7 +38,7 @@ services:
       echo 'Running alembic migrations...' &&
       alembic upgrade head &&
       echo 'Starting Uvicorn...' &&
-      uvicorn app.run:make_app --host ${UVICORN_HOST} --port ${UVICORN_PORT} --loop uvloop
+      uvicorn app.run:make_app --factory --host ${UVICORN_HOST} --port ${UVICORN_PORT} --loop uvloop
       "
 
 volumes:

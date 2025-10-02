@@ -1,31 +1,10 @@
-# Venv
-.venv/
+# Ignore everything
+**
 
-# Git
-.git/
-.gitignore
-.gitattributes
-
-# Python Cache
-__pycache__/
-*.py[cod]
-*$py.class
-.mypy_cache/
-.ruff_cache/
-
-# IDE Specific
-.idea/
-.vscode/
-
-# Test artifacts
-.coverage
-htmlcov/
-
-# Documentation and non-essential files
-docs/
-scripts/
-LICENSE
-logo.jpg
-
-# Local environment
-.env*
+# Except
+!pyproject.toml
+!uv.lock
+!README.md
+!config/**
+!src/**
+!alembic.ini
