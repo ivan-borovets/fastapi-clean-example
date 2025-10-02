@@ -1,13 +1,12 @@
 import logging
 import os
+import tomllib
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Final
-
-import rtoml
 
 ConfigDict = dict[str, Any]
 ExportEnv = dict[str, str]
@@ -141,7 +140,7 @@ def read_config(
             f"The file does not exist at the specified path: {file_path}",
         )
     with open(file=file_path, mode="r", encoding="utf-8") as file:
-        return rtoml.load(file)
+        return tomllib.loads(file.read())
 
 
 def merge_dicts(*, dict1: ConfigDict, dict2: ConfigDict) -> ConfigDict:
