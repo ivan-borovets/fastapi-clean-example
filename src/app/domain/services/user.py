@@ -36,7 +36,7 @@ class UserService:
         if not role.is_assignable:
             raise RoleAssignmentNotPermittedError(role)
 
-        user_id = UserId(self._user_id_generator())
+        user_id = UserId(self._user_id_generator.generate())
         password_hash = UserPasswordHash(self._password_hasher.hash(raw_password))
         return User(
             id_=user_id,

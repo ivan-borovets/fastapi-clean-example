@@ -35,7 +35,7 @@ def test_creates_active_user_with_hashed_password(
     expected_id = create_user_id()
     expected_hash = create_password_hash()
 
-    user_id_generator.return_value = expected_id.value
+    user_id_generator.generate.return_value = expected_id.value
     password_hasher.hash.return_value = expected_hash.value
     sut = UserService(user_id_generator, password_hasher)
 
@@ -55,21 +55,12 @@ def test_creates_inactive_user_if_specified(
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
-    # Arrange
     username = create_username()
     raw_password = create_raw_password()
-
-    expected_id = create_user_id()
-    expected_hash = create_password_hash()
-
-    user_id_generator.return_value = expected_id.value
-    password_hasher.hash.return_value = expected_hash.value
     sut = UserService(user_id_generator, password_hasher)
 
-    # Act
     result = sut.create_user(username, raw_password, is_active=False)
 
-    # Assert
     assert not result.is_active
 
 
