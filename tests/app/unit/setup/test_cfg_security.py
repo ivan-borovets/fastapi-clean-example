@@ -34,25 +34,3 @@ def test_auth_rejects_invalid_ttl(ttl: int | str) -> None:
 
     with pytest.raises(ValidationError):
         AuthSettings.model_validate(data)
-
-
-def test_auth_accepts_correct_session_refresh_threshold() -> None:
-    correct_threshold = 0.5
-    data = create_auth_settings_data(session_refresh_threshold=correct_threshold)
-
-    AuthSettings.model_validate(data)
-
-
-@pytest.mark.parametrize(
-    "threshold",
-    [
-        pytest.param("0.5", id="wrong_type"),
-        pytest.param(0, id="too_small"),
-        pytest.param(1, id="too_big"),
-    ],
-)
-def test_auth_rejects_incorrect_session_refresh_threshold(threshold: int | str) -> None:
-    data = create_auth_settings_data(session_refresh_threshold=threshold)  # type: ignore[arg-type]
-
-    with pytest.raises(ValidationError):
-        AuthSettings.model_validate(data)

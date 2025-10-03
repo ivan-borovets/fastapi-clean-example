@@ -19,11 +19,12 @@ from tests.app.unit.factories.value_objects import (
 )
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "role",
     [UserRole.USER, UserRole.ADMIN],
 )
-def test_creates_active_user_with_hashed_password(
+async def test_creates_active_user_with_hashed_password(
     role: UserRole,
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
@@ -40,7 +41,7 @@ def test_creates_active_user_with_hashed_password(
     sut = UserService(user_id_generator, password_hasher)
 
     # Act
-    result = sut.create_user(username, raw_password, role)
+    result = await sut.create_user(username, raw_password, role)
 
     # Assert
     assert isinstance(result, User)
@@ -51,7 +52,8 @@ def test_creates_active_user_with_hashed_password(
     assert result.is_active is True
 
 
-def test_creates_inactive_user_if_specified(
+@pytest.mark.asyncio
+async def test_creates_inactive_user_if_specified(
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
@@ -59,12 +61,13 @@ def test_creates_inactive_user_if_specified(
     raw_password = create_raw_password()
     sut = UserService(user_id_generator, password_hasher)
 
-    result = sut.create_user(username, raw_password, is_active=False)
+    result = await sut.create_user(username, raw_password, is_active=False)
 
     assert not result.is_active
 
 
-def test_fails_to_create_user_with_unassignable_role(
+@pytest.mark.asyncio
+async def test_fails_to_create_user_with_unassignable_role(
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
@@ -73,18 +76,19 @@ def test_fails_to_create_user_with_unassignable_role(
     sut = UserService(user_id_generator, password_hasher)
 
     with pytest.raises(RoleAssignmentNotPermittedError):
-        sut.create_user(
+        await sut.create_user(
             username=username,
             raw_password=raw_password,
             role=UserRole.SUPER_ADMIN,
         )
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "is_valid",
     [True, False],
 )
-def test_checks_password_authenticity(
+async def test_checks_password_authenticity(
     is_valid: bool,
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
@@ -97,13 +101,14 @@ def test_checks_password_authenticity(
     sut = UserService(user_id_generator, password_hasher)
 
     # Act
-    result = sut.is_password_valid(user, raw_password)
+    result = await sut.is_password_valid(user, raw_password)
 
     # Assert
     assert result is is_valid
 
 
-def test_changes_password(
+@pytest.mark.asyncio
+async def test_changes_password(
     user_id_generator: MagicMock,
     password_hasher: MagicMock,
 ) -> None:
@@ -117,7 +122,7 @@ def test_changes_password(
     sut = UserService(user_id_generator, password_hasher)
 
     # Act
-    sut.change_password(user, raw_password)
+    await sut.change_password(user, raw_password)
 
     # Assert
     assert user.password_hash == expected_hash

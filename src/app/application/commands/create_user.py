@@ -80,7 +80,9 @@ class CreateUserInteractor:
 
         username = Username(request_data.username)
         password = RawPassword(request_data.password)
-        user = self._user_service.create_user(username, password, request_data.role)
+        user = await self._user_service.create_user(
+            username, password, request_data.role
+        )
 
         self._user_command_gateway.add(user)
 

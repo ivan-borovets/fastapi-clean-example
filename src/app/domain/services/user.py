@@ -22,7 +22,7 @@ class UserService:
         self._user_id_generator = user_id_generator
         self._password_hasher = password_hasher
 
-    def create_user(
+    async def create_user(
         self,
         username: Username,
         raw_password: RawPassword,
@@ -37,7 +37,8 @@ class UserService:
             raise RoleAssignmentNotPermittedError(role)
 
         user_id = UserId(self._user_id_generator.generate())
-        password_hash = UserPasswordHash(self._password_hasher.hash(raw_password))
+        password_hash_value = await self._password_hasher.hash(raw_password)
+        password_hash = UserPasswordHash(password_hash_value)
         return User(
             id_=user_id,
             username=username,
@@ -46,14 +47,15 @@ class UserService:
             is_active=is_active,
         )
 
-    def is_password_valid(self, user: User, raw_password: RawPassword) -> bool:
-        return self._password_hasher.verify(
+    async def is_password_valid(self, user: User, raw_password: RawPassword) -> bool:
+        return await self._password_hasher.verify(
             raw_password=raw_password,
             hashed_password=user.password_hash.value,
         )
 
-    def change_password(self, user: User, raw_password: RawPassword) -> None:
-        hashed_password = UserPasswordHash(self._password_hasher.hash(raw_password))
+    async def change_password(self, user: User, raw_password: RawPassword) -> None:
+        password_hash_value = await self._password_hasher.hash(raw_password)
+        hashed_password = UserPasswordHash(password_hash_value)
         user.password_hash = hashed_password
 
     def toggle_user_activation(self, user: User, *, is_active: bool) -> bool:

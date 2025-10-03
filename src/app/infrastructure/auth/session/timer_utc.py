@@ -1,15 +1,11 @@
 from datetime import UTC, datetime, timedelta
-from typing import NewType
-
-AuthSessionTtlMin = NewType("AuthSessionTtlMin", timedelta)
-AuthSessionRefreshThreshold = NewType("AuthSessionRefreshThreshold", float)
 
 
 class UtcAuthSessionTimer:
     def __init__(
         self,
-        auth_session_ttl_min: AuthSessionTtlMin,
-        auth_session_refresh_threshold: AuthSessionRefreshThreshold,
+        auth_session_ttl_min: timedelta,
+        auth_session_refresh_threshold: float,
     ):
         self._auth_session_ttl_min = auth_session_ttl_min
         self._auth_session_refresh_threshold = auth_session_refresh_threshold
