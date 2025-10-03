@@ -78,7 +78,7 @@ class LogInHandler:
         if user is None:
             raise UserNotFoundByUsernameError(username)
 
-        if not self._user_service.is_password_valid(user, password):
+        if not await self._user_service.is_password_valid(user, password):
             raise AuthenticationError(AUTH_PASSWORD_INVALID)
 
         if not user.is_active:
