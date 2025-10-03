@@ -1,21 +1,25 @@
+from unittest.mock import Mock
+
 from line_profiler import LineProfiler
 
 from app.domain.value_objects.raw_password import RawPassword
 from app.infrastructure.adapters.password_hasher_bcrypt import (
     BcryptPasswordHasher,
-    PasswordPepper,
 )
 
 
 def profile_password_hashing(hasher: BcryptPasswordHasher) -> None:
     raw_password = RawPassword("raw_password")
-    hashed = hasher.hash(raw_password)
-    hasher.verify(raw_password=raw_password, hashed_password=hashed)
+    hashed = hasher.hash_sync(raw_password)
+    hasher.verify_sync(raw_password, hashed)
 
 
 def main() -> None:
-    pepper = PasswordPepper("Cayenne!")
-    hasher = BcryptPasswordHasher(pepper)
+    hasher = BcryptPasswordHasher(
+        pepper="Cayenne!",
+        work_factor=11,
+        executor=Mock(),
+    )
 
     profiler = LineProfiler()
     profiler.add_function(profile_password_hashing)

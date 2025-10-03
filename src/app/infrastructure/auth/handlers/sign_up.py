@@ -74,7 +74,7 @@ class SignUpHandler:
         username = Username(request_data.username)
         password = RawPassword(request_data.password)
 
-        user = self._user_service.create_user(username, password)
+        user = await self._user_service.create_user(username, password)
 
         self._user_command_gateway.add(user)
 

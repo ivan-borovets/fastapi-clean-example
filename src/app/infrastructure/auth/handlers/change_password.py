@@ -62,10 +62,13 @@ class ChangePasswordHandler:
         if current_password == new_password:
             raise AuthenticationChangeError(AUTH_PASSWORD_NEW_SAME_AS_CURRENT)
 
-        if not self._user_service.is_password_valid(current_user, current_password):
+        if not await self._user_service.is_password_valid(
+            current_user,
+            current_password,
+        ):
             raise ReAuthenticationError(AUTH_PASSWORD_INVALID)
 
-        self._user_service.change_password(current_user, new_password)
+        await self._user_service.change_password(current_user, new_password)
         await self._transaction_manager.commit()
 
         log.info("Change password: done. User ID: '%s'.", current_user.id_.value)

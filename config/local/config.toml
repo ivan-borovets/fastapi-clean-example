@@ -19,5 +19,5 @@ MAX_OVERFLOW = 10
 
 # Logs
 [logs]
-# Level can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+# Can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
 LEVEL = "DEBUG"

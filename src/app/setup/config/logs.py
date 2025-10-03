@@ -28,6 +28,7 @@ def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
         format=(
             "[%(asctime)s.%(msecs)03d] "
+            "[%(threadName)s] "
             "%(funcName)20s "
             "%(module)s:%(lineno)d "
             "%(levelname)-8s - "

@@ -92,7 +92,7 @@ class SetUserPasswordInteractor:
             ),
         )
 
-        self._user_service.change_password(user, password)
+        await self._user_service.change_password(user, password)
         await self._transaction_manager.commit()
 
         log.info("Set user password: done. Target user ID: '%s'.", user.id_.value)
