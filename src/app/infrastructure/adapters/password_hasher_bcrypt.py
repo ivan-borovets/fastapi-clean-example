@@ -10,6 +10,7 @@ import bcrypt
 
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.value_objects.raw_password import RawPassword
+from app.domain.value_objects.user_password_hash import UserPasswordHash
 from app.infrastructure.adapters.types import HasherSemaphore, HasherThreadPoolExecutor
 from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 
@@ -41,7 +42,11 @@ class BcryptPasswordHasher(PasswordHasher):
                 raw_password,
             )
 
-    async def verify(self, raw_password: RawPassword, hashed_password: bytes) -> bool:
+    async def verify(
+        self,
+        raw_password: RawPassword,
+        hashed_password: UserPasswordHash,
+    ) -> bool:
         """:raises PasswordHasherBusyError:"""
         async with self._permit():
             loop = asyncio.get_running_loop()
@@ -49,7 +54,7 @@ class BcryptPasswordHasher(PasswordHasher):
                 self._executor,
                 self.verify_sync,
                 raw_password,
-                hashed_password,
+                hashed_password.value,
             )
 
     @asynccontextmanager
@@ -75,18 +80,18 @@ class BcryptPasswordHasher(PasswordHasher):
         https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#introduction
         """
         log.debug("hash")
-        base64_hmac_peppered: bytes = self._add_pepper(raw_password, self._pepper)
-        salt: bytes = bcrypt.gensalt(rounds=self._work_factor)
+        base64_hmac_peppered = self._add_pepper(raw_password, self._pepper)
+        salt = bcrypt.gensalt(rounds=self._work_factor)
         return bcrypt.hashpw(base64_hmac_peppered, salt)
 
     def verify_sync(self, raw_password: RawPassword, hashed_password: bytes) -> bool:
         log.debug("verify")
-        base64_hmac_peppered: bytes = self._add_pepper(raw_password, self._pepper)
+        base64_hmac_peppered = self._add_pepper(raw_password, self._pepper)
         return bcrypt.checkpw(base64_hmac_peppered, hashed_password)
 
     @staticmethod
     def _add_pepper(raw_password: RawPassword, pepper: bytes) -> bytes:
-        hmac_password: bytes = hmac.new(
+        hmac_password = hmac.new(
             key=pepper,
             msg=raw_password.value,
             digestmod=hashlib.sha384,

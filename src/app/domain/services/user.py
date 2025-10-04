@@ -52,7 +52,7 @@ class UserService:
         """:raises PasswordHasherBusyError:"""
         return await self._password_hasher.verify(
             raw_password=raw_password,
-            hashed_password=user.password_hash.value,
+            hashed_password=user.password_hash,
         )
 
     async def change_password(self, user: User, raw_password: RawPassword) -> None:
