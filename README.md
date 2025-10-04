@@ -491,7 +491,7 @@ natural.
 
 - **Python**: `3.13`
 - **Core**: `alembic`, `alembic-postgresql-enum`, `bcrypt`, `dishka`, `fastapi-error-map`, `fastapi`, `orjson`,
-  `psycopg3[binary]`, `pyjwt[crypto]`, `sqlalchemy[mypy]`, `uuid6`, `uvicorn`, `uvloop`
+  `psycopg3[binary]`, `pyjwt[crypto]`, `sqlalchemy[mypy]`, `uuid-utils`, `uvicorn`, `uvloop`
 - **Development**: `mypy`, `pre-commit`, `ruff`, `slotscheck`
 - **Testing**: `coverage`, `line-profiler`, `pytest`, `pytest-asyncio`
 
