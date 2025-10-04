@@ -1,10 +1,9 @@
-from uuid import UUID
-
 import uuid6
 
 from app.domain.ports.user_id_generator import UserIdGenerator
+from app.domain.value_objects.user_id import UserId
 
 
 class UuidUserIdGenerator(UserIdGenerator):
-    def generate(self) -> UUID:
-        return uuid6.uuid7()
+    def generate(self) -> UserId:
+        return UserId(uuid6.uuid7())

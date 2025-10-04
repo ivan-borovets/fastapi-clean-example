@@ -32,7 +32,7 @@ class BcryptPasswordHasher(PasswordHasher):
         self._semaphore = semaphore
         self._semaphore_wait_timeout_s = semaphore_wait_timeout_s
 
-    async def hash(self, raw_password: RawPassword) -> bytes:
+    async def hash(self, raw_password: RawPassword) -> UserPasswordHash:
         """:raises PasswordHasherBusyError:"""
         async with self._permit():
             loop = asyncio.get_running_loop()
@@ -54,7 +54,7 @@ class BcryptPasswordHasher(PasswordHasher):
                 self._executor,
                 self.verify_sync,
                 raw_password,
-                hashed_password.value,
+                hashed_password,
             )
 
     @asynccontextmanager
@@ -72,7 +72,7 @@ class BcryptPasswordHasher(PasswordHasher):
         finally:
             self._semaphore.release()
 
-    def hash_sync(self, raw_password: RawPassword) -> bytes:
+    def hash_sync(self, raw_password: RawPassword) -> UserPasswordHash:
         """
         Pre-hashing:
         https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pre-hashing-passwords-with-bcrypt
@@ -82,12 +82,14 @@ class BcryptPasswordHasher(PasswordHasher):
         log.debug("hash")
         base64_hmac_peppered = self._add_pepper(raw_password, self._pepper)
         salt = bcrypt.gensalt(rounds=self._work_factor)
-        return bcrypt.hashpw(base64_hmac_peppered, salt)
+        return UserPasswordHash(bcrypt.hashpw(base64_hmac_peppered, salt))
 
-    def verify_sync(self, raw_password: RawPassword, hashed_password: bytes) -> bool:
+    def verify_sync(
+        self, raw_password: RawPassword, hashed_password: UserPasswordHash
+    ) -> bool:
         log.debug("verify")
         base64_hmac_peppered = self._add_pepper(raw_password, self._pepper)
-        return bcrypt.checkpw(base64_hmac_peppered, hashed_password)
+        return bcrypt.checkpw(base64_hmac_peppered, hashed_password.value)
 
     @staticmethod
     def _add_pepper(raw_password: RawPassword, pepper: bytes) -> bytes:

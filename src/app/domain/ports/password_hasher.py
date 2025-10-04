@@ -7,7 +7,7 @@ from app.domain.value_objects.user_password_hash import UserPasswordHash
 
 class PasswordHasher(Protocol):
     @abstractmethod
-    async def hash(self, raw_password: RawPassword) -> bytes:
+    async def hash(self, raw_password: RawPassword) -> UserPasswordHash:
         """:raises PasswordHasherBusyError:"""
 
     @abstractmethod
