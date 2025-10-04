@@ -81,7 +81,7 @@ class BcryptPasswordHasher(PasswordHasher):
     def _add_pepper(raw_password: RawPassword, pepper: bytes) -> bytes:
         hmac_password: bytes = hmac.new(
             key=pepper,
-            msg=raw_password.value.encode(),
+            msg=raw_password.value,
             digestmod=hashlib.sha384,
         ).digest()
         return base64.b64encode(hmac_password)

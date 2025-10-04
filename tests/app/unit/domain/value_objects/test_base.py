@@ -1,4 +1,4 @@
-from dataclasses import FrozenInstanceError, dataclass, fields
+from dataclasses import FrozenInstanceError, dataclass, field, fields
 from typing import ClassVar, Final
 
 import pytest
@@ -116,3 +116,25 @@ def test_class_field_not_in_repr() -> None:
     sut = MixedFieldsVO(baz=1)
 
     assert repr(sut) == "MixedFieldsVO(1)"
+
+
+def test_hidden_field_not_in_repr() -> None:
+    @dataclass(frozen=True, repr=False)
+    class HiddenFieldVO(ValueObject):
+        visible: int
+        hidden: int = field(repr=False)
+
+    sut = HiddenFieldVO(123, 456)
+
+    assert repr(sut) == "HiddenFieldVO(123)"
+
+
+def test_all_fields_hidden_repr() -> None:
+    @dataclass(frozen=True, repr=False)
+    class HiddenFieldVO(ValueObject):
+        hidden_1: int = field(repr=False)
+        hidden_2: int = field(repr=False)
+
+    sut = HiddenFieldVO(123, 456)
+
+    assert repr(sut) == "HiddenFieldVO(<hidden>)"

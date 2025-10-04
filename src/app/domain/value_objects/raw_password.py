@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar, Final
 
 from app.domain.exceptions.base import DomainFieldError
@@ -11,12 +11,13 @@ class RawPassword(ValueObject):
 
     MIN_LEN: ClassVar[Final[int]] = 6
 
-    value: str
+    value: bytes = field(init=False, repr=False)
 
-    def __post_init__(self) -> None:
+    def __init__(self, value: str):
         """:raises DomainFieldError:"""
+        self._validate_password_length(value)
+        object.__setattr__(self, "value", value.encode())
         super(RawPassword, self).__post_init__()
-        self._validate_password_length(self.value)
 
     def _validate_password_length(self, password_value: str) -> None:
         """:raises DomainFieldError:"""
