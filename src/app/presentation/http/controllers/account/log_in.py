@@ -14,6 +14,7 @@ from app.infrastructure.auth.exceptions import (
 )
 from app.infrastructure.auth.handlers.log_in import LogInHandler, LogInRequest
 from app.infrastructure.exceptions.gateway import DataMapperError
+from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 from app.presentation.http.errors.callbacks import log_error, log_info
 from app.presentation.http.errors.translators import (
     ServiceUnavailableTranslator,
@@ -36,6 +37,11 @@ def create_log_in_router() -> APIRouter:
             ),
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
             UserNotFoundByUsernameError: status.HTTP_404_NOT_FOUND,
+            PasswordHasherBusyError: rule(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                translator=ServiceUnavailableTranslator(),
+                on_error=log_error,
+            ),
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
         },
         default_on_error=log_info,

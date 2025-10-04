@@ -59,6 +59,7 @@ class SetUserPasswordInteractor:
         :raises AuthorizationError:
         :raises DomainFieldError:
         :raises UserNotFoundByIdError:
+        :raises PasswordHasherBusyError:
         """
         log.info(
             "Set user password: started. Target user ID: '%s'.",

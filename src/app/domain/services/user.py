@@ -32,6 +32,7 @@ class UserService:
         """
         :raises RoleAssignmentNotPermittedError:
         :raises DomainFieldError:
+        :raises PasswordHasherBusyError:
         """
         if not role.is_assignable:
             raise RoleAssignmentNotPermittedError(role)
@@ -48,12 +49,14 @@ class UserService:
         )
 
     async def is_password_valid(self, user: User, raw_password: RawPassword) -> bool:
+        """:raises PasswordHasherBusyError:"""
         return await self._password_hasher.verify(
             raw_password=raw_password,
             hashed_password=user.password_hash.value,
         )
 
     async def change_password(self, user: User, raw_password: RawPassword) -> None:
+        """:raises PasswordHasherBusyError:"""
         password_hash_value = await self._password_hasher.hash(raw_password)
         hashed_password = UserPasswordHash(password_hash_value)
         user.password_hash = hashed_password

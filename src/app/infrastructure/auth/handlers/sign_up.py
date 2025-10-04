@@ -60,6 +60,7 @@ class SignUpHandler:
         :raises AuthorizationError:
         :raises DataMapperError:
         :raises DomainFieldError:
+        :raises PasswordHasherBusyError:
         :raises RoleAssignmentNotPermittedError:
         :raises UsernameAlreadyExistsError:
         """

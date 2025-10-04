@@ -11,6 +11,7 @@ import bcrypt
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.value_objects.raw_password import RawPassword
 from app.infrastructure.adapters.types import HasherSemaphore, HasherThreadPoolExecutor
+from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 
 log = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ class BcryptPasswordHasher(PasswordHasher):
         self._semaphore_wait_timeout_s = semaphore_wait_timeout_s
 
     async def hash(self, raw_password: RawPassword) -> bytes:
+        """:raises PasswordHasherBusyError:"""
         async with self._permit():
             loop = asyncio.get_running_loop()
             return await loop.run_in_executor(
@@ -40,6 +42,7 @@ class BcryptPasswordHasher(PasswordHasher):
             )
 
     async def verify(self, raw_password: RawPassword, hashed_password: bytes) -> bool:
+        """:raises PasswordHasherBusyError:"""
         async with self._permit():
             loop = asyncio.get_running_loop()
             return await loop.run_in_executor(
@@ -51,10 +54,14 @@ class BcryptPasswordHasher(PasswordHasher):
 
     @asynccontextmanager
     async def _permit(self) -> AsyncIterator[None]:
-        await asyncio.wait_for(
-            self._semaphore.acquire(),
-            timeout=self._semaphore_wait_timeout_s,
-        )
+        """:raises PasswordHasherBusyError:"""
+        try:
+            await asyncio.wait_for(
+                self._semaphore.acquire(),
+                timeout=self._semaphore_wait_timeout_s,
+            )
+        except TimeoutError as error:
+            raise PasswordHasherBusyError from error
         try:
             yield
         finally:

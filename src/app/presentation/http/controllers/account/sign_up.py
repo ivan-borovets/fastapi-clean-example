@@ -18,6 +18,7 @@ from app.infrastructure.auth.handlers.sign_up import (
     SignUpResponse,
 )
 from app.infrastructure.exceptions.gateway import DataMapperError
+from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 from app.presentation.http.errors.callbacks import (
     log_error,
     log_info,
@@ -42,6 +43,11 @@ def create_sign_up_router() -> APIRouter:
                 on_error=log_error,
             ),
             DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            PasswordHasherBusyError: rule(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                translator=ServiceUnavailableTranslator(),
+                on_error=log_error,
+            ),
             RoleAssignmentNotPermittedError: status.HTTP_422_UNPROCESSABLE_ENTITY,
             UsernameAlreadyExistsError: status.HTTP_409_CONFLICT,
         },

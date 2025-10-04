@@ -50,6 +50,7 @@ class ChangePasswordHandler:
         :raises DomainFieldError:
         :raises AuthenticationChangeError:
         :raises ReAuthenticationError:
+        :raises PasswordHasherBusyError:
         """
         log.info("Change password: started.")
 
