@@ -39,3 +39,5 @@ SECURE = false
 HASHER_WORK_FACTOR = 11
 # CPU-bound & GIL released: per-worker ≈ max(1, floor(effective vCPUs / workers))
 HASHER_MAX_THREADS = 8
+# Fail-fast cap: max semaphore wait before timeout (start ~1 second, tune to peak)
+HASHER_SEMAPHORE_WAIT_TIMEOUT_S = 1.0

@@ -22,6 +22,6 @@ def bcrypt_password_hasher(
     return partial(
         BcryptPasswordHasher,
         executor=hasher_threadpool_executor,
-        pepper="Habanero",
+        pepper=b"Habanero",
         work_factor=11,
     )
