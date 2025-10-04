@@ -66,8 +66,8 @@ async def test_different_peppers_fail_verification(
     bcrypt_password_hasher: partial[BcryptPasswordHasher],
 ) -> None:
     pwd = create_raw_password()
-    hasher1 = bcrypt_password_hasher(pepper="PepperA")
-    hasher2 = bcrypt_password_hasher(pepper="PepperB")
+    hasher1 = bcrypt_password_hasher(pepper=b"PepperA")
+    hasher2 = bcrypt_password_hasher(pepper=b"PepperB")
 
     hashed = await hasher1.hash(pwd)
 
