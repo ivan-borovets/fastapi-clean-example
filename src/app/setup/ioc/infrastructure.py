@@ -150,8 +150,8 @@ class AuthSessionProvider(Provider):
         security: SecuritySettings,
     ) -> UtcAuthSessionTimer:
         return UtcAuthSessionTimer(
-            auth_session_ttl_min=security.auth.session_ttl_min,
-            auth_session_refresh_threshold=security.auth.session_refresh_threshold,
+            ttl_min=security.auth.session_ttl_min,
+            refresh_threshold=security.auth.session_refresh_threshold,
         )
 
     gateway = provide(SqlaAuthSessionDataMapper, provides=AuthSessionGateway)

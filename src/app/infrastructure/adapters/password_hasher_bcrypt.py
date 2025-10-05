@@ -65,8 +65,8 @@ class BcryptPasswordHasher(PasswordHasher):
                 self._semaphore.acquire(),
                 timeout=self._semaphore_wait_timeout_s,
             )
-        except TimeoutError as error:
-            raise PasswordHasherBusyError from error
+        except TimeoutError as err:
+            raise PasswordHasherBusyError from err
         try:
             yield
         finally:

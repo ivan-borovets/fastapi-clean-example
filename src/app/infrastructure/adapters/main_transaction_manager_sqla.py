@@ -26,5 +26,5 @@ class SqlaMainTransactionManager(TransactionManager):
             await self._session.commit()
             log.debug("%s Main session.", DB_COMMIT_DONE)
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(f"{DB_QUERY_FAILED} {DB_COMMIT_FAILED}") from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(f"{DB_QUERY_FAILED} {DB_COMMIT_FAILED}") from err

@@ -71,5 +71,5 @@ class SqlaUserReader(UserQueryGateway):
                 for row in rows
             ]
 
-        except SQLAlchemyError as error:
-            raise ReaderError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise ReaderError(DB_QUERY_FAILED) from err

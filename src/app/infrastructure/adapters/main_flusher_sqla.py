@@ -31,13 +31,13 @@ class SqlaMainFlusher(Flusher):
             await self._session.flush()
             log.debug("%s Main session.", DB_FLUSH_DONE)
 
-        except IntegrityError as error:
-            if "uq_users_username" in str(error):
-                params: Mapping[str, Any] = cast(Mapping[str, Any], error.params)
+        except IntegrityError as err:
+            if "uq_users_username" in str(err):
+                params: Mapping[str, Any] = cast(Mapping[str, Any], err.params)
                 username = str(params.get("username", "unknown"))
-                raise UsernameAlreadyExistsError(username) from error
+                raise UsernameAlreadyExistsError(username) from err
 
-            raise DataMapperError(DB_CONSTRAINT_VIOLATION) from error
+            raise DataMapperError(DB_CONSTRAINT_VIOLATION) from err
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(f"{DB_QUERY_FAILED} {DB_FLUSH_FAILED}") from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(f"{DB_QUERY_FAILED} {DB_FLUSH_FAILED}") from err
