@@ -6,7 +6,7 @@ from fastapi import APIRouter, status
 from fastapi_error_map import ErrorAwareRouter, rule
 
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.exceptions.base import DomainFieldError
+from app.domain.exceptions.base import DomainTypeError
 from app.domain.exceptions.user import (
     RoleAssignmentNotPermittedError,
     UsernameAlreadyExistsError,
@@ -42,7 +42,7 @@ def create_sign_up_router() -> APIRouter:
                 translator=ServiceUnavailableTranslator(),
                 on_error=log_error,
             ),
-            DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            DomainTypeError: status.HTTP_400_BAD_REQUEST,
             PasswordHasherBusyError: rule(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 translator=ServiceUnavailableTranslator(),

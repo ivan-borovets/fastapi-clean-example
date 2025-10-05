@@ -1,40 +1,31 @@
-from typing import Any, TypeVar
+from typing import Any, Self
 
-from app.domain.exceptions.base import DomainError
 from app.domain.value_objects.base import ValueObject
-
-T = TypeVar("T", bound=ValueObject)
 
 
 class Entity[T: ValueObject]:
     """
-    raises DomainError
-
     Base class for domain entities, defined by a unique identity (`id`).
     - `id`: Identity that remains constant throughout the entity's lifecycle.
     - Entities are mutable, but are compared solely by their `id`.
     """
 
-    def __init__(self, *, id_: T) -> None:
-        """:raises DomainError:"""
-        self.__forbid_base_class_instantiation()
-        self.id_ = id_
+    def __new__(cls, *_args: Any, **_kwargs: Any) -> Self:
+        if cls is Entity:
+            raise TypeError("Base Entity cannot be instantiated directly.")
+        return object.__new__(cls)
 
-    def __forbid_base_class_instantiation(self) -> None:
-        """:raises DomainError:"""
-        if type(self) is Entity:
-            raise DomainError("Base Entity cannot be instantiated directly.")
+    def __init__(self, *, id_: T) -> None:
+        self.id_ = id_
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
-        :raises DomainError:
-
         Prevents modifying the `id` after it's set.
         Other attributes can be changed as usual.
         """
         if name == "id_" and getattr(self, "id_", None) is not None:
-            raise DomainError("Changing entity ID is not permitted.")
-        super().__setattr__(name, value)
+            raise AttributeError("Changing entity ID is not permitted.")
+        object.__setattr__(self, name, value)
 
     def __eq__(self, other: Any) -> bool:
         """

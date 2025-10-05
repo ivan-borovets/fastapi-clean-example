@@ -13,7 +13,7 @@ from app.application.commands.create_user import (
 )
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.domain.enums.user_role import UserRole
-from app.domain.exceptions.base import DomainFieldError
+from app.domain.exceptions.base import DomainTypeError
 from app.domain.exceptions.user import (
     RoleAssignmentNotPermittedError,
     UsernameAlreadyExistsError,
@@ -55,7 +55,7 @@ def create_create_user_router() -> APIRouter:
                 on_error=log_error,
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            DomainTypeError: status.HTTP_400_BAD_REQUEST,
             PasswordHasherBusyError: rule(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 translator=ServiceUnavailableTranslator(),

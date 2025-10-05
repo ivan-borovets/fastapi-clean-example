@@ -62,7 +62,7 @@ class CreateUserInteractor:
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
         :raises PasswordHasherBusyError:
         :raises RoleAssignmentNotPermittedError:
         :raises UsernameAlreadyExistsError:

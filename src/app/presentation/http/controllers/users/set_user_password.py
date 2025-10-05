@@ -12,7 +12,7 @@ from app.application.commands.set_user_password import (
     SetUserPasswordRequest,
 )
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.exceptions.base import DomainFieldError
+from app.domain.exceptions.base import DomainTypeError
 from app.domain.exceptions.user import (
     UserNotFoundByIdError,
 )
@@ -40,7 +40,7 @@ def create_set_user_password_router() -> APIRouter:
                 on_error=log_error,
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            DomainTypeError: status.HTTP_400_BAD_REQUEST,
             UserNotFoundByIdError: status.HTTP_404_NOT_FOUND,
             PasswordHasherBusyError: rule(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,

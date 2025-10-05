@@ -59,7 +59,7 @@ class LogInHandler:
         :raises AlreadyAuthenticatedError:
         :raises AuthorizationError:
         :raises DataMapperError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
         :raises UserNotFoundByUsernameError:
         :raises PasswordHasherBusyError:
         :raises AuthenticationError:

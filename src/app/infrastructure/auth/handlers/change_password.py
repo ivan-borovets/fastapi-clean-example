@@ -47,7 +47,7 @@ class ChangePasswordHandler:
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
         :raises AuthenticationChangeError:
         :raises ReAuthenticationError:
         :raises PasswordHasherBusyError:

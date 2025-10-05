@@ -3,7 +3,6 @@ from typing import ClassVar, Final
 
 import pytest
 
-from app.domain.exceptions.base import DomainFieldError
 from app.domain.value_objects.base import ValueObject
 from tests.app.unit.factories.value_objects import (
     create_multi_field_vo,
@@ -12,7 +11,7 @@ from tests.app.unit.factories.value_objects import (
 
 
 def test_cannot_init() -> None:
-    with pytest.raises(DomainFieldError):
+    with pytest.raises(TypeError):
         ValueObject()
 
 
@@ -21,7 +20,7 @@ def test_child_cannot_init_with_no_instance_fields() -> None:
     class EmptyVO(ValueObject):
         pass
 
-    with pytest.raises(DomainFieldError):
+    with pytest.raises(TypeError):
         EmptyVO()
 
 
@@ -31,7 +30,7 @@ def test_child_cannot_init_with_only_class_fields() -> None:
         foo: ClassVar[int] = 0
         bar: ClassVar[Final[str]] = "baz"
 
-    with pytest.raises(DomainFieldError):
+    with pytest.raises(TypeError):
         ClassFieldsVO()
 
 

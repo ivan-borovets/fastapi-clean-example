@@ -1,7 +1,6 @@
 import pytest
 
 from app.domain.entities.base import Entity
-from app.domain.exceptions.base import DomainError
 from tests.app.unit.factories.named_entity import (
     create_named_entity,
     create_named_entity_id,
@@ -14,7 +13,7 @@ from tests.app.unit.factories.value_objects import create_single_field_vo
 def test_cannot_init() -> None:
     vo = create_single_field_vo()
 
-    with pytest.raises(DomainError):
+    with pytest.raises(TypeError):
         Entity(id_=vo)
 
 
@@ -28,7 +27,7 @@ def test_cannot_init() -> None:
 def test_entity_id_cannot_be_changed(new_id: int) -> None:
     sut = create_named_entity(id_=1)
 
-    with pytest.raises(DomainError):
+    with pytest.raises(AttributeError):
         sut.id_ = create_named_entity_id(new_id)
 
 

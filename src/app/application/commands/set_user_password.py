@@ -57,7 +57,7 @@ class SetUserPasswordInteractor:
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
         :raises UserNotFoundByIdError:
         :raises PasswordHasherBusyError:
         """

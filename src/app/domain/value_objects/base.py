@@ -1,6 +1,5 @@
 from dataclasses import dataclass, fields
-
-from app.domain.exceptions.base import DomainFieldError
+from typing import Any, Self
 
 
 @dataclass(frozen=True, slots=True, repr=False)
@@ -14,7 +13,7 @@ class ValueObject:
     fields with `repr=False` are omitted to avoid leaking secrets.
     If no fields have `repr=True`, '<hidden>' is shown.
 
-    Typing/runtime mismatch:
+    Typing/runtime mismatch when working with class constants:
     By current typing rules, `Final` should wrap `ClassVar` → `Final[ClassVar[T]]`.
     At runtime, `dataclasses.fields()` includes it as an instance field (and with
     `__slots__` it becomes a `member_descriptor`). Use `ClassVar[Final[T]]`
@@ -22,43 +21,19 @@ class ValueObject:
     As of now, mypy does not enforce `Final` inside `ClassVar`; reassignment is
     allowed, so `ClassVar[Final[T]]` is effectively `ClassVar[T]`. We keep `Final`
     for forward-compatibility, expecting future enforcement.
-
-    References:
     https://github.com/python/cpython/issues/89547
     https://github.com/python/mypy/issues/19607
     """
 
+    def __new__(cls, *_args: Any, **_kwargs: Any) -> Self:
+        if cls is ValueObject:
+            raise TypeError("Base ValueObject cannot be instantiated directly.")
+        if not fields(cls):
+            raise TypeError(f"{cls.__name__} must have at least one field!")
+        return object.__new__(cls)
+
     def __post_init__(self) -> None:
-        """
-        :raises DomainFieldError:
-
-        Hook for additional initialization and ensuring invariants.
-        Subclasses can override this method to implement custom logic, while
-        still calling `super().__post_init__()` to preserve base checks.
-
-        Note on slotted dataclasses:
-        With `slots=True`, the dataclass transformation may replace the class
-        object; a zero-arg `super()` in a subclass `__post_init__` can then raise
-        `TypeError`. In such cases, call the base with two-arg super, e.g.:
-            `super(Username, self).__post_init__()`
-        (or invoke directly: `ValueObject.__post_init__(self)`).
-
-        Reference: https://github.com/python/cpython/issues/90562
-        """
-        self.__forbid_base_class_instantiation()
-        self.__check_field_existence()
-
-    def __forbid_base_class_instantiation(self) -> None:
-        """:raises DomainFieldError:"""
-        if type(self) is ValueObject:
-            raise DomainFieldError("Base ValueObject cannot be instantiated directly.")
-
-    def __check_field_existence(self) -> None:
-        """:raises DomainFieldError:"""
-        if not fields(self):
-            raise DomainFieldError(
-                f"{type(self).__name__} must have at least one field!",
-            )
+        """Hook for additional initialization and ensuring invariants."""
 
     def __repr__(self) -> str:
         """
