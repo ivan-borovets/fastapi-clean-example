@@ -36,8 +36,8 @@ async def test_creates_active_user_with_hashed_password(
     expected_id = create_user_id()
     expected_hash = create_password_hash()
 
-    user_id_generator.generate.return_value = expected_id.value
-    password_hasher.hash.return_value = expected_hash.value
+    user_id_generator.generate.return_value = expected_id
+    password_hasher.hash.return_value = expected_hash
     sut = UserService(user_id_generator, password_hasher)
 
     # Act
@@ -118,7 +118,7 @@ async def test_changes_password(
     raw_password = create_raw_password()
 
     expected_hash = create_password_hash(b"new")
-    password_hasher.hash.return_value = expected_hash.value
+    password_hasher.hash.return_value = expected_hash
     sut = UserService(user_id_generator, password_hasher)
 
     # Act

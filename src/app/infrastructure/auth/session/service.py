@@ -38,7 +38,7 @@ class AuthSessionService:
         auth_transaction_manager: AuthSessionTransactionManager,
         auth_session_id_generator: StrAuthSessionIdGenerator,
         auth_session_timer: UtcAuthSessionTimer,
-    ):
+    ) -> None:
         self._auth_session_gateway = auth_session_gateway
         self._auth_session_transport = auth_session_transport
         self._auth_transaction_manager = auth_transaction_manager
@@ -62,8 +62,8 @@ class AuthSessionService:
             self._auth_session_gateway.add(auth_session)
             await self._auth_transaction_manager.commit()
 
-        except DataMapperError as error:
-            raise AuthenticationError(AUTH_UNAVAILABLE) from error
+        except DataMapperError as err:
+            raise AuthenticationError(AUTH_UNAVAILABLE) from err
 
         self._auth_session_transport.deliver(auth_session)
 
@@ -180,9 +180,9 @@ class AuthSessionService:
                 AuthSession | None
             ) = await self._auth_session_gateway.read_by_id(auth_session_id)
 
-        except DataMapperError as error:
-            log.error("%s: '%s'", AUTH_SESSION_EXTRACTION_FAILED, error)
-            raise AuthenticationError(AUTH_NOT_AUTHENTICATED) from error
+        except DataMapperError as err:
+            log.error("%s: '%s'", AUTH_SESSION_EXTRACTION_FAILED, err)
+            raise AuthenticationError(AUTH_NOT_AUTHENTICATED) from err
 
         if auth_session is None:
             log.debug(AUTH_SESSION_NOT_FOUND)
@@ -226,8 +226,8 @@ class AuthSessionService:
             await self._auth_session_gateway.update(auth_session)
             await self._auth_transaction_manager.commit()
 
-        except DataMapperError as error:
-            log.error("%s: '%s'", AUTH_SESSION_EXTENSION_FAILED, error)
+        except DataMapperError as err:
+            log.error("%s: '%s'", AUTH_SESSION_EXTENSION_FAILED, err)
             auth_session.expiration = original_expiration
             return auth_session
 

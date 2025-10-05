@@ -46,7 +46,7 @@ class SetUserPasswordInteractor:
         user_command_gateway: UserCommandGateway,
         user_service: UserService,
         transaction_manager: TransactionManager,
-    ):
+    ) -> None:
         self._current_user_service = current_user_service
         self._user_command_gateway = user_command_gateway
         self._user_service = user_service
@@ -57,8 +57,9 @@ class SetUserPasswordInteractor:
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
         :raises UserNotFoundByIdError:
+        :raises PasswordHasherBusyError:
         """
         log.info(
             "Set user password: started. Target user ID: '%s'.",

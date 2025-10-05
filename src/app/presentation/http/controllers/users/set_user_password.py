@@ -12,12 +12,13 @@ from app.application.commands.set_user_password import (
     SetUserPasswordRequest,
 )
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.exceptions.base import DomainFieldError
+from app.domain.exceptions.base import DomainTypeError
 from app.domain.exceptions.user import (
     UserNotFoundByIdError,
 )
 from app.infrastructure.auth.exceptions import AuthenticationError
 from app.infrastructure.exceptions.gateway import DataMapperError
+from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
 from app.presentation.http.errors.callbacks import log_error, log_info
 from app.presentation.http.errors.translators import (
@@ -39,8 +40,13 @@ def create_set_user_password_router() -> APIRouter:
                 on_error=log_error,
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            DomainTypeError: status.HTTP_400_BAD_REQUEST,
             UserNotFoundByIdError: status.HTTP_404_NOT_FOUND,
+            PasswordHasherBusyError: rule(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                translator=ServiceUnavailableTranslator(),
+                on_error=log_error,
+            ),
         },
         default_on_error=log_info,
         status_code=status.HTTP_204_NO_CONTENT,

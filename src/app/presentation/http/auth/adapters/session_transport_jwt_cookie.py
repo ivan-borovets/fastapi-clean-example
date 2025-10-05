@@ -27,7 +27,7 @@ class JwtCookieAuthSessionTransport(AuthSessionTransport):
         request: Request,
         access_token_processor: JwtAccessTokenProcessor,
         cookie_params: CookieParams,
-    ):
+    ) -> None:
         self._request = request
         self._access_token_processor = access_token_processor
         self._cookie_params = cookie_params

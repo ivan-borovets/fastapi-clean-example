@@ -7,7 +7,7 @@ from fastapi import APIRouter, Body, Security, status
 from fastapi_error_map import ErrorAwareRouter, rule
 
 from app.application.common.exceptions.authorization import AuthorizationError
-from app.domain.exceptions.base import DomainFieldError
+from app.domain.exceptions.base import DomainTypeError
 from app.infrastructure.auth.exceptions import (
     AuthenticationChangeError,
     AuthenticationError,
@@ -18,6 +18,7 @@ from app.infrastructure.auth.handlers.change_password import (
     ChangePasswordRequest,
 )
 from app.infrastructure.exceptions.gateway import DataMapperError
+from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
 from app.presentation.http.errors.callbacks import log_error, log_info
 from app.presentation.http.errors.translators import (
@@ -39,9 +40,14 @@ def create_change_password_router() -> APIRouter:
                 on_error=log_error,
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            DomainFieldError: status.HTTP_400_BAD_REQUEST,
+            DomainTypeError: status.HTTP_400_BAD_REQUEST,
             AuthenticationChangeError: status.HTTP_400_BAD_REQUEST,
             ReAuthenticationError: status.HTTP_403_FORBIDDEN,
+            PasswordHasherBusyError: rule(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                translator=ServiceUnavailableTranslator(),
+                on_error=log_error,
+            ),
         },
         default_on_error=log_info,
         status_code=status.HTTP_204_NO_CONTENT,

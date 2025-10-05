@@ -6,7 +6,7 @@ from app.domain.services.user import UserService
 from app.infrastructure.adapters.password_hasher_bcrypt import (
     BcryptPasswordHasher,
 )
-from app.infrastructure.adapters.types import HasherThreadPoolExecutor
+from app.infrastructure.adapters.types import HasherSemaphore, HasherThreadPoolExecutor
 from app.infrastructure.adapters.user_id_generator_uuid import (
     UuidUserIdGenerator,
 )
@@ -29,9 +29,12 @@ class DomainProvider(Provider):
         self,
         security: SecuritySettings,
         executor: HasherThreadPoolExecutor,
+        semaphore: HasherSemaphore,
     ) -> PasswordHasher:
         return BcryptPasswordHasher(
-            pepper=security.password.pepper,
+            pepper=security.password.pepper.encode(),
             work_factor=security.password.hasher_work_factor,
             executor=executor,
+            semaphore=semaphore,
+            semaphore_wait_timeout_s=security.password.hasher_semaphore_wait_timeout_s,
         )

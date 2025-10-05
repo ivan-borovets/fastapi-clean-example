@@ -48,7 +48,7 @@ class LogInHandler:
         user_command_gateway: UserCommandGateway,
         user_service: UserService,
         auth_session_service: AuthSessionService,
-    ):
+    ) -> None:
         self._current_user_service = current_user_service
         self._user_command_gateway = user_command_gateway
         self._user_service = user_service
@@ -59,8 +59,9 @@ class LogInHandler:
         :raises AlreadyAuthenticatedError:
         :raises AuthorizationError:
         :raises DataMapperError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
         :raises UserNotFoundByUsernameError:
+        :raises PasswordHasherBusyError:
         :raises AuthenticationError:
         """
         log.info("Log in: started. Username: '%s'.", request_data.username)

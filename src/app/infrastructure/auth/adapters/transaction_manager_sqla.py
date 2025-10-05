@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 
 class SqlaAuthSessionTransactionManager(AuthSessionTransactionManager):
-    def __init__(self, session: AuthAsyncSession):
+    def __init__(self, session: AuthAsyncSession) -> None:
         self._session = session
 
     async def commit(self) -> None:
@@ -26,5 +26,5 @@ class SqlaAuthSessionTransactionManager(AuthSessionTransactionManager):
             await self._session.commit()
             log.debug("%s Auth session.", DB_COMMIT_DONE)
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(f"{DB_QUERY_FAILED} {DB_COMMIT_FAILED}") from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(f"{DB_QUERY_FAILED} {DB_COMMIT_FAILED}") from err

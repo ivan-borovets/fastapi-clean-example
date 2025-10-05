@@ -8,8 +8,6 @@ from app.domain.exceptions.user import (
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.ports.user_id_generator import UserIdGenerator
 from app.domain.value_objects.raw_password import RawPassword
-from app.domain.value_objects.user_id import UserId
-from app.domain.value_objects.user_password_hash import UserPasswordHash
 from app.domain.value_objects.username import Username
 
 
@@ -31,14 +29,13 @@ class UserService:
     ) -> User:
         """
         :raises RoleAssignmentNotPermittedError:
-        :raises DomainFieldError:
+        :raises PasswordHasherBusyError:
         """
         if not role.is_assignable:
             raise RoleAssignmentNotPermittedError(role)
 
-        user_id = UserId(self._user_id_generator.generate())
-        password_hash_value = await self._password_hasher.hash(raw_password)
-        password_hash = UserPasswordHash(password_hash_value)
+        user_id = self._user_id_generator.generate()
+        password_hash = await self._password_hasher.hash(raw_password)
         return User(
             id_=user_id,
             username=username,
@@ -48,15 +45,15 @@ class UserService:
         )
 
     async def is_password_valid(self, user: User, raw_password: RawPassword) -> bool:
+        """:raises PasswordHasherBusyError:"""
         return await self._password_hasher.verify(
             raw_password=raw_password,
-            hashed_password=user.password_hash.value,
+            hashed_password=user.password_hash,
         )
 
     async def change_password(self, user: User, raw_password: RawPassword) -> None:
-        password_hash_value = await self._password_hasher.hash(raw_password)
-        hashed_password = UserPasswordHash(password_hash_value)
-        user.password_hash = hashed_password
+        """:raises PasswordHasherBusyError:"""
+        user.password_hash = await self._password_hasher.hash(raw_password)
 
     def toggle_user_activation(self, user: User, *, is_active: bool) -> bool:
         """:raises ActivationChangeNotPermittedError:"""

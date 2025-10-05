@@ -34,8 +34,8 @@ DEFAULT_LOG_LEVEL: Final[LoggingLevel] = LoggingLevel.INFO
 def validate_logging_level(*, level: str) -> LoggingLevel:
     try:
         return LoggingLevel(level)
-    except ValueError as e:
-        raise ValueError(f"Invalid log level: '{level}'.") from e
+    except ValueError as err:
+        raise ValueError(f"Invalid log level: '{level}'.") from err
 
 
 def configure_logging(*, level: LoggingLevel = DEFAULT_LOG_LEVEL) -> None:
@@ -96,11 +96,11 @@ def validate_env(env: str | None) -> ValidEnvs:
         raise ValueError(f"{ENV_VAR_NAME} is not set.")
     try:
         return ValidEnvs(env)
-    except ValueError as e:
+    except ValueError as err:
         valid_values = ", ".join(f"'{e}'" for e in ValidEnvs)
         raise ValueError(
             f"Invalid {ENV_VAR_NAME}: '{env}'. Must be one of: {valid_values}.",
-        ) from e
+        ) from err
 
 
 def get_current_env() -> ValidEnvs:
@@ -139,8 +139,8 @@ def read_config(
         raise FileNotFoundError(
             f"The file does not exist at the specified path: {file_path}",
         )
-    with open(file=file_path, mode="r", encoding="utf-8") as file:
-        return tomllib.loads(file.read())
+    with open(file=file_path, mode="r", encoding="utf-8") as f:
+        return tomllib.loads(f.read())
 
 
 def merge_dicts(*, dict1: ConfigDict, dict2: ConfigDict) -> ConfigDict:
@@ -226,8 +226,10 @@ def get_env_value_by_export_field(*, config: ConfigDict, field: str) -> str:
 
     try:
         return str(current)
-    except (TypeError, ValueError) as e:
-        raise ValueError(f"Field '{field}' cannot be converted to string: {e!s}") from e
+    except (TypeError, ValueError) as err:
+        raise ValueError(
+            f"Field '{field}' cannot be converted to string: {err!s}"
+        ) from err
 
 
 # DOTENV GENERATION

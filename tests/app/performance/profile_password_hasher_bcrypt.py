@@ -16,9 +16,11 @@ def profile_password_hashing(hasher: BcryptPasswordHasher) -> None:
 
 def main() -> None:
     hasher = BcryptPasswordHasher(
-        pepper="Cayenne!",
+        pepper=b"Cayenne!",
         work_factor=11,
         executor=Mock(),
+        semaphore=Mock(),
+        semaphore_wait_timeout_s=1,
     )
 
     profiler = LineProfiler()

@@ -25,7 +25,7 @@ class PostgresSettingsData(TypedDict):
 
 
 def create_auth_settings_data(
-    jwt_secret: str = "jwt_secret",
+    jwt_secret: str = "jwt_secret" + "0" * 32,
     jwt_algorithm: Literal[
         "HS256",
         "HS384",

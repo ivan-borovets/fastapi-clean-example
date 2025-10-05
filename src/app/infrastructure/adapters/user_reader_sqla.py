@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class SqlaUserReader(UserQueryGateway):
-    def __init__(self, session: MainAsyncSession):
+    def __init__(self, session: MainAsyncSession) -> None:
         self._session = session
 
     async def read_all(
@@ -71,5 +71,5 @@ class SqlaUserReader(UserQueryGateway):
                 for row in rows
             ]
 
-        except SQLAlchemyError as error:
-            raise ReaderError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise ReaderError(DB_QUERY_FAILED) from err

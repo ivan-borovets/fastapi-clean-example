@@ -50,7 +50,7 @@ class CreateUserInteractor:
         user_command_gateway: UserCommandGateway,
         flusher: Flusher,
         transaction_manager: TransactionManager,
-    ):
+    ) -> None:
         self._current_user_service = current_user_service
         self._user_service = user_service
         self._user_command_gateway = user_command_gateway
@@ -62,7 +62,8 @@ class CreateUserInteractor:
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises DomainFieldError:
+        :raises DomainTypeError:
+        :raises PasswordHasherBusyError:
         :raises RoleAssignmentNotPermittedError:
         :raises UsernameAlreadyExistsError:
         """

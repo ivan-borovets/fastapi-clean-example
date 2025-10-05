@@ -4,10 +4,7 @@ from app.infrastructure.auth.session.service import AuthSessionService
 
 
 class AuthSessionAccessRevoker(AccessRevoker):
-    def __init__(
-        self,
-        auth_session_service: AuthSessionService,
-    ):
+    def __init__(self, auth_session_service: AuthSessionService) -> None:
         self._auth_session_service = auth_session_service
 
     async def remove_all_user_access(self, user_id: UserId) -> None:

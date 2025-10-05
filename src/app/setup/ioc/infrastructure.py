@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections.abc import AsyncIterator, Iterator
 from concurrent.futures import ThreadPoolExecutor
@@ -11,7 +12,11 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.infrastructure.adapters.types import HasherThreadPoolExecutor, MainAsyncSession
+from app.infrastructure.adapters.types import (
+    HasherSemaphore,
+    HasherThreadPoolExecutor,
+    MainAsyncSession,
+)
 from app.infrastructure.auth.adapters.data_mapper_sqla import (
     SqlaAuthSessionDataMapper,
 )
@@ -59,7 +64,13 @@ class MainAdaptersProvider(Provider):
             )
         )
         yield executor
+        log.debug("Disposing hasher threadpool executor...")
         executor.shutdown(wait=True, cancel_futures=True)
+        log.debug("Hasher threadpool executor is disposed.")
+
+    @provide
+    def provide_hasher_semaphore(self, security: SecuritySettings) -> HasherSemaphore:
+        return HasherSemaphore(asyncio.Semaphore(security.password.hasher_max_threads))
 
 
 class PersistenceSqlaProvider(Provider):
@@ -139,8 +150,8 @@ class AuthSessionProvider(Provider):
         security: SecuritySettings,
     ) -> UtcAuthSessionTimer:
         return UtcAuthSessionTimer(
-            auth_session_ttl_min=security.auth.session_ttl_min,
-            auth_session_refresh_threshold=security.auth.session_refresh_threshold,
+            ttl_min=security.auth.session_ttl_min,
+            refresh_threshold=security.auth.session_refresh_threshold,
         )
 
     gateway = provide(SqlaAuthSessionDataMapper, provides=AuthSessionGateway)

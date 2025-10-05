@@ -29,9 +29,9 @@ dependencies = [
     "psycopg[binary]==3.2.9",
     "pyjwt[crypto]==2.10.1",
     "sqlalchemy[mypy]==2.0.41",
-    "uuid6==2025.0.1",
     "uvicorn==0.35.0",
     "uvloop==0.21.0",
+    "uuid-utils==0.11.1",
 ]
 
 [dependency-groups]

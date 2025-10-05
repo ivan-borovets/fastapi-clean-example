@@ -4,10 +4,7 @@ from app.infrastructure.auth.session.service import AuthSessionService
 
 
 class AuthSessionIdentityProvider(IdentityProvider):
-    def __init__(
-        self,
-        auth_session_service: AuthSessionService,
-    ):
+    def __init__(self, auth_session_service: AuthSessionService) -> None:
         self._auth_session_service = auth_session_service
 
     async def get_current_user_id(self) -> UserId:

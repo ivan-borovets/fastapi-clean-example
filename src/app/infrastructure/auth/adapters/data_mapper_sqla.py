@@ -12,7 +12,7 @@ from app.infrastructure.exceptions.gateway import DataMapperError
 
 
 class SqlaAuthSessionDataMapper(AuthSessionGateway):
-    def __init__(self, session: AuthAsyncSession):
+    def __init__(self, session: AuthAsyncSession) -> None:
         self._session = session
 
     def add(self, auth_session: AuthSession) -> None:
@@ -20,8 +20,8 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
         try:
             self._session.add(auth_session)
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(DB_QUERY_FAILED) from err
 
     async def read_by_id(
         self,
@@ -38,16 +38,16 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
 
             return auth_session
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(DB_QUERY_FAILED) from err
 
     async def update(self, auth_session: AuthSession) -> None:
         """:raises DataMapperError:"""
         try:
             await self._session.merge(auth_session)
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(DB_QUERY_FAILED) from err
 
     async def delete(self, auth_session_id: str) -> None:
         """:raises DataMapperError:"""
@@ -58,8 +58,8 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
         try:
             await self._session.execute(delete_stmt)
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(DB_QUERY_FAILED) from err
 
     async def delete_all_for_user(self, user_id: UserId) -> None:
         """:raises DataMapperError:"""
@@ -70,5 +70,5 @@ class SqlaAuthSessionDataMapper(AuthSessionGateway):
         try:
             await self._session.execute(delete_stmt)
 
-        except SQLAlchemyError as error:
-            raise DataMapperError(DB_QUERY_FAILED) from error
+        except SQLAlchemyError as err:
+            raise DataMapperError(DB_QUERY_FAILED) from err
