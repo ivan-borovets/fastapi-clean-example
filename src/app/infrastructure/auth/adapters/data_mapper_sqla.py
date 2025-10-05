@@ -12,7 +12,7 @@ from app.infrastructure.exceptions.gateway import DataMapperError
 
 
 class SqlaAuthSessionDataMapper(AuthSessionGateway):
-    def __init__(self, session: AuthAsyncSession):
+    def __init__(self, session: AuthAsyncSession) -> None:
         self._session = session
 
     def add(self, auth_session: AuthSession) -> None:

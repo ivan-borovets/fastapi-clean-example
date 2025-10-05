@@ -37,7 +37,7 @@ class ChangePasswordHandler:
         current_user_service: CurrentUserService,
         user_service: UserService,
         transaction_manager: TransactionManager,
-    ):
+    ) -> None:
         self._current_user_service = current_user_service
         self._user_service = user_service
         self._transaction_manager = transaction_manager

@@ -11,7 +11,7 @@ from app.infrastructure.exceptions.gateway import DataMapperError
 
 
 class SqlaUserDataMapper(UserCommandGateway):
-    def __init__(self, session: MainAsyncSession):
+    def __init__(self, session: MainAsyncSession) -> None:
         self._session = session
 
     def add(self, user: User) -> None:

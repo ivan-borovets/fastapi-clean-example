@@ -19,7 +19,7 @@ class CurrentUserService:
         identity_provider: IdentityProvider,
         user_command_gateway: UserCommandGateway,
         access_revoker: AccessRevoker,
-    ):
+    ) -> None:
         self._identity_provider = identity_provider
         self._user_command_gateway = user_command_gateway
         self._access_revoker = access_revoker

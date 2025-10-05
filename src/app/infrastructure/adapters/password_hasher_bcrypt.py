@@ -25,7 +25,7 @@ class BcryptPasswordHasher(PasswordHasher):
         executor: HasherThreadPoolExecutor,
         semaphore: HasherSemaphore,
         semaphore_wait_timeout_s: float,
-    ):
+    ) -> None:
         self._pepper = pepper
         self._work_factor = work_factor
         self._executor = executor

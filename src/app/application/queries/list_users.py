@@ -46,7 +46,7 @@ class ListUsersQueryService:
         self,
         current_user_service: CurrentUserService,
         user_query_gateway: UserQueryGateway,
-    ):
+    ) -> None:
         self._current_user_service = current_user_service
         self._user_query_gateway = user_query_gateway
 

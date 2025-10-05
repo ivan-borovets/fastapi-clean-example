@@ -38,7 +38,7 @@ class AuthSessionService:
         auth_transaction_manager: AuthSessionTransactionManager,
         auth_session_id_generator: StrAuthSessionIdGenerator,
         auth_session_timer: UtcAuthSessionTimer,
-    ):
+    ) -> None:
         self._auth_session_gateway = auth_session_gateway
         self._auth_session_transport = auth_session_transport
         self._auth_transaction_manager = auth_transaction_manager

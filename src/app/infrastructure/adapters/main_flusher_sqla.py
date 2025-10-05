@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class SqlaMainFlusher(Flusher):
-    def __init__(self, session: MainAsyncSession):
+    def __init__(self, session: MainAsyncSession) -> None:
         self._session = session
 
     async def flush(self) -> None:

@@ -13,7 +13,7 @@ class RawPassword(ValueObject):
 
     value: bytes = field(init=False, repr=False)
 
-    def __init__(self, value: str):
+    def __init__(self, value: str) -> None:
         """:raises DomainTypeError:"""
         self._validate_password_length(value)
         object.__setattr__(self, "value", value.encode())

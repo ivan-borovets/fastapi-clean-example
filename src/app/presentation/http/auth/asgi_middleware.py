@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 class ASGIAuthMiddleware:
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:

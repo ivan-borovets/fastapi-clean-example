@@ -17,7 +17,7 @@ class LogOutHandler:
         self,
         current_user_service: CurrentUserService,
         auth_session_service: AuthSessionService,
-    ):
+    ) -> None:
         self._current_user_service = current_user_service
         self._auth_session_service = auth_session_service
 

@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 
 class SqlaAuthSessionTransactionManager(AuthSessionTransactionManager):
-    def __init__(self, session: AuthAsyncSession):
+    def __init__(self, session: AuthAsyncSession) -> None:
         self._session = session
 
     async def commit(self) -> None:

@@ -30,7 +30,7 @@ class JwtAccessTokenProcessor:
             "RS384",
             "RS512",
         ],
-    ):
+    ) -> None:
         self._secret = secret
         self._algorithm = algorithm
 

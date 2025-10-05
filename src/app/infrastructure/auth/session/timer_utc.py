@@ -6,7 +6,7 @@ class UtcAuthSessionTimer:
         self,
         auth_session_ttl_min: timedelta,
         auth_session_refresh_threshold: float,
-    ):
+    ) -> None:
         self._auth_session_ttl_min = auth_session_ttl_min
         self._auth_session_refresh_threshold = auth_session_refresh_threshold
 
