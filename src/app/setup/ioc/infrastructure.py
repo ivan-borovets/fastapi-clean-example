@@ -64,7 +64,9 @@ class MainAdaptersProvider(Provider):
             )
         )
         yield executor
+        log.debug("Disposing hasher threadpool executor...")
         executor.shutdown(wait=True, cancel_futures=True)
+        log.debug("Hasher threadpool executor is disposed.")
 
     @provide
     def provide_hasher_semaphore(self, security: SecuritySettings) -> HasherSemaphore:
