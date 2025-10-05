@@ -1,4 +1,4 @@
-from typing import Any, Self
+from typing import Any, Self, cast
 
 from app.domain.value_objects.base import ValueObject
 
@@ -27,12 +27,12 @@ class Entity[T: ValueObject]:
             raise AttributeError("Changing entity ID is not permitted.")
         object.__setattr__(self, name, value)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Two entities are considered equal if they have the same `id`,
         regardless of other attribute values.
         """
-        return type(self) is type(other) and other.id_ == self.id_
+        return type(self) is type(other) and cast(Self, other).id_ == self.id_
 
     def __hash__(self) -> int:
         """

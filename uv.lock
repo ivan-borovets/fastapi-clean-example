@@ -301,7 +301,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = "==3.2.9" },
     { name = "pyjwt", extras = ["crypto"], specifier = "==2.10.1" },
     { name = "sqlalchemy", extras = ["mypy"], specifier = "==2.0.41" },
-    { name = "uuid-utils", specifier = ">=0.11.1" },
+    { name = "uuid-utils", specifier = "==0.11.1" },
     { name = "uvicorn", specifier = "==0.35.0" },
     { name = "uvloop", specifier = "==0.21.0" },
 ]
