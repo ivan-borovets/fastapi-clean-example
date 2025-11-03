@@ -160,6 +160,8 @@ cython_debug/
 .idea/
 
 # Config
+config/local/*
+!config/local/.gitkeep
 config/dev/*
 !config/dev/.gitkeep
 config/prod/*
