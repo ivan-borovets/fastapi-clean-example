@@ -6,11 +6,11 @@ from app.domain.enums.user_role import UserRole
 from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.user_password_hash import UserPasswordHash
 from app.domain.value_objects.username import Username
-from app.infrastructure.persistence_sqla.registry import mapping_registry
+from app.infrastructure.persistence_sqla.registry import mapper_registry
 
 users_table = Table(
     "users",
-    mapping_registry.metadata,
+    mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("username", String(Username.MAX_LEN), nullable=False, unique=True),
     Column("password_hash", LargeBinary, nullable=False),
@@ -25,7 +25,7 @@ users_table = Table(
 
 
 def map_users_table() -> None:
-    mapping_registry.map_imperatively(
+    mapper_registry.map_imperatively(
         User,
         users_table,
         properties={

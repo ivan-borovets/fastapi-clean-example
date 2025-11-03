@@ -10,7 +10,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.infrastructure.persistence_sqla.mappings.all import map_tables
-from app.infrastructure.persistence_sqla.registry import mapping_registry
+from app.infrastructure.persistence_sqla.registry import mapper_registry
 from app.setup.config.settings import AppSettings, load_settings
 
 # this is the Alembic Config object, which provides
@@ -27,7 +27,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 map_tables()
-target_metadata = mapping_registry.metadata
+target_metadata = mapper_registry.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
