@@ -6,6 +6,7 @@ from app.domain.value_objects.base import ValueObject
 class Entity[T: ValueObject]:
     """
     Base class for domain entities, defined by a unique identity (`id`).
+    Subclassing is optional; any implementation honoring this contract is valid.
     - `id`: Identity that remains constant throughout the entity's lifecycle.
     - Entities are mutable, but are compared solely by their `id`.
     """

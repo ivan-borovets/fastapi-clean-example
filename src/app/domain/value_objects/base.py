@@ -6,6 +6,7 @@ from typing import Any, Self
 class ValueObject:
     """
     Base class for immutable value objects (VO) in domain.
+    Subclassing is optional; any implementation honoring this contract is valid.
     Defined by instance attributes only; these must be immutable.
     For simple type tagging, consider `typing.NewType` instead of subclassing.
 
