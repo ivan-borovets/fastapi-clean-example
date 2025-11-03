@@ -11,7 +11,7 @@ packages = ["src/app"]
 [project]
 name = "fastapi-clean-example"
 version = "0.1"
-description = "Framework-agnostic backend example using FastAPI"
+description = "Practical Clean Architecture backend example built with FastAPI"
 readme = "README.md"
 license = "MIT"
 authors = [
@@ -19,18 +19,18 @@ authors = [
 ]
 requires-python = "==3.13.*"
 dependencies = [
-    "alembic==1.16.4",
+    "alembic==1.17.1",
     "alembic-postgresql-enum==1.8.0",
-    "bcrypt==4.3.0",
-    "dishka==1.6.0",
-    "fastapi-error-map==0.9.6",
-    "fastapi==0.116.1",
-    "orjson==3.11.0",
-    "psycopg[binary]==3.2.9",
+    "bcrypt==5.0.0",
+    "dishka==1.7.2",
+    "fastapi-error-map==0.9.8",
+    "fastapi==0.121.0",
+    "orjson==3.11.4",
+    "psycopg[binary]==3.2.12",
     "pyjwt[crypto]==2.10.1",
-    "sqlalchemy[mypy]==2.0.41",
-    "uvicorn==0.35.0",
-    "uvloop==0.21.0",
+    "sqlalchemy[mypy]==2.0.44",
+    "uvicorn==0.38.0",
+    "uvloop==0.22.1",
     "uuid-utils==0.11.1",
 ]
 
