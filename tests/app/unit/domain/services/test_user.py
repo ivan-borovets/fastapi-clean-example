@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock
-
 import pytest
 
 from app.domain.entities.user import User
@@ -10,6 +8,10 @@ from app.domain.exceptions.user import (
     RoleChangeNotPermittedError,
 )
 from app.domain.services.user import UserService
+from tests.app.unit.domain.services.mock_types import (
+    PasswordHasherMock,
+    UserIdGeneratorMock,
+)
 from tests.app.unit.factories.user_entity import create_user
 from tests.app.unit.factories.value_objects import (
     create_password_hash,
@@ -26,8 +28,8 @@ from tests.app.unit.factories.value_objects import (
 )
 async def test_creates_active_user_with_hashed_password(
     role: UserRole,
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     # Arrange
     username = create_username()
@@ -38,7 +40,7 @@ async def test_creates_active_user_with_hashed_password(
 
     user_id_generator.generate.return_value = expected_id
     password_hasher.hash.return_value = expected_hash
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     # Act
     result = await sut.create_user(username, raw_password, role)
@@ -54,12 +56,12 @@ async def test_creates_active_user_with_hashed_password(
 
 @pytest.mark.asyncio
 async def test_creates_inactive_user_if_specified(
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     username = create_username()
     raw_password = create_raw_password()
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     result = await sut.create_user(username, raw_password, is_active=False)
 
@@ -68,12 +70,12 @@ async def test_creates_inactive_user_if_specified(
 
 @pytest.mark.asyncio
 async def test_fails_to_create_user_with_unassignable_role(
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     username = create_username()
     raw_password = create_raw_password()
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     with pytest.raises(RoleAssignmentNotPermittedError):
         await sut.create_user(
@@ -90,15 +92,15 @@ async def test_fails_to_create_user_with_unassignable_role(
 )
 async def test_checks_password_authenticity(
     is_valid: bool,
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     # Arrange
     user = create_user()
     raw_password = create_raw_password()
 
     password_hasher.verify.return_value = is_valid
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     # Act
     result = await sut.is_password_valid(user, raw_password)
@@ -109,8 +111,8 @@ async def test_checks_password_authenticity(
 
 @pytest.mark.asyncio
 async def test_changes_password(
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     # Arrange
     initial_hash = create_password_hash(b"old")
@@ -119,7 +121,7 @@ async def test_changes_password(
 
     expected_hash = create_password_hash(b"new")
     password_hasher.hash.return_value = expected_hash
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     # Act
     await sut.change_password(user, raw_password)
@@ -141,11 +143,11 @@ def test_toggles_activation_state(
     initial_state: bool,
     target_state: bool,
     expected_result: bool,
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     user = create_user(is_active=initial_state)
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     result = sut.toggle_user_activation(user, is_active=target_state)
 
@@ -159,11 +161,11 @@ def test_toggles_activation_state(
 )
 def test_preserves_super_admin_activation_state(
     is_active: bool,
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     user = create_user(role=UserRole.SUPER_ADMIN, is_active=not is_active)
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     with pytest.raises(ActivationChangeNotPermittedError):
         sut.toggle_user_activation(user, is_active=is_active)
@@ -185,11 +187,11 @@ def test_toggles_role(
     target_is_admin: bool,
     expected_role: UserRole,
     expected_result: bool,
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     user = create_user(role=initial_role)
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     result = sut.toggle_user_admin_role(user, is_admin=target_is_admin)
 
@@ -203,11 +205,11 @@ def test_toggles_role(
 )
 def test_preserves_super_admin_role(
     is_admin: bool,
-    user_id_generator: MagicMock,
-    password_hasher: MagicMock,
+    user_id_generator: UserIdGeneratorMock,
+    password_hasher: PasswordHasherMock,
 ) -> None:
     user = create_user(role=UserRole.SUPER_ADMIN)
-    sut = UserService(user_id_generator, password_hasher)
+    sut = UserService(user_id_generator, password_hasher)  # type: ignore[arg-type]
 
     with pytest.raises(RoleChangeNotPermittedError):
         sut.toggle_user_admin_role(user, is_admin=is_admin)
