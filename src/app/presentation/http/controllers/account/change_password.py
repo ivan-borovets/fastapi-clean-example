@@ -19,7 +19,7 @@ from app.infrastructure.auth.handlers.change_password import (
 )
 from app.infrastructure.exceptions.gateway import DataMapperError
 from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
-from app.presentation.http.auth.fastapi_openapi_markers import cookie_scheme
+from app.presentation.http.auth.openapi_marker import cookie_scheme
 from app.presentation.http.errors.callbacks import log_error, log_info
 from app.presentation.http.errors.translators import (
     ServiceUnavailableTranslator,
