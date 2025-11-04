@@ -1,6 +1,5 @@
 services:
   web_app_db_pg:
-    container_name: "app_db_pg_${APP_ENV}"
     image: postgres:16-alpine
     shm_size: 128mb
     environment:
@@ -8,7 +7,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -22,14 +21,14 @@ services:
     build:
       context: ../..
       dockerfile: config/${APP_ENV}/Dockerfile
-    image: web_app:latest
+    image: web_app:${APP_ENV}
     environment:
       APP_ENV: ${APP_ENV}
       UVICORN_HOST: ${UVICORN_HOST}
       UVICORN_PORT: ${UVICORN_PORT}
       POSTGRES_HOST: web_app_db_pg
     ports:
-      - "${UVICORN_PORT}:${UVICORN_PORT}"
+      - "127.0.0.1:${UVICORN_PORT}:${UVICORN_PORT}"
     depends_on:
       web_app_db_pg:
         condition: service_healthy
@@ -43,3 +42,4 @@ services:
 
 volumes:
   pgdata:
+    name: "web_app_pgdata_${APP_ENV}"

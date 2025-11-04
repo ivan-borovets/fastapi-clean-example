@@ -1,3 +1,28 @@
+# Code quality
+.PHONY: code.format code.lint code.test code.cov code.cov.html code.check
+code.format:
+	ruff format
+
+code.lint: code.format
+	ruff check --exit-non-zero-on-fix
+	slotscheck src
+	mypy
+
+code.test:
+	pytest -v
+
+code.cov:
+	coverage run -m pytest
+	coverage combine
+	coverage report
+
+code.cov.html:
+	coverage run -m pytest
+	coverage combine
+	coverage html
+
+code.check: code.lint code.test
+
 # Environment
 PYTHON := python
 CONFIGS_DIG := config
@@ -24,11 +49,11 @@ DOCKER_COMPOSE_PRUNE := scripts/makefile/docker_prune.sh
 .PHONY: up.db up.db-echo up up.echo down down.total logs.db shell.db prune
 up.db: guard-APP_ENV
 	@echo "APP_ENV=$(APP_ENV)"
-	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up -d web_app_db_pg --build
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up -d web_app_db_pg
 
 up.db-echo: guard-APP_ENV
 	@echo "APP_ENV=$(APP_ENV)"
-	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up web_app_db_pg --build
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up web_app_db_pg
 
 up: guard-APP_ENV
 	@echo "APP_ENV=$(APP_ENV)"
@@ -37,6 +62,9 @@ up: guard-APP_ENV
 up.echo: guard-APP_ENV
 	@echo "APP_ENV=$(APP_ENV)"
 	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) up --build
+
+down.db: guard-APP_ENV
+	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) down web_app_db_pg
 
 down: guard-APP_ENV
 	@cd $(CONFIGS_DIG)/$(APP_ENV) && $(DOCKER_COMPOSE) --env-file .env.$(APP_ENV) down
@@ -52,31 +80,6 @@ shell.db: guard-APP_ENV
 
 prune:
 	$(DOCKER_COMPOSE_PRUNE)
-
-# Code quality
-.PHONY: code.format code.lint code.test code.cov code.cov.html code.check
-code.format:
-	ruff format
-
-code.lint: code.format
-	ruff check --exit-non-zero-on-fix
-	slotscheck src
-	mypy
-
-code.test:
-	pytest -v
-
-code.cov:
-	coverage run -m pytest
-	coverage combine
-	coverage report
-
-code.cov.html:
-	coverage run -m pytest
-	coverage combine
-	coverage html
-
-code.check: code.lint code.test
 
 # Project structure visualization
 PYCACHE_DEL := scripts/makefile/pycache_del.sh
