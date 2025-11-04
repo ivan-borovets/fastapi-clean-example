@@ -90,8 +90,8 @@ def read_config(
         raise FileNotFoundError(
             f"The file does not exist at the specified path: {file_path}",
         )
-    with open(file=file_path, mode="r", encoding="utf-8") as f:
-        return tomllib.loads(f.read())
+    with file_path.open(mode="rb") as f:
+        return tomllib.load(f)
 
 
 def merge_dicts(*, dict1: ConfigDict, dict2: ConfigDict) -> ConfigDict:

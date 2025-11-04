@@ -3,11 +3,11 @@ from sqlalchemy.orm import composite
 
 from app.domain.value_objects.user_id import UserId
 from app.infrastructure.auth.session.model import AuthSession
-from app.infrastructure.persistence_sqla.registry import mapping_registry
+from app.infrastructure.persistence_sqla.registry import mapper_registry
 
 auth_sessions_table = Table(
     "auth_sessions",
-    mapping_registry.metadata,
+    mapper_registry.metadata,
     Column("id", String, primary_key=True),
     Column("user_id", UUID(as_uuid=True), nullable=False),
     Column("expiration", DateTime(timezone=True), nullable=False),
@@ -15,7 +15,7 @@ auth_sessions_table = Table(
 
 
 def map_auth_sessions_table() -> None:
-    mapping_registry.map_imperatively(
+    mapper_registry.map_imperatively(
         AuthSession,
         auth_sessions_table,
         properties={

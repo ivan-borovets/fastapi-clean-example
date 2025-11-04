@@ -94,7 +94,7 @@ For now, we will focus on the purpose of the layers.
   But in projects with anemic entities, they can also contain logic that would otherwise be in those entities.
 - In early stages of development when the domain model is not yet clearly defined,
   I'd recommend keeping entities flat and anemic, even though the latter weakens encapsulation.
-  Once core logic is well established, some entities can, as aggregate roots, become non-flat and rich.
+  Once domain logic is well established, some entities can, as aggregate roots, become non-flat and rich.
   This best enforces invariants but can be tricky to design once and for all.
 - Prefer rich value objects early, freeing entities and services from an excessive burden of local rules.
 - Consider domain layer the most important, stable, and independent part of a system.
@@ -110,13 +110,13 @@ For now, we will focus on the purpose of the layers.
   Each is invoked independently - typically by external drivers such as HTTP controllers, message consumers, or
   scheduled jobs.
 - Interactor orchestrates domain logic and external calls needed to perform the operation.
-  Its primary responsibilities include permission verification and transaction management.
+  Its primary responsibilities may include permission verification and transaction management.
   To access external systems, interactors rely on **interfaces (ports)** that abstract infrastructure details.
 - Interactor uses **DTOs (Data Transfer Objects)** to exchange serializable data with external layers.
   These are simple, behavior-free carriers - the cross-layer transport for external contracts.
 - If logic is reused across interactors: extract an application service when it falls under typical interactor
   responsibilities; otherwise, consider evolving the domain model to include it.
-  Such evolution is a normal enrichment step.
+  Such evolution is a normal part of model enrichment.
 - Together, domain and application layers form the **core** of the system.
 
 ![#green](https://placehold.co/15x15/green/green.svg) **Infrastructure Layer**
@@ -156,7 +156,7 @@ In other words, dependencies must never point outwards.
 > - Components within the same layer **can depend on each other.** For example, components in the Infrastructure layer
     can interact with one another without crossing into other layers.
 >
-> - Components in any outer layer can depend on components in **any** inner layer, not necessarily the one closest to
+> - Components in any outer layer can depend on components in any inner layer, not necessarily the one closest to
     them. For example, components in the Presentation layer can directly depend on the Domain layer, bypassing the
     Application and Infrastructure layers.
 >
