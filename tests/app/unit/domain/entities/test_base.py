@@ -102,3 +102,11 @@ def test_entity_can_be_used_in_set() -> None:
     entity_set = {e1, e2, e3, e4}
 
     assert len(entity_set) == 3
+
+
+def test_entity_repr_shows_id() -> None:
+    sut = create_named_entity(id_=1, name="Alice")
+
+    repr_str = repr(sut)
+
+    assert repr_str == "NamedEntity(id_=NamedEntityId(1))"

@@ -4,7 +4,7 @@ from app.application.common.exceptions.query import PaginationError
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class Pagination:
+class OffsetPaginationParams:
     """
     raises PaginationError
     """

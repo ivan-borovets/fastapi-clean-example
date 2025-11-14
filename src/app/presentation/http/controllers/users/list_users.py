@@ -9,11 +9,11 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.application.common.exceptions.authorization import AuthorizationError
 from app.application.common.exceptions.query import PaginationError, SortingError
+from app.application.common.ports.user_query_gateway import ListUsersQM
 from app.application.common.query_params.sorting import SortingOrder
 from app.application.queries.list_users import (
     ListUsersQueryService,
     ListUsersRequest,
-    ListUsersResponse,
 )
 from app.infrastructure.auth.exceptions import AuthenticationError
 from app.infrastructure.exceptions.gateway import DataMapperError, ReaderError
@@ -52,13 +52,13 @@ def create_list_users_router() -> APIRouter:
                 on_error=log_error,
             ),
             AuthorizationError: status.HTTP_403_FORBIDDEN,
+            PaginationError: status.HTTP_400_BAD_REQUEST,
+            SortingError: status.HTTP_400_BAD_REQUEST,
             ReaderError: rule(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 translator=ServiceUnavailableTranslator(),
                 on_error=log_error,
             ),
-            PaginationError: status.HTTP_400_BAD_REQUEST,
-            SortingError: status.HTTP_400_BAD_REQUEST,
         },
         default_on_error=log_info,
         status_code=status.HTTP_200_OK,
@@ -68,7 +68,7 @@ def create_list_users_router() -> APIRouter:
     async def list_users(
         request_data_pydantic: Annotated[ListUsersRequestPydantic, Depends()],
         interactor: FromDishka[ListUsersQueryService],
-    ) -> ListUsersResponse:
+    ) -> ListUsersQM:
         request_data = ListUsersRequest(
             limit=request_data_pydantic.limit,
             offset=request_data_pydantic.offset,

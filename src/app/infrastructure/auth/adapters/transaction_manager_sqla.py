@@ -7,7 +7,7 @@ from app.infrastructure.adapters.constants import (
     DB_COMMIT_FAILED,
     DB_QUERY_FAILED,
 )
-from app.infrastructure.auth.adapters.types import AuthAsyncSession
+from app.infrastructure.auth.adapters.types_ import AuthAsyncSession
 from app.infrastructure.auth.session.ports.transaction_manager import (
     AuthSessionTransactionManager,
 )

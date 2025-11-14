@@ -42,3 +42,6 @@ class Entity[T: ValueObject]:
         reduces the risk of hash collisions between different entity types.
         """
         return hash((type(self), self.id_))
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(id_={self.id_!r})"
