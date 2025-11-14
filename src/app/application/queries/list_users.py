@@ -22,8 +22,8 @@ log = logging.getLogger(__name__)
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ListUsersRequest:
-    offset: int
     limit: int
+    offset: int
     sorting_field: str
     sorting_order: SortingOrder
 
