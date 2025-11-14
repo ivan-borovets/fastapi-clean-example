@@ -35,7 +35,7 @@ class DirContents(StrEnum):
     DOTENV_NAME = ".env"
 
 
-BASE_DIR_PATH = Path(__file__).resolve().parents[4]
+BASE_DIR_PATH: Final[Path] = Path(__file__).resolve().parents[4]
 CONFIG_PATH: Final[Path] = BASE_DIR_PATH / "config"
 
 ENV_TO_DIR_PATHS: Final[Mapping[ValidEnvs, Path]] = MappingProxyType({

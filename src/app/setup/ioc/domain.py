@@ -6,7 +6,7 @@ from app.domain.services.user import UserService
 from app.infrastructure.adapters.password_hasher_bcrypt import (
     BcryptPasswordHasher,
 )
-from app.infrastructure.adapters.types import HasherSemaphore, HasherThreadPoolExecutor
+from app.infrastructure.adapters.types_ import HasherSemaphore, HasherThreadPoolExecutor
 from app.infrastructure.adapters.user_id_generator_uuid import (
     UuidUserIdGenerator,
 )

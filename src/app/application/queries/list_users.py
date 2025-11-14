@@ -1,16 +1,12 @@
 import logging
 from dataclasses import dataclass
-from typing import TypedDict
 
-from app.application.common.exceptions.query import SortingError
-from app.application.common.ports.user_query_gateway import UserQueryGateway
-from app.application.common.query_models.user import UserQueryModel
-from app.application.common.query_params.pagination import Pagination
-from app.application.common.query_params.sorting import SortingOrder
-from app.application.common.query_params.user import (
-    UserListParams,
-    UserListSorting,
+from app.application.common.ports.user_query_gateway import (
+    ListUsersQM,
+    UserQueryGateway,
 )
+from app.application.common.query_params.offset_pagination import OffsetPaginationParams
+from app.application.common.query_params.sorting import SortingOrder, SortingParams
 from app.application.common.services.authorization.authorize import (
     authorize,
 )
@@ -26,14 +22,10 @@ log = logging.getLogger(__name__)
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ListUsersRequest:
-    limit: int
     offset: int
+    limit: int
     sorting_field: str
     sorting_order: SortingOrder
-
-
-class ListUsersResponse(TypedDict):
-    users: list[UserQueryModel]
 
 
 class ListUsersQueryService:
@@ -50,14 +42,14 @@ class ListUsersQueryService:
         self._current_user_service = current_user_service
         self._user_query_gateway = user_query_gateway
 
-    async def execute(self, request_data: ListUsersRequest) -> ListUsersResponse:
+    async def execute(self, request_data: ListUsersRequest) -> ListUsersQM:
         """
         :raises AuthenticationError:
         :raises DataMapperError:
         :raises AuthorizationError:
-        :raises ReaderError:
         :raises PaginationError:
         :raises SortingError:
+        :raises ReaderError:
         """
         log.info("List users: started.")
 
@@ -72,28 +64,18 @@ class ListUsersQueryService:
         )
 
         log.debug("Retrieving list of users.")
-        user_list_params = UserListParams(
-            pagination=Pagination(
-                limit=request_data.limit,
-                offset=request_data.offset,
-            ),
-            sorting=UserListSorting(
-                sorting_field=request_data.sorting_field,
-                sorting_order=request_data.sorting_order,
-            ),
+        pagination = OffsetPaginationParams(
+            limit=request_data.limit,
+            offset=request_data.offset,
         )
-
-        users: list[UserQueryModel] | None = await self._user_query_gateway.read_all(
-            user_list_params,
+        sorting = SortingParams(
+            field=request_data.sorting_field,
+            order=request_data.sorting_order,
         )
-        if users is None:
-            log.error(
-                "Retrieving list of users failed: invalid sorting column '%s'.",
-                request_data.sorting_field,
-            )
-            raise SortingError("Invalid sorting field.")
-
-        response = ListUsersResponse(users=users)
+        response = await self._user_query_gateway.read_all(
+            pagination=pagination,
+            sorting=sorting,
+        )
 
         log.info("List users: done.")
         return response
