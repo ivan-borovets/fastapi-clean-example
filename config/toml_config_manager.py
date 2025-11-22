@@ -231,12 +231,7 @@ def get_env_value_by_export_field(*, config: ConfigDict, field: str) -> str:
             f"got {type(current).__name__}",
         )
 
-    try:
-        return str(current)
-    except (TypeError, ValueError) as err:
-        raise ValueError(
-            f"Field '{field}' cannot be converted to string: {err!s}"
-        ) from err
+    return str(current)
 
 
 # DOTENV GENERATION

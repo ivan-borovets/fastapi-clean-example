@@ -14,8 +14,8 @@ PORT = 9999
 [sqla]
 ECHO = false
 ECHO_POOL = false
-POOL_SIZE = 50
-MAX_OVERFLOW = 10
+POOL_SIZE = 30
+MAX_OVERFLOW = 20
 
 # Logs
 [logs]
