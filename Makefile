@@ -4,8 +4,10 @@ code.format:
 	ruff format
 
 code.lint: code.format
-	ruff check --exit-non-zero-on-fix
+	deptry
 	slotscheck src
+	lint-imports
+	ruff check --exit-non-zero-on-fix
 	mypy
 
 code.test:

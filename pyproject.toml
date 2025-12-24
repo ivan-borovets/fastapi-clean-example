@@ -36,6 +36,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "deptry==0.24.0",
+    "import-linter==2.9",
     "mypy==1.17.0",
     "pre-commit==4.2.0",
     "ruff==0.12.5",
@@ -52,19 +54,21 @@ test = [
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
-exclude_also = [
+exclude_lines = [
     "if __name__ == .__main__.:",
-    '@(abc\.)?abstractmethod',
     "pass",
-    '\.\.\.',
-    "from .*",
+    "\\.\\.\\.",
+    "from .* import .*",
     "import .*",
-    'logging\..*',
-    'log\..*',
+    "logging\\..*",
+    "log\\..*",
+    "@(abc\\.)?abstractmethod",
+    ".* = NewType\\(.*\\)",
+    ".* = Literal\\[.*\\]",
 ]
 
 [tool.coverage.run]
-source = ["src", ]
+source = ["src"]
 omit = [
     "**/__init__.py",
     "**/alembic/**",
@@ -76,7 +80,36 @@ concurrency = [
 parallel = true
 branch = true
 
+[tool.deptry]
+root = ["src"]
+ignore = [
+    "DEP002", # Unused dependencies
+    "DEP003", # Transitive dependencies
+]
+
+[tool.importlinter]
+root_package = "app"
+exclude_type_checking_imports = true
+
+[[tool.importlinter.contracts]]
+id = "clean-architecture"
+name = "inner must not import outer"
+type = "layers"
+containers = ["app"]
+layers = [
+    "(run)",
+    "(setup)",
+    "presentation",
+    "infrastructure",
+    "application",
+    "domain",
+]
+ignore_imports = [
+    "app.infrastructure.persistence_sqla.alembic.env -> app.setup.config.settings",
+]
+
 [tool.mypy]
+mypy_path = ["src"]
 files = [
     "config",
     "scripts",
@@ -84,23 +117,36 @@ files = [
     "tests",
 ]
 exclude = "^.*alembic.*$"
+python_version = "3.13"
 strict = true
+pretty = true
+follow_imports = "silent"
 ignore_missing_imports = true
-allow_subclassing_any = true
-disallow_untyped_defs = false
+strict_optional = true
+no_implicit_optional = true
+warn_no_return = true
+warn_unreachable = true
 plugins = [
     "pydantic.mypy",
     "sqlalchemy.ext.mypy.plugin",
 ]
 
+[tool.pydantic-mypy]
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+init_typed = true
+
 [tool.pytest.ini_options]
-testpaths = ["tests", ]
-markers = ["slow", ]
+testpaths = ["tests"]
+markers = ["slow"]
 addopts = "-m 'not slow'"
+asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+filterwarnings = []
 
 [tool.ruff]
 line-length = 88
+target-version = "py313"
 preview = true  # experimental
 
 [tool.ruff.format]
@@ -162,7 +208,7 @@ force-wrap-aliases = true
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
-"src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL", ]
+"src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL"]
 "tests/**" = [
     "ARG002", # unused-method-argument
     "PLC2801", # unnecessary-dunder-call
@@ -173,11 +219,11 @@ split-on-trailing-comma = true
     "S107", # hardcoded-password-default
 ]
 #
-"src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501", ]  # line-too-long
-"src/app/infrastructure/auth/handlers/constants.py" = ["S105", ]          # hardcoded-password-string
-"src/app/presentation/http/auth/constants.py" = ["S105", ]                # hardcoded-password-string
-"src/app/presentation/http/errors/translators.py" = ["ARG002", ]          # unused-method-argument
-"scripts/dishka/plot_dependencies_data.py" = ["T201", ]                   # print
+"src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501"]  # line-too-long
+"src/app/infrastructure/auth/handlers/constants.py" = ["S105"]          # hardcoded-password-string
+"src/app/presentation/http/auth/constants.py" = ["S105"]                # hardcoded-password-string
+"src/app/presentation/http/errors/translators.py" = ["ARG002"]          # unused-method-argument
+"scripts/dishka/plot_dependencies_data.py" = ["T201"]                   # print
 
 [tool.slotscheck]
 strict-imports = true

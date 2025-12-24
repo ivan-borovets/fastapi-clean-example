@@ -219,19 +219,28 @@ def extract_export_fields_from_config(
 
 
 def get_env_value_by_export_field(*, config: ConfigDict, field: str) -> str:
-    current = config
-    for part in field.split("."):
-        if not isinstance(current, dict) or part not in current:
-            raise KeyError(f"Field '{field}' not found in config")
-        current = current[part]
+    node: Mapping[str, Any] = config
+    value: Any = node
 
-    if isinstance(current, (dict, list)):
+    parts = field.split(".")
+    for idx, part in enumerate(parts):
+        if part not in node:
+            raise KeyError(f"Field '{field}' not found in config")
+
+        value = node[part]
+
+        if idx != len(parts) - 1:
+            if not isinstance(value, Mapping):
+                raise KeyError(f"Field '{field}' not found in config")
+            node = value
+
+    if isinstance(value, (dict, list)):
         raise ValueError(
             f"Field '{field}' cannot be converted to string: "
-            f"got {type(current).__name__}",
+            f"got {type(value).__name__}",
         )
 
-    return str(current)
+    return str(value)
 
 
 # DOTENV GENERATION

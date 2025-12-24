@@ -6,13 +6,6 @@ from app.presentation.http.controllers.general.health import (
 
 
 def create_general_router() -> APIRouter:
-    router = APIRouter(
-        tags=["General"],
-    )
-
-    sub_routers = (create_health_router(),)
-
-    for sub_router in sub_routers:
-        router.include_router(sub_router)
-
+    router = APIRouter(tags=["General"])
+    router.include_router(create_health_router())
     return router

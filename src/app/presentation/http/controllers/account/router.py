@@ -17,15 +17,8 @@ def create_account_router() -> APIRouter:
         prefix="/account",
         tags=["Account"],
     )
-
-    sub_routers = (
-        create_sign_up_router(),
-        create_log_in_router(),
-        create_change_password_router(),
-        create_log_out_router(),
-    )
-
-    for sub_router in sub_routers:
-        router.include_router(sub_router)
-
+    router.include_router(create_sign_up_router())
+    router.include_router(create_log_in_router())
+    router.include_router(create_change_password_router())
+    router.include_router(create_log_out_router())
     return router
