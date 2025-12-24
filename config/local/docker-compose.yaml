@@ -1,0 +1,45 @@
+services:
+  web_app_db_pg:
+    image: postgres:16-alpine
+    shm_size: 128mb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  web_app:
+    build:
+      context: ../..
+      dockerfile: config/${APP_ENV}/Dockerfile
+    image: web_app:${APP_ENV}
+    environment:
+      APP_ENV: ${APP_ENV}
+      UVICORN_HOST: ${UVICORN_HOST}
+      UVICORN_PORT: ${UVICORN_PORT}
+      POSTGRES_HOST: web_app_db_pg
+    ports:
+      - "127.0.0.1:${UVICORN_PORT}:${UVICORN_PORT}"
+    depends_on:
+      web_app_db_pg:
+        condition: service_healthy
+    command: >
+      sh -c "
+      echo 'Running alembic migrations...' &&
+      alembic upgrade head &&
+      echo 'Starting Uvicorn...' &&
+      uvicorn app.run:make_app --factory --host ${UVICORN_HOST} --port ${UVICORN_PORT} --loop uvloop
+      "
+
+volumes:
+  pgdata:
+    name: "web_app_pgdata_${APP_ENV}"

@@ -1,0 +1,43 @@
+# PostgreSQL
+[postgres]
+DB = "web_app_db_pg"
+HOST = "localhost"
+PORT = 5432
+DRIVER = "psycopg"
+
+# Uvicorn
+[uvicorn]
+HOST = "0.0.0.0"
+PORT = 9999
+
+# SQLAlchemy
+[sqla]
+ECHO = false
+ECHO_POOL = false
+POOL_SIZE = 30
+MAX_OVERFLOW = 20
+
+# Logs
+[logs]
+# Can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+LEVEL = "DEBUG"
+
+[security.auth]
+# Can be set to "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"
+JWT_ALGORITHM = "HS256"
+# Must be at least 1 (number of minutes)
+SESSION_TTL_MIN = 5
+# Must be a number (fraction, 0 < fraction < 1)
+SESSION_REFRESH_THRESHOLD = 0.2
+
+[security.cookies]
+# Choose `true` for production (secure=True, samesite="Strict")
+SECURE = false
+
+[security.password]
+# https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#introduction
+HASHER_WORK_FACTOR = 11
+# CPU-bound & GIL released: per-worker ≈ max(1, floor(effective vCPUs / workers))
+HASHER_MAX_THREADS = 8
+# Fail-fast cap: max semaphore wait before timeout (start ~1 second, tune to peak)
+HASHER_SEMAPHORE_WAIT_TIMEOUT_S = 1.0

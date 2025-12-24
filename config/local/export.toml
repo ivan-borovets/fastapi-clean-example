@@ -1,0 +1,13 @@
+# Don't rename `export` or `fields`
+[export]
+fields = [
+    # PostgreSQL from secrets
+    "postgres.USER",
+    "postgres.PASSWORD",
+    # PostgreSQL from config
+    "postgres.DB",
+    "postgres.PORT",
+    # Uvicorn from config
+    "uvicorn.HOST",
+    "uvicorn.PORT",
+]

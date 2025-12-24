@@ -1,0 +1,10 @@
+# Ignore everything
+**
+
+# Except
+!pyproject.toml
+!uv.lock
+!README.md
+!config/**
+!src/**
+!alembic.ini

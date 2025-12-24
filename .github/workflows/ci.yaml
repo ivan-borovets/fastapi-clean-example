@@ -1,0 +1,49 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync --locked --group dev
+
+      - name: Check code
+        run: uv run make code.check
+
+      - name: Test Docker Compose setup
+        env:
+          APP_ENV: local
+        run: |
+          uv run config/toml_config_manager.py
+          cd config/local
+          docker compose --env-file .env.local up -d --build
+
+      - name: Verify Application Health
+        run: |
+          timeout 10s bash -s <<'BASH'
+          while ! curl -sf http://127.0.0.1:9999/api/v1/health; do
+            sleep 1
+          done
+          BASH
+
+      - name: Test Signup Handler
+        run: |
+          curl -f --json @- http://127.0.0.1:9999/api/v1/account/signup <<'JSON'
+          {
+            "username": "string",
+            "password": "string"
+          }
+          JSON

@@ -1,0 +1,14 @@
+repos:
+  - repo: local
+    hooks:
+      - id: make-check
+        name: source-code-check
+        entry: make code.check
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.20.0
+    hooks:
+      - id: yamlfmt
