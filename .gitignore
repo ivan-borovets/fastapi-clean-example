@@ -171,3 +171,6 @@ config/prod/*
 
 # IgnoreToDo
 todo/
+
+# ImportLinter
+.import_linter_cache/

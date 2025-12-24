@@ -1,9 +1,8 @@
+from collections.abc import Hashable
 from typing import Any, Self, cast
 
-from app.domain.value_objects.base import ValueObject
 
-
-class Entity[T: ValueObject]:
+class Entity[T: Hashable]:
     """
     Base class for domain entities, defined by a unique identity (`id`).
     Subclassing is optional; any implementation honoring this contract is valid.

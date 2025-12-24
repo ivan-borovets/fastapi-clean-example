@@ -6,7 +6,7 @@ from app.domain.entities.user import User
 from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.username import Username
 from app.infrastructure.adapters.constants import DB_QUERY_FAILED
-from app.infrastructure.adapters.types_ import MainAsyncSession
+from app.infrastructure.adapters.types import MainAsyncSession
 from app.infrastructure.exceptions.gateway import DataMapperError
 
 

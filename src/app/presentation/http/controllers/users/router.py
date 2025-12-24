@@ -26,18 +26,11 @@ def create_users_router() -> APIRouter:
         prefix="/users",
         tags=["Users"],
     )
-
-    sub_routers = (
-        create_create_user_router(),
-        create_list_users_router(),
-        create_set_user_password_router(),
-        create_grant_admin_router(),
-        create_revoke_admin_router(),
-        create_activate_user_router(),
-        create_deactivate_user_router(),
-    )
-
-    for sub_router in sub_routers:
-        router.include_router(sub_router)
-
+    router.include_router(create_create_user_router())
+    router.include_router(create_list_users_router())
+    router.include_router(create_set_user_password_router())
+    router.include_router(create_grant_admin_router())
+    router.include_router(create_revoke_admin_router())
+    router.include_router(create_activate_user_router())
+    router.include_router(create_deactivate_user_router())
     return router

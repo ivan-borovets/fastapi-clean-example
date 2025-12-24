@@ -12,7 +12,7 @@ from app.application.common.ports.user_query_gateway import (
 from app.application.common.query_params.offset_pagination import OffsetPaginationParams
 from app.application.common.query_params.sorting import SortingOrder, SortingParams
 from app.infrastructure.adapters.constants import DB_QUERY_FAILED
-from app.infrastructure.adapters.types_ import MainAsyncSession
+from app.infrastructure.adapters.types import MainAsyncSession
 from app.infrastructure.exceptions.gateway import ReaderError
 from app.infrastructure.persistence_sqla.mappings.user import users_table
 

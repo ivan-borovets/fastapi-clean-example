@@ -12,7 +12,7 @@ from app.infrastructure.adapters.constants import (
     DB_FLUSH_FAILED,
     DB_QUERY_FAILED,
 )
-from app.infrastructure.adapters.types_ import MainAsyncSession
+from app.infrastructure.adapters.types import MainAsyncSession
 from app.infrastructure.exceptions.gateway import DataMapperError
 
 log = logging.getLogger(__name__)

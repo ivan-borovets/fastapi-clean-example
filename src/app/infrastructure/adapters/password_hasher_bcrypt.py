@@ -11,7 +11,7 @@ import bcrypt
 from app.domain.ports.password_hasher import PasswordHasher
 from app.domain.value_objects.raw_password import RawPassword
 from app.domain.value_objects.user_password_hash import UserPasswordHash
-from app.infrastructure.adapters.types_ import HasherSemaphore, HasherThreadPoolExecutor
+from app.infrastructure.adapters.types import HasherSemaphore, HasherThreadPoolExecutor
 from app.infrastructure.exceptions.password_hasher import PasswordHasherBusyError
 
 log = logging.getLogger(__name__)

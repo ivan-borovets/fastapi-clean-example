@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.infrastructure.adapters.types_ import (
+from app.infrastructure.adapters.types import (
     HasherSemaphore,
     HasherThreadPoolExecutor,
     MainAsyncSession,
@@ -23,7 +23,7 @@ from app.infrastructure.auth.adapters.data_mapper_sqla import (
 from app.infrastructure.auth.adapters.transaction_manager_sqla import (
     SqlaAuthSessionTransactionManager,
 )
-from app.infrastructure.auth.adapters.types_ import AuthAsyncSession
+from app.infrastructure.auth.adapters.types import AuthAsyncSession
 from app.infrastructure.auth.handlers.change_password import (
     ChangePasswordHandler,
 )

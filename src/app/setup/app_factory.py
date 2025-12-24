@@ -39,7 +39,10 @@ def create_web_app() -> FastAPI:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    map_tables()
-    yield
     # https://dishka.readthedocs.io/en/stable/integrations/fastapi.html
-    await app.state.dishka_container.close()
+    container = app.state.dishka_container
+    try:
+        map_tables()
+        yield
+    finally:
+        await container.close()
