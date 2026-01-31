@@ -7,6 +7,7 @@ from app.application.commands.grant_admin import GrantAdminInteractor
 from app.application.commands.revoke_admin import RevokeAdminInteractor
 from app.application.commands.set_user_password import SetUserPasswordInteractor
 from app.application.common.ports.access_revoker import AccessRevoker
+from app.application.common.ports.app_version_provider import AppVersionProvider
 from app.application.common.ports.flusher import Flusher
 from app.application.common.ports.identity_provider import IdentityProvider
 from app.application.common.ports.transaction_manager import (
@@ -15,7 +16,10 @@ from app.application.common.ports.transaction_manager import (
 from app.application.common.ports.user_command_gateway import UserCommandGateway
 from app.application.common.ports.user_query_gateway import UserQueryGateway
 from app.application.common.services.current_user import CurrentUserService
+from app.application.common.services.request_id import RequestIdService
+from app.application.queries.get_app_version import GetAppVersionQueryService
 from app.application.queries.list_users import ListUsersQueryService
+from app.infrastructure.adapters.app_version_provider_pyproject import PyprojectAppVersionProvider
 from app.infrastructure.adapters.main_flusher_sqla import SqlaMainFlusher
 from app.infrastructure.adapters.main_transaction_manager_sqla import (
     SqlaMainTransactionManager,
@@ -38,6 +42,7 @@ class ApplicationProvider(Provider):
     # Services
     services = provide_all(
         CurrentUserService,
+        RequestIdService,
     )
 
     # Ports Persistence
@@ -45,6 +50,11 @@ class ApplicationProvider(Provider):
     flusher = provide(SqlaMainFlusher, provides=Flusher)
     user_command_gateway = provide(SqlaUserDataMapper, provides=UserCommandGateway)
     user_query_gateway = provide(SqlaUserReader, provides=UserQueryGateway)
+    app_version_provider = provide(
+        PyprojectAppVersionProvider,
+        provides=AppVersionProvider,
+        scope=Scope.APP,
+    )
 
     # Ports Auth
     access_revoker = provide(AuthSessionAccessRevoker, provides=AccessRevoker)
@@ -62,5 +72,6 @@ class ApplicationProvider(Provider):
 
     # Queries
     query_services = provide_all(
+        GetAppVersionQueryService,
         ListUsersQueryService,
     )

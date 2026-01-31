@@ -9,6 +9,9 @@ from app.infrastructure.persistence_sqla.mappings.all import map_tables
 from app.presentation.http.auth.asgi_middleware import (
     ASGIAuthMiddleware,
 )
+from app.presentation.http.middleware.request_id import (
+    ASGIRequestIdMiddleware,
+)
 from app.presentation.http.controllers.root_router import create_root_router
 from app.setup.config.settings import AppSettings
 from app.setup.ioc.provider_registry import get_providers
@@ -30,6 +33,7 @@ def create_web_app() -> FastAPI:
         lifespan=lifespan,
         default_response_class=ORJSONResponse,
     )
+    app.add_middleware(ASGIRequestIdMiddleware)
     # https://github.com/encode/starlette/discussions/2451
     app.add_middleware(ASGIAuthMiddleware)
     # Good place to register global exception handlers
