@@ -1,13 +1,18 @@
+import asyncio
+
 import dishka.plotter
-import uvloop
-from dishka import AsyncContainer, make_async_container
+from dishka import AsyncContainer
 
-from app.setup.config.settings import AppSettings, load_settings
-from app.setup.ioc.provider_registry import get_providers
-
-
-def make_plot_data_container(settings: AppSettings) -> AsyncContainer:
-    return make_async_container(*get_providers(), context={AppSettings: settings})
+from app.config.loader import (
+    load_app_settings,
+    load_cookie_settings,
+    load_jwt_settings,
+    load_password_hasher_settings,
+    load_postgres_settings,
+    load_session_settings,
+    load_sqla_settings,
+)
+from app.main.run import make_ioc_container
 
 
 def generate_dependency_graph_d2(container: AsyncContainer) -> str:
@@ -19,11 +24,18 @@ def generate_dependency_graph_d2(container: AsyncContainer) -> str:
 
 
 async def main() -> None:
-    settings: AppSettings = load_settings()
-    async with make_plot_data_container(settings)() as container:
+    async with make_ioc_container(
+        app_settings=load_app_settings(),
+        postgres_settings=load_postgres_settings(),
+        sqla_settings=load_sqla_settings(),
+        password_hasher_settings=load_password_hasher_settings(),
+        jwt_settings=load_jwt_settings(),
+        session_settings=load_session_settings(),
+        cookie_settings=load_cookie_settings(),
+    )() as container:
         print(generate_dependency_graph_d2(container))
         await container.close()
 
 
 if __name__ == "__main__":
-    uvloop.run(main())
+    asyncio.run(main())

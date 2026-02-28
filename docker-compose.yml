@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - ENVIRONMENT=dev
+    restart: on-failure
+    volumes:
+      - .:/code
+    ports:
+      - "127.0.0.1:${UVICORN_PORT}:8000"
+    depends_on:
+      db_pg:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - COVERAGE_FILE=/tmp/.coverage
+    command: ["start", "8000"]
+
+  db_pg:
+    image: postgres:18-alpine
+    shm_size: 128mb
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?POSTGRES_PASSWORD is required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 1s

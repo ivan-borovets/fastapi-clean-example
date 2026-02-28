@@ -2,9 +2,10 @@
 **
 
 # Except
+!docker-entrypoint.sh
 !pyproject.toml
-!uv.lock
 !README.md
-!config/**
-!src/**
+!uv.lock
 !alembic.ini
+!src/**
+!tests/**

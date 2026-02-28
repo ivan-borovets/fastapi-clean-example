@@ -1,11 +1,10 @@
-from sqlalchemy import UUID, Boolean, Column, Enum, LargeBinary, String, Table
+from sqlalchemy import UUID, Boolean, Column, DateTime, Enum, LargeBinary, String, Table
 from sqlalchemy.orm import composite
 
-from app.domain.entities.user import User
-from app.domain.enums.user_role import UserRole
-from app.domain.value_objects.user_id import UserId
-from app.domain.value_objects.user_password_hash import UserPasswordHash
-from app.domain.value_objects.username import Username
+from app.core.common.entities.types_ import UserRole
+from app.core.common.entities.user import User
+from app.core.common.value_objects.username import Username
+from app.core.common.value_objects.utc_datetime import UtcDatetime
 from app.infrastructure.persistence_sqla.registry import mapper_registry
 
 users_table = Table(
@@ -16,11 +15,17 @@ users_table = Table(
     Column("password_hash", LargeBinary, nullable=False),
     Column(
         "role",
-        Enum(UserRole, name="userrole"),
-        default=UserRole.USER,
+        Enum(
+            UserRole,
+            name="user_role",
+            native_enum=False,
+            validate_strings=True,
+        ),
         nullable=False,
     ),
-    Column("is_active", Boolean, default=True, nullable=False),
+    Column("is_active", Boolean, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
 )
 
 
@@ -29,11 +34,13 @@ def map_users_table() -> None:
         User,
         users_table,
         properties={
-            "id_": composite(UserId, users_table.c.id),
+            "id_": users_table.c.id,
             "username": composite(Username, users_table.c.username),
-            "password_hash": composite(UserPasswordHash, users_table.c.password_hash),
+            "password_hash": users_table.c.password_hash,
             "role": users_table.c.role,
             "is_active": users_table.c.is_active,
+            "_created_at": composite(UtcDatetime, users_table.c.created_at),
+            "updated_at": composite(UtcDatetime, users_table.c.updated_at),
         },
-        column_prefix="_",
+        column_prefix="__",
     )
