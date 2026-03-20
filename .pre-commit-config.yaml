@@ -1,14 +1,70 @@
+default_language_version:
+  python: python3.13
+
+default_stages: [pre-commit]
+
 repos:
   - repo: local
     hooks:
-      - id: make-check
-        name: source-code-check
-        entry: make code.check
+      - id: code-check
+        name: code-check (local)
+        entry: uv run make check
         language: system
         pass_filenames: false
-        always_run: true
+      - id: pip-audit-local
+        name: pip-audit (local)
+        entry: uv run make pip-audit
+        language: system
+        pass_filenames: false
+        verbose: true
+      - id: test-docker
+        name: test-docker (local)
+        entry: make test-docker
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
+        verbose: true
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-ast
+      - id: check-case-conflict
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: ^docs/
+      - id: check-added-large-files
+      - id: check-docstring-first
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+        exclude: docker-compose.test.yml
+      - id: detect-private-key
+      - id: debug-statements
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: no-commit-to-branch
+        args: [--branch, develop, --branch, dev, --branch, master, --branch, main]
+
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.40.0
+    hooks:
+      - id: typos
+        args: [--force-exclude]
 
   - repo: https://github.com/google/yamlfmt
     rev: v0.20.0
     hooks:
       - id: yamlfmt
+        name: YAML formatter
+        files: (^|/).*\.ya?ml$
+        args:
+          - "--conf"
+          - ".yamlfmt"
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.11.0
+    hooks:
+      - id: shellcheck
+        args: ["--severity=warning"]

@@ -9,9 +9,10 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from app.config.loader import load_postgres_settings
+from app.config.settings import PostgresSettings
 from app.infrastructure.persistence_sqla.mappings.all import map_tables
 from app.infrastructure.persistence_sqla.registry import mapper_registry
-from app.setup.config.settings import AppSettings, load_settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -33,9 +34,9 @@ target_metadata = mapper_registry.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-settings: AppSettings = load_settings()
+settings: PostgresSettings = load_postgres_settings()
 
-config.set_main_option("sqlalchemy.url", settings.postgres.dsn)
+config.set_main_option("sqlalchemy.url", settings.dsn)
 
 
 def run_migrations_offline() -> None:
