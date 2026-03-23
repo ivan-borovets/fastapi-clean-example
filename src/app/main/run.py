@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator, Callable
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 
-from dishka import AsyncContainer, Provider, make_async_container
+from dishka import Provider, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
@@ -44,31 +44,6 @@ def make_lifespan() -> Callable[[FastAPI], AbstractAsyncContextManager[None]]:
     return lifespan
 
 
-def make_ioc_container(
-    *di_providers: Provider,
-    app_settings: AppSettings,
-    postgres_settings: PostgresSettings,
-    sqla_settings: SqlaSettings,
-    password_hasher_settings: PasswordHasherSettings,
-    jwt_settings: JwtSettings,
-    session_settings: SessionSettings,
-    cookie_settings: CookieSettings,
-) -> AsyncContainer:
-    return make_async_container(
-        *get_providers(),
-        *di_providers,
-        context={
-            AppSettings: app_settings,
-            PostgresSettings: postgres_settings,
-            SqlaSettings: sqla_settings,
-            PasswordHasherSettings: password_hasher_settings,
-            JwtSettings: jwt_settings,
-            SessionSettings: session_settings,
-            CookieSettings: cookie_settings,
-        },
-    )
-
-
 def make_app(
     *di_providers: Provider,
     app_settings: AppSettings | None = None,
@@ -106,15 +81,18 @@ def make_app(
         lifespan=make_lifespan(),
         root_path=app_settings.ROOT_PATH.rstrip("/"),
     )
-    container = make_ioc_container(
+    container = make_async_container(
+        *get_providers(),
         *di_providers,
-        app_settings=app_settings,
-        postgres_settings=postgres_settings,
-        sqla_settings=sqla_settings,
-        password_hasher_settings=password_hasher_settings,
-        jwt_settings=jwt_settings,
-        session_settings=session_settings,
-        cookie_settings=cookie_settings,
+        context={
+            AppSettings: app_settings,
+            PostgresSettings: postgres_settings,
+            SqlaSettings: sqla_settings,
+            PasswordHasherSettings: password_hasher_settings,
+            JwtSettings: jwt_settings,
+            SessionSettings: session_settings,
+            CookieSettings: cookie_settings,
+        },
     )
     setup_dishka(container, app)
     setup_middlewares(app, cookie_settings)

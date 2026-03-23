@@ -7,9 +7,12 @@ MAKEFLAGS += --no-print-directory
 
 # -----------------------------
 # User-configurable variables (edit this)
+# INFRA_SERVICES: long-running infra (db, broker, cache, ...)
+# INFRA_INIT_SERVICES: one-shot services that prepare INFRA_SERVICES
 # -----------------------------
 PROJECT_NAME ?= $(notdir $(abspath .))
 INFRA_SERVICES ?= db_pg
+INFRA_INIT_SERVICES ?=
 
 # -----------------------------
 # Internal vars / aliases
@@ -117,10 +120,10 @@ up: docker-env
 	$(DOCKER_COMPOSE) up --build --force-recreate
 
 upd-local: local-env
-	$(DOCKER_COMPOSE) up -d --build --force-recreate $(INFRA_SERVICES)
+	$(DOCKER_COMPOSE) up -d --build --force-recreate $(INFRA_SERVICES) $(INFRA_INIT_SERVICES)
 
 up-local: local-env
-	$(DOCKER_COMPOSE) up --build --force-recreate $(INFRA_SERVICES)
+	$(DOCKER_COMPOSE) up --build --force-recreate $(INFRA_SERVICES) $(INFRA_INIT_SERVICES)
 
 down:
 	$(DOCKER_COMPOSE) down
@@ -135,6 +138,9 @@ test-docker: docker-env
 	$(DC_TEST_DOCKER) down -v --remove-orphans >/dev/null 2>&1 || true; \
 	if [ -n "$(strip $(INFRA_SERVICES))" ]; then \
 	  $(DC_TEST_DOCKER) up -d --build --wait --wait-timeout 180 $(INFRA_SERVICES); \
+	  if [ -n "$(strip $(INFRA_INIT_SERVICES))" ]; then \
+	    $(DC_TEST_DOCKER) up --build $(INFRA_INIT_SERVICES) >/dev/null; \
+	  fi; \
 	else \
 	  echo "INFRA_SERVICES is empty, skipping infra startup"; \
 	fi; \
