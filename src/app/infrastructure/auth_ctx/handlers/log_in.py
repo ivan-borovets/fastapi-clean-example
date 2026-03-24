@@ -2,7 +2,6 @@ import logging
 from dataclasses import dataclass
 from typing import Final
 
-from app.core.commands.exceptions import UserNotFoundError
 from app.core.common.authorization.current_user_service import CurrentUserService
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
@@ -15,7 +14,6 @@ from app.infrastructure.auth_ctx.service import AuthService
 from app.infrastructure.auth_ctx.sqla_user_tx_storage import AuthSqlaUserTxStorage
 
 AUTH_ACCOUNT_INACTIVE: Final[str] = "Your account is inactive. Please contact support."
-AUTH_PASSWORD_INVALID: Final[str] = "Invalid password."  # noqa: S105
 
 logger = logging.getLogger(__name__)
 
@@ -60,10 +58,10 @@ class LogIn:
         password = RawPassword(request.password)
         user = await self._user_tx_storage.get_by_username(username)
         if user is None:
-            raise UserNotFoundError
+            raise AuthenticationError
 
         if not await self._user_service.is_password_valid(user, password):
-            raise AuthenticationError(AUTH_PASSWORD_INVALID)
+            raise AuthenticationError
 
         if not user.is_active:
             raise AuthenticationError(AUTH_ACCOUNT_INACTIVE)

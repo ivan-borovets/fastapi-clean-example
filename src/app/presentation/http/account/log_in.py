@@ -5,7 +5,6 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 from fastapi_error_map import ErrorAwareRouter
 
-from app.core.commands.exceptions import UserNotFoundError
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.core.common.exceptions import BusinessTypeError
 from app.infrastructure.adapters.exceptions import PasswordHasherBusyError
@@ -26,7 +25,6 @@ def make_log_in_router() -> APIRouter:
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             AlreadyAuthenticatedError: status.HTTP_403_FORBIDDEN,
             BusinessTypeError: status.HTTP_400_BAD_REQUEST,
-            UserNotFoundError: status.HTTP_404_NOT_FOUND,
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
             PasswordHasherBusyError: HTTP_503_SERVICE_UNAVAILABLE_RULE,
         },
