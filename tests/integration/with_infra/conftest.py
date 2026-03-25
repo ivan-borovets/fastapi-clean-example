@@ -11,6 +11,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config.settings import AppSettings
+from app.core.common.services.user import UserService
 from app.infrastructure.persistence_sqla.registry import mapper_registry
 from app.main.run import make_app
 
@@ -93,3 +94,13 @@ async def it_session(
 ) -> AsyncIterator[AsyncSession]:
     async with it_sessionmaker() as session:
         yield session
+
+
+@pytest.fixture
+async def it_user_service(
+    it_client: httpx.AsyncClient,
+    it_fastapi_app: FastAPI,
+) -> UserService:
+    container = it_fastapi_app.state.dishka_container
+    user_service = await container.get(UserService)
+    return cast(UserService, user_service)

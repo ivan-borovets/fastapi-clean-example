@@ -74,7 +74,6 @@ class SetUserPassword:
                 target=user,
             ),
         )
-
         await self._user_service.change_password(
             user,
             password,
