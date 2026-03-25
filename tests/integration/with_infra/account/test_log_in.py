@@ -5,6 +5,7 @@ from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
 from tests.integration.with_infra.account.constants import AUTH_COOKIE_NAME, LOG_IN_ENDPOINT
+from tests.integration.with_infra.authentication import authenticate
 from tests.integration.with_infra.factories import (
     create_raw_password,
     create_raw_username,
@@ -88,3 +89,20 @@ async def test_returns_401_when_user_is_inactive(
     r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
 
     assert r.status_code == 401
+
+
+async def test_returns_403_when_already_authenticated(
+    it_client: httpx.AsyncClient,
+    it_session: AsyncSession,
+    it_user_service: UserService,
+) -> None:
+    password = create_raw_password()
+    user = await create_user_with_password(it_user_service, raw_password=password)
+    it_session.add(user)
+    await it_session.commit()
+    await authenticate(it_client, user.username.value, password)
+    payload = {"username": user.username.value, "password": password}
+
+    r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
+
+    assert r.status_code == 403

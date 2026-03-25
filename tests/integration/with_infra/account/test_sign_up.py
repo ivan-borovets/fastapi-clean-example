@@ -9,10 +9,12 @@ from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
 from app.infrastructure.persistence_sqla.mappings.user import users_table
 from tests.integration.with_infra.account.constants import SIGN_UP_ENDPOINT
+from tests.integration.with_infra.authentication import authenticate
 from tests.integration.with_infra.factories import (
     create_raw_password,
     create_raw_username,
     create_user,
+    create_user_with_password,
 )
 
 
@@ -71,3 +73,20 @@ async def test_returns_409_when_username_already_exists(
     stmt = select(func.count()).select_from(User)
     count = await it_session.scalar(stmt)
     assert count == 1
+
+
+async def test_returns_403_when_already_authenticated(
+    it_client: httpx.AsyncClient,
+    it_session: AsyncSession,
+    it_user_service: UserService,
+) -> None:
+    password = create_raw_password()
+    user = await create_user_with_password(it_user_service, raw_password=password)
+    it_session.add(user)
+    await it_session.commit()
+    await authenticate(it_client, user.username.value, password)
+    payload = {"username": create_raw_username(), "password": create_raw_password()}
+
+    r = await it_client.post(SIGN_UP_ENDPOINT, json=payload)
+
+    assert r.status_code == 403
