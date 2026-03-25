@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from app.core.common.entities.types_ import UserId, UserPasswordHash, UserRole
 from app.core.common.entities.user import User
 from app.core.common.services.user import UserService
+from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
 from app.core.common.value_objects.utc_datetime import UtcDatetime
 
@@ -48,6 +49,27 @@ def create_user(
         password_hash=UserPasswordHash(
             raw_password_hash if raw_password_hash is not None else create_raw_password_hash()
         ),
+        now=now,
+        role=role,
+        is_active=is_active,
+    )
+
+
+async def create_user_with_password(
+    user_service: UserService,
+    *,
+    raw_user_id: uuid.UUID | None = None,
+    raw_username: str | None = None,
+    raw_password: str | None = None,
+    role: UserRole = UserRole.USER,
+    is_active: bool = True,
+    raw_now: datetime | None = None,
+) -> User:
+    now = UtcDatetime(raw_now if raw_now is not None else create_raw_now())
+    return await user_service.create_user_with_raw_password(
+        user_id=UserId(raw_user_id if raw_user_id is not None else create_raw_user_id()),
+        username=Username(raw_username if raw_username is not None else create_raw_username()),
+        raw_password=RawPassword(raw_password if raw_password is not None else create_raw_password()),
         now=now,
         role=role,
         is_active=is_active,
