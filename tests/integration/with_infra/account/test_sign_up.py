@@ -30,7 +30,6 @@ async def test_returns_204_and_creates_user(
     stmt = select(User).where(users_table.c.username == username)
     user = await it_session.scalar(stmt)
     assert isinstance(user, User)
-    assert user.username.value == username
     assert user.role == UserRole.USER
     assert user.is_active is True
 

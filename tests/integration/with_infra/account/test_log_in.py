@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
-from tests.integration.with_infra.account.constants import LOG_IN_ENDPOINT
+from tests.integration.with_infra.account.constants import AUTH_COOKIE_NAME, LOG_IN_ENDPOINT
 from tests.integration.with_infra.factories import (
     create_raw_password,
     create_raw_username,
@@ -26,7 +26,7 @@ async def test_returns_204_and_sets_cookie(
     r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
 
     assert r.status_code == 204
-    assert "auth_token" in r.cookies
+    assert AUTH_COOKIE_NAME in r.cookies
 
 
 async def test_returns_400_when_username_is_too_short(
