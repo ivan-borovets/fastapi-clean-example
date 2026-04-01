@@ -29,7 +29,7 @@ uvicorn app.main.run:make_app --host 0.0.0.0 --port 8000 --reload
 ```
 Full API access:
 - create user via sign up
-- set its role to `SUPER_ADMIN` manually in DB
+- set its role to `super_admin` manually in DB
 - log in as super admin
 
 Stop

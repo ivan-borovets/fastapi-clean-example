@@ -74,3 +74,25 @@ async def create_user_with_password(
         role=role,
         is_active=is_active,
     )
+
+
+async def create_super_admin_with_password(
+    user_service: UserService,
+    *,
+    raw_user_id: uuid.UUID | None = None,
+    raw_username: str | None = None,
+    raw_password: str | None = None,
+    is_active: bool = True,
+    raw_now: datetime | None = None,
+) -> User:
+    """System role is not assignable via UserService; create as USER, then promote."""
+    user = await create_user_with_password(
+        user_service,
+        raw_user_id=raw_user_id,
+        raw_username=raw_username,
+        raw_password=raw_password,
+        is_active=is_active,
+        raw_now=raw_now,
+    )
+    user.role = UserRole.SUPER_ADMIN
+    return user

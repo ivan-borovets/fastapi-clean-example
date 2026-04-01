@@ -18,7 +18,7 @@ COPY pyproject.toml uv.lock README.md ./
 RUN if [ "${ENVIRONMENT}" = "prod" ]; then \
       uv sync --frozen --no-cache --no-dev --no-install-project; \
     else \
-      uv sync --frozen --dev --no-install-project; \
+      uv sync --frozen --no-cache --dev --no-install-project; \
     fi
 
 COPY . .
@@ -26,7 +26,7 @@ COPY . .
 RUN if [ "${ENVIRONMENT}" = "prod" ]; then \
       uv sync --frozen --no-cache --no-dev; \
     else \
-      uv sync --frozen --dev; \
+      uv sync --frozen --no-cache --dev; \
     fi
 
 RUN groupadd -r runner
