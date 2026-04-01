@@ -20,7 +20,7 @@ async def test_returns_204_and_grants_admin(
     it_super_admin: User,
     it_user_service: UserService,
 ) -> None:
-    target = create_user(it_user_service)
+    target = create_user(it_user_service, role=UserRole.USER)
     it_session.add(target)
     await it_session.commit()
 
