@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 from sqlalchemy import UUID, Boolean, Column, DateTime, Enum, LargeBinary, String, Table
 from sqlalchemy.orm import composite
 
@@ -6,6 +8,12 @@ from app.core.common.entities.user import User
 from app.core.common.value_objects.username import Username
 from app.core.common.value_objects.utc_datetime import UtcDatetime
 from app.infrastructure.persistence_sqla.registry import mapper_registry
+
+
+def get_strenum_values(enum_cls: type[StrEnum]) -> list[str]:
+    """Return member values instead of member names for SQLAlchemy Enum storage."""
+    return [e.value for e in enum_cls]
+
 
 users_table = Table(
     "users",
@@ -20,6 +28,7 @@ users_table = Table(
             name="user_role",
             native_enum=False,
             validate_strings=True,
+            values_callable=get_strenum_values,
         ),
         nullable=False,
     ),

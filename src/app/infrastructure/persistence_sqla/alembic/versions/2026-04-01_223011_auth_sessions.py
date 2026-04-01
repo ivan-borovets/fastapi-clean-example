@@ -1,8 +1,8 @@
 """auth_sessions
 
-Revision ID: 7b50faaefa7c
-Revises: c64b121a3428
-Create Date: 2026-03-02 23:06:28.995808
+Revision ID: c025baa8044e
+Revises: 0e6c649ac887
+Create Date: 2026-04-01 22:30:11.002095
 
 """
 
@@ -13,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "7b50faaefa7c"
-down_revision: Union[str, Sequence[str], None] = "c64b121a3428"
+revision: str = "c025baa8044e"
+down_revision: Union[str, Sequence[str], None] = "0e6c649ac887"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
