@@ -17,19 +17,6 @@ wheels = [
 ]
 
 [[package]]
-name = "alembic-postgresql-enum"
-version = "1.10.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "alembic" },
-    { name = "sqlalchemy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/63/cf/b5147b926441e7cdc12f306465dac488ff22364b1467a09a5d43743b8cfc/alembic_postgresql_enum-1.10.0.tar.gz", hash = "sha256:ea23481de3d6a00d68d369f92a46ff4fa27b2575e39c583145f1e23ea9c7511d", size = 18557, upload-time = "2026-02-23T16:15:04.148Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/8a/4db3821584824ac68df00a6ca27331d3f41f40105f22a8dc1b30b1ec83af/alembic_postgresql_enum-1.10.0-py3-none-any.whl", hash = "sha256:39297cb5dc0e71a3e08df1feeab9ffcc1b6aac0be02bf578748d74c442cd3fbf", size = 27774, upload-time = "2026-02-23T16:15:02.789Z" },
-]
-
-[[package]]
 name = "annotated-doc"
 version = "0.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -403,7 +390,6 @@ version = "0.2"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
-    { name = "alembic-postgresql-enum" },
     { name = "bcrypt" },
     { name = "dishka" },
     { name = "fastapi" },
@@ -438,7 +424,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = "==1.18.4" },
-    { name = "alembic-postgresql-enum", specifier = "==1.10.0" },
     { name = "bcrypt", specifier = "==5.0.0" },
     { name = "dishka", specifier = "==1.9.1" },
     { name = "fastapi", specifier = "==0.135.3" },
