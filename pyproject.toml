@@ -10,7 +10,6 @@ authors = [
 ]
 dependencies = [
   "alembic==1.18.4",
-  "alembic-postgresql-enum==1.10.0",
   "bcrypt==5.0.0",
   "dishka==1.9.1",
   "fastapi==0.135.3",
