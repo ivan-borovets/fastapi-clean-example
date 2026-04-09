@@ -1,6 +1,6 @@
 import pytest
 
-from app.config.loader import (
+from app.main.config.loader import (
     load_app_settings,
     load_cookie_settings,
     load_jwt_settings,
@@ -9,7 +9,7 @@ from app.config.loader import (
     load_session_settings,
     load_sqla_settings,
 )
-from app.config.logging_ import LoggingLevel
+from app.main.config.logging_ import LoggingLevel
 
 
 @pytest.mark.parametrize(

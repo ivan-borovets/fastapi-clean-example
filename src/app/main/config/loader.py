@@ -3,7 +3,7 @@ from typing import Final
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.config.settings import (
+from app.main.config.settings import (
     AppSettings,
     CookieSettings,
     JwtSettings,
@@ -13,7 +13,7 @@ from app.config.settings import (
     SqlaSettings,
 )
 
-BASE_DIR: Final[Path] = Path(__file__).resolve().parents[3]
+BASE_DIR: Final[Path] = Path(__file__).resolve().parents[4]
 _ENV_FILE: Final[Path] = BASE_DIR.joinpath(".env")
 _DEFAULT_CONFIG_DICT: Final[SettingsConfigDict] = SettingsConfigDict(
     env_file=_ENV_FILE,

@@ -16,8 +16,8 @@ from alembic.command import downgrade, upgrade
 from alembic.config import Config
 from alembic.script import Script, ScriptDirectory
 
-from app.config.loader import BASE_DIR, load_postgres_settings
-from app.config.settings import PostgresSettings
+from app.main.config.loader import BASE_DIR, load_postgres_settings
+from app.main.config.settings import PostgresSettings
 
 ALEMBIC_INI_PATH: Final[str] = str(BASE_DIR / "alembic.ini")
 

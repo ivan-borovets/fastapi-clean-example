@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import pytest
 
-from app.config.settings import SessionSettings
+from app.main.config.settings import SessionSettings
 
 
 @pytest.mark.parametrize(

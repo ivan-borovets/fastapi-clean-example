@@ -8,14 +8,6 @@ from dishka import Provider, Scope, from_context, provide
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from starlette.requests import Request
 
-from app.config.settings import (
-    CookieSettings,
-    JwtSettings,
-    PasswordHasherSettings,
-    PostgresSettings,
-    SessionSettings,
-    SqlaSettings,
-)
 from app.infrastructure.adapters.bcrypt_password_hasher import HasherSemaphore, HasherThreadPoolExecutor
 from app.infrastructure.auth_ctx.cookie_manager import CookieManager, CookieName
 from app.infrastructure.auth_ctx.handlers.change_password import ChangePassword
@@ -29,6 +21,14 @@ from app.infrastructure.auth_ctx.sqla_tx_storage import AuthSessionSqlaTxStorage
 from app.infrastructure.auth_ctx.sqla_user_tx_storage import AuthSqlaUserTxStorage
 from app.infrastructure.auth_ctx.types_ import AuthAsyncSession
 from app.infrastructure.auth_ctx.utc_timer import AuthSessionUtcTimer
+from app.main.config.settings import (
+    CookieSettings,
+    JwtSettings,
+    PasswordHasherSettings,
+    PostgresSettings,
+    SessionSettings,
+    SqlaSettings,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -68,7 +68,6 @@ relative_files = true
 source = ["src"]
 omit = [
   "**/__init__.py",
-  "src/app/config/logging_.py",
   "src/app/main/**",
   "**/health/**",
   "**/alembic/**",
@@ -97,14 +96,13 @@ type = "layers"
 containers = ["app"]
 layers = [
   "(main)",
-  "(config)",
   "presentation",
   "infrastructure",
   "core",
 ]
 ignore_imports = [
-  "app.infrastructure.persistence_sqla.alembic.env ->  app.config.loader",
-  "app.infrastructure.persistence_sqla.alembic.env ->  app.config.settings",
+  "app.infrastructure.persistence_sqla.alembic.env ->  app.main.config.loader",
+  "app.infrastructure.persistence_sqla.alembic.env ->  app.main.config.settings",
 ]
 
 [[tool.importlinter.contracts]]

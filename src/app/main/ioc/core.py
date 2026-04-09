@@ -1,6 +1,5 @@
 from dishka import Provider, Scope, provide
 
-from app.config.settings import PasswordHasherSettings
 from app.core.commands.activate_user import ActivateUser
 from app.core.commands.create_user import CreateUser
 from app.core.commands.deactivate_user import DeactivateUser
@@ -31,6 +30,7 @@ from app.infrastructure.adapters.sqla_transaction_manager import SqlaTransaction
 from app.infrastructure.adapters.sqla_user_reader import SqlaUserReader
 from app.infrastructure.adapters.sqla_user_tx_storage import SqlaUserTxStorage
 from app.infrastructure.adapters.system_utc_timer import SystemUtcTimer
+from app.main.config.settings import PasswordHasherSettings
 
 
 class CoreProvider(Provider):
