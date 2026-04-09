@@ -6,8 +6,8 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.config.loader import load_postgres_settings
-from app.config.settings import PostgresSettings
+from app.main.config.loader import load_postgres_settings
+from app.main.config.settings import PostgresSettings
 from app.infrastructure.persistence_sqla.mappings.all import map_tables
 from app.infrastructure.persistence_sqla.registry import mapper_registry
 

@@ -2,8 +2,8 @@ import logging
 
 from fastapi import FastAPI
 
-from app.config.logging_ import DATEFMT, FMT, LoggingLevel
-from app.config.settings import CookieSettings
+from app.main.config.logging_ import DATEFMT, FMT, LoggingLevel
+from app.main.config.settings import CookieSettings
 from app.presentation.http.auth_cookie_middleware import AuthCookieMiddleware
 
 logger = logging.getLogger(__name__)

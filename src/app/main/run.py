@@ -5,7 +5,8 @@ from dishka import Provider, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from app.config.loader import (
+from app.infrastructure.persistence_sqla.mappings.all import map_tables
+from app.main.config.loader import (
     load_app_settings,
     load_cookie_settings,
     load_jwt_settings,
@@ -14,7 +15,7 @@ from app.config.loader import (
     load_session_settings,
     load_sqla_settings,
 )
-from app.config.settings import (
+from app.main.config.settings import (
     AppSettings,
     CookieSettings,
     JwtSettings,
@@ -23,7 +24,6 @@ from app.config.settings import (
     SessionSettings,
     SqlaSettings,
 )
-from app.infrastructure.persistence_sqla.mappings.all import map_tables
 from app.main.ioc.provider_registry import get_providers
 from app.main.setup import setup_global_exception_handlers, setup_logging, setup_middlewares
 from app.presentation.http.root_router import make_fastapi_root_router
