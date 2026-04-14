@@ -3,6 +3,7 @@
 Stay tuned. Refactor in progress, see [`legacy-2025`](https://github.com/ivan-borovets/fastapi-clean-example/tree/legacy-2025) branch for architecture docs
 
 TODO:
+- [x] Write tests
 - [ ] Explain code and patterns in new README
 - [ ] Make template project
 
