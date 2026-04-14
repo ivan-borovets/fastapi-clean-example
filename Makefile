@@ -17,9 +17,14 @@ INFRA_INIT_SERVICES ?=
 # -----------------------------
 # Internal vars / aliases
 # -----------------------------
-PYTHON_BIN := python
 DOCKER_COMPOSE := docker compose -p $(PROJECT_NAME)
-DOCKER_COMPOSE_PRUNE := scripts/makefile/docker_prune.sh
+PIP_AUDIT := scripts/makefile/pip_audit.sh
+SLOTSCHECK := scripts/makefile/slotscheck.sh
+DOCKER_ENV := scripts/makefile/docker_env.sh
+LOCAL_ENV := scripts/makefile/local_env.sh
+DOCKER_PRUNE := scripts/makefile/docker_prune.sh
+PYCACHE_DEL := scripts/makefile/pycache_del.sh
+DISHKA_PLOT_DATA := scripts/dishka/plot_dependencies_data.py
 
 # Test stack is isolated by project name
 TEST_PROJECT ?= $(PROJECT_NAME)-test
@@ -52,17 +57,12 @@ PYTEST_ARGS_COV_DOCKER := \
 # Safety
 .PHONY: pip-audit
 pip-audit:
-	tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
-	uv -qq export --format pylock.toml -o "$$tmp/pylock.toml"; \
-	pip-audit --locked "$$tmp" \
-	|| echo "WARNING: pip-audit found vulnerabilities (non-blocking)" >&2
+	$(PIP_AUDIT)
 
 # Code quality
 .PHONY: slotscheck lint test check
 slotscheck:
-	slotscheck $(SLOTSCHECK_TARGET) 2>&1 | tee /dev/stderr \
-	| { grep -m1 "Failed to import" || true; } | cut -d"'" -f2 \
-	| xargs -r -n1 $(PYTHON_BIN) -c 'import importlib,sys; importlib.import_module(sys.argv[1])'
+	$(SLOTSCHECK) src
 
 lint:
 	ruff check --fix
@@ -70,7 +70,7 @@ lint:
 	tombi format
 	tombi lint
 	deptry
-	$(MAKE) slotscheck SLOTSCHECK_TARGET=src
+	$(MAKE) slotscheck
 	lint-imports
 	mypy
 
@@ -85,33 +85,10 @@ check: lint test
 # Docker compose
 .PHONY: docker-env local-env upd up upd-local up-local down stop-all
 docker-env:
-	{ \
-	  echo "# This .env file is generated automatically for DOCKER environment by Makefile."; \
-	  echo "# Do not edit it directly; edit env.example / .secrets and Makefile instead."; \
-	  echo; \
-	  cat env.example; \
-	  if [ -f .secrets ]; then \
-	    echo; \
-	    echo "# --- secrets from .secrets (not committed) ---"; \
-	    cat .secrets; \
-	  fi; \
-	} > .env
+	$(DOCKER_ENV)
 
 local-env:
-	{ \
-	  echo "# This .env file is generated automatically for LOCAL environment by Makefile."; \
-	  echo "# Do not edit it directly; edit env.example / .secrets and Makefile instead."; \
-	  echo; \
-	  sed \
-	    -e 's|^EXAMPLE_SERVICE_URL=.*|EXAMPLE_SERVICE_URL=http://127.0.0.1:51999|' \
-	    -e 's|^POSTGRES_HOST=.*|POSTGRES_HOST=127.0.0.1|' \
-	    env.example; \
-	  if [ -f .secrets ]; then \
-	    echo; \
-	    echo "# --- secrets from .secrets (not committed) ---"; \
-	    cat .secrets; \
-	  fi; \
-	} > .env
+	$(LOCAL_ENV)
 
 upd: docker-env
 	$(DOCKER_COMPOSE) up -d --build --force-recreate
@@ -158,18 +135,15 @@ test-docker: docker-env
 
 .PHONY: prune
 prune:
-	$(DOCKER_COMPOSE_PRUNE)
+	$(DOCKER_PRUNE)
 
 # Project structure visualization
 .PHONY: pycache-del tree plot-data
-PYCACHE_DEL := scripts/makefile/pycache_del.sh
-DISHKA_PLOT_DATA := scripts/dishka/plot_dependencies_data.py
-
 pycache-del:
-	@$(PYCACHE_DEL)
+	$(PYCACHE_DEL)
 
 tree: pycache-del
-	@tree
+	tree
 
 plot-data:
-	@$(PYTHON_BIN) $(DISHKA_PLOT_DATA)
+	APP_LOGGING_LEVEL=CRITICAL python $(DISHKA_PLOT_DATA)
