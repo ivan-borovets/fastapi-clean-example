@@ -5,7 +5,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
 
-from app.infrastructure.auth_ctx.cookie_manager import STAGED_COOKIE
+from app.outbound.auth_ctx.cookie_manager import STAGED_COOKIE
 
 
 class AuthCookieMiddleware(BaseHTTPMiddleware):

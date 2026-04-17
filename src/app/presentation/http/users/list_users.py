@@ -14,8 +14,8 @@ from app.core.queries.ports.user_reader import ListUsersQm
 from app.core.queries.query_support.exceptions import PaginationError
 from app.core.queries.query_support.offset_pagination import OffsetPaginationParams
 from app.core.queries.query_support.sorting import SortingOrder
-from app.infrastructure.auth_ctx.exceptions import AuthenticationError
-from app.infrastructure.exceptions import ReaderError, StorageError
+from app.outbound.auth_ctx.exceptions import AuthenticationError
+from app.outbound.exceptions import ReaderError, StorageError
 from app.presentation.http.errors.callbacks import log_info
 from app.presentation.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 

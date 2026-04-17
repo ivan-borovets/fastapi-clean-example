@@ -8,10 +8,10 @@ from fastapi_error_map import ErrorAwareRouter
 from app.core.commands.exceptions import UsernameAlreadyExistsError
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.core.common.exceptions import BusinessTypeError
-from app.infrastructure.adapters.exceptions import PasswordHasherBusyError
-from app.infrastructure.auth_ctx.exceptions import AlreadyAuthenticatedError
-from app.infrastructure.auth_ctx.handlers.sign_up import SignUp, SignUpRequest
-from app.infrastructure.exceptions import StorageError
+from app.outbound.adapters.exceptions import PasswordHasherBusyError
+from app.outbound.auth_ctx.exceptions import AlreadyAuthenticatedError
+from app.outbound.auth_ctx.handlers.sign_up import SignUp, SignUpRequest
+from app.outbound.exceptions import StorageError
 from app.presentation.http.errors.callbacks import log_info
 from app.presentation.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 

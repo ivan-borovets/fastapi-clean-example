@@ -7,9 +7,9 @@ from fastapi.security import APIKeyCookie
 from fastapi_error_map import ErrorAwareRouter
 
 from app.core.common.authorization.exceptions import AuthorizationError
-from app.infrastructure.auth_ctx.exceptions import AuthenticationError
-from app.infrastructure.auth_ctx.handlers.log_out import LogOut
-from app.infrastructure.exceptions import StorageError
+from app.outbound.auth_ctx.exceptions import AuthenticationError
+from app.outbound.auth_ctx.handlers.log_out import LogOut
+from app.outbound.exceptions import StorageError
 from app.presentation.http.errors.callbacks import log_info
 from app.presentation.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 
