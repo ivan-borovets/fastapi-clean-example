@@ -96,7 +96,7 @@ type = "layers"
 containers = ["app"]
 layers = [
   "(main)",
-  "presentation",
+  "inbound",
   "outbound",
   "core",
 ]

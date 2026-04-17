@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.presentation.http.account.router import make_account_router
-from app.presentation.http.users.router import make_users_router
+from app.inbound.http.account.router import make_account_router
+from app.inbound.http.users.router import make_users_router
 
 
 def make_v1_router(*, cookie_name: str) -> APIRouter:

@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from app.presentation.http.account.change_password import make_change_password_router
-from app.presentation.http.account.log_in import make_log_in_router
-from app.presentation.http.account.log_out import make_log_out_router
-from app.presentation.http.account.sign_up import make_sign_up_router
+from app.inbound.http.account.change_password import make_change_password_router
+from app.inbound.http.account.log_in import make_log_in_router
+from app.inbound.http.account.log_out import make_log_out_router
+from app.inbound.http.account.sign_up import make_sign_up_router
 
 
 def make_account_router(*, cookie_name: str) -> APIRouter:

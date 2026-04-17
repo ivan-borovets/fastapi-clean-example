@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from starlette.responses import RedirectResponse
 
-from app.presentation.http.api_v1_router import make_v1_router
-from app.presentation.http.health.router import make_health_router
+from app.inbound.http.api_v1_router import make_v1_router
+from app.inbound.http.health.router import make_health_router
 
 
 def make_fastapi_root_router(*, debug_mode: bool, cookie_name: str) -> APIRouter:

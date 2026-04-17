@@ -9,12 +9,12 @@ from pydantic import BaseModel, ConfigDict
 
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.core.common.exceptions import BusinessTypeError
+from app.inbound.http.errors.callbacks import log_info
+from app.inbound.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 from app.outbound.adapters.exceptions import PasswordHasherBusyError
 from app.outbound.auth_ctx.exceptions import AuthenticationChangeError, AuthenticationError, ReAuthenticationError
 from app.outbound.auth_ctx.handlers.change_password import ChangePassword, ChangePasswordRequest
 from app.outbound.exceptions import StorageError
-from app.presentation.http.errors.callbacks import log_info
-from app.presentation.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 
 
 class ChangePasswordRequestSchema(BaseModel):

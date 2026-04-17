@@ -3,7 +3,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.presentation.http.health.checks import db_check
+from app.inbound.http.health.checks import db_check
 
 
 class InternalServerError(Exception):

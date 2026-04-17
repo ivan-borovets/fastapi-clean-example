@@ -7,20 +7,20 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Path, status
 from fastapi_error_map import ErrorAwareRouter
 
+from app.core.commands.activate_user import ActivateUser, ActivateUserRequest
 from app.core.commands.exceptions import UserNotFoundError
-from app.core.commands.grant_admin import GrantAdmin, GrantAdminRequest
 from app.core.common.authorization.exceptions import AuthorizationError
+from app.inbound.http.errors.callbacks import log_info
+from app.inbound.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 from app.outbound.auth_ctx.exceptions import AuthenticationError
 from app.outbound.exceptions import StorageError
-from app.presentation.http.errors.callbacks import log_info
-from app.presentation.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 
 
-def make_grant_admin_router() -> APIRouter:
+def make_activate_user_router() -> APIRouter:
     router = ErrorAwareRouter()
 
     @router.put(
-        "/{user_id}/roles/admin/",
+        "/{user_id}/activation/",
         error_map={
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
             StorageError: HTTP_503_SERVICE_UNAVAILABLE_RULE,
@@ -29,14 +29,14 @@ def make_grant_admin_router() -> APIRouter:
         },
         default_on_error=log_info,
         status_code=status.HTTP_204_NO_CONTENT,
-        description=getdoc(GrantAdmin),
+        description=getdoc(ActivateUser),
     )
     @inject
-    async def grant_admin(
+    async def activate_user(
         user_id: Annotated[UUID, Path()],
-        interactor: FromDishka[GrantAdmin],
+        interactor: FromDishka[ActivateUser],
     ) -> None:
-        request = GrantAdminRequest(user_id)
+        request = ActivateUserRequest(user_id)
         await interactor.execute(request)
 
     return router
