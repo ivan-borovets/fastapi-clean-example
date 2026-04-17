@@ -96,13 +96,13 @@ type = "layers"
 containers = ["app"]
 layers = [
   "(main)",
-  "presentation",
-  "infrastructure",
+  "inbound",
+  "outbound",
   "core",
 ]
 ignore_imports = [
-  "app.infrastructure.persistence_sqla.alembic.env ->  app.main.config.loader",
-  "app.infrastructure.persistence_sqla.alembic.env ->  app.main.config.settings",
+  "app.outbound.persistence_sqla.alembic.env ->  app.main.config.loader",
+  "app.outbound.persistence_sqla.alembic.env ->  app.main.config.settings",
 ]
 
 [[tool.importlinter.contracts]]
@@ -137,8 +137,8 @@ forbidden_modules = ["app.core.commands"]
 id = "auth-ctx"
 name = "auth-ctx must use its own adapters"
 type = "forbidden"
-source_modules = ["app.infrastructure.auth_ctx"]
-forbidden_modules = ["app.infrastructure.adapters"]
+source_modules = ["app.outbound.auth_ctx"]
+forbidden_modules = ["app.outbound.adapters"]
 
 [tool.mypy]
 mypy_path = ["src"]
@@ -247,7 +247,7 @@ split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
 "scripts/dishka/plot_dependencies_data.py" = ["T201"]  # print
-"src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL"]
+"src/app/outbound/persistence_sqla/alembic/**" = ["ALL"]
 "tests/**" = [
   "ARG002",  # unused-method-argument
   "PLC2801",  # unnecessary-dunder-call
@@ -263,7 +263,7 @@ split-on-trailing-comma = true
 [tool.slotscheck]
 strict-imports = true
 exclude-modules = '''
-^app\.infrastructure\.persistence_sqla\.alembic
+^app\.outbound\.persistence_sqla\.alembic
 '''
 
 [tool.typos.files]

@@ -3,8 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, PostgresDsn
 
-from app.infrastructure.auth_ctx.jwt_types import JwtAlgorithm
 from app.main.config.logging_ import LoggingLevel
+from app.outbound.auth_ctx.jwt_types import JwtAlgorithm
 
 
 class AppSettings(BaseModel):

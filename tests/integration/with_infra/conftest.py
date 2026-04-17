@@ -11,9 +11,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.common.services.user import UserService
-from app.infrastructure.persistence_sqla.registry import mapper_registry
 from app.main.config.settings import AppSettings
 from app.main.run import make_app
+from app.outbound.persistence_sqla.registry import mapper_registry
 
 LIFESPAN_MANAGER_STARTUP_TIMEOUT_S: Final[int] = 30
 ALLOW_DESTRUCTIVE_TEST_CLEANUP: Final[str] = "ALLOW_DESTRUCTIVE_TEST_CLEANUP"

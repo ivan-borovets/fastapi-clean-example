@@ -7,7 +7,7 @@ from app.core.common.entities.user import User
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
-from app.infrastructure.persistence_sqla.mappings.user import users_table
+from app.outbound.persistence_sqla.mappings.user import users_table
 from tests.integration.with_infra.account.constants import SIGN_UP_ENDPOINT
 from tests.integration.with_infra.authentication import authenticate
 from tests.integration.with_infra.factories import (

@@ -18,19 +18,19 @@ from app.core.common.ports.password_hasher import PasswordHasher
 from app.core.common.services.user import UserService
 from app.core.queries.list_users import ListUsers
 from app.core.queries.ports.user_reader import UserReader
-from app.infrastructure.adapters.auth_session_access_revoker import AuthSessionAccessRevoker
-from app.infrastructure.adapters.auth_session_identity_provider import AuthSessionIdentityProvider
-from app.infrastructure.adapters.bcrypt_password_hasher import (
+from app.main.config.settings import PasswordHasherSettings
+from app.outbound.adapters.auth_session_access_revoker import AuthSessionAccessRevoker
+from app.outbound.adapters.auth_session_identity_provider import AuthSessionIdentityProvider
+from app.outbound.adapters.bcrypt_password_hasher import (
     BcryptPasswordHasher,
     HasherSemaphore,
     HasherThreadPoolExecutor,
 )
-from app.infrastructure.adapters.sqla_flusher import SqlaFlusher
-from app.infrastructure.adapters.sqla_transaction_manager import SqlaTransactionManager
-from app.infrastructure.adapters.sqla_user_reader import SqlaUserReader
-from app.infrastructure.adapters.sqla_user_tx_storage import SqlaUserTxStorage
-from app.infrastructure.adapters.system_utc_timer import SystemUtcTimer
-from app.main.config.settings import PasswordHasherSettings
+from app.outbound.adapters.sqla_flusher import SqlaFlusher
+from app.outbound.adapters.sqla_transaction_manager import SqlaTransactionManager
+from app.outbound.adapters.sqla_user_reader import SqlaUserReader
+from app.outbound.adapters.sqla_user_tx_storage import SqlaUserTxStorage
+from app.outbound.adapters.system_utc_timer import SystemUtcTimer
 
 
 class CoreProvider(Provider):
