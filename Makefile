@@ -65,7 +65,7 @@ pip-audit:
 	$(PIP_AUDIT)
 
 # Code quality
-.PHONY: slotscheck lint test check
+.PHONY: slotscheck lint test check check-ci
 slotscheck:
 	$(SLOTSCHECK) src
 
@@ -85,6 +85,20 @@ test:
 		$(PYTEST_ARGS_COV)
 
 check: lint test
+	coverage html
+
+check-ci:
+	ruff check
+	ruff format --check
+	tombi format --check
+	tombi lint
+	deptry
+	$(MAKE) slotscheck
+	lint-imports
+	mypy
+	pytest -v \
+		$(PYTEST_PATHS_LIGHT) \
+		$(PYTEST_ARGS_COV)
 	coverage html
 
 # Docker compose
