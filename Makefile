@@ -9,10 +9,14 @@ MAKEFLAGS += --no-print-directory
 # User-configurable variables (edit this)
 # INFRA_SERVICES: long-running infra (db, broker, cache, ...)
 # INFRA_INIT_SERVICES: one-shot services that prepare INFRA_SERVICES
+# MIGRATION_DB_SERVICE: transactional db service used by alembic (empty = no migrations)
+# STAIRWAY_TEST: path to stairway test (empty = skip stairway step)
 # -----------------------------
 PROJECT_NAME ?= $(notdir $(abspath .))
 INFRA_SERVICES ?= db_pg
 INFRA_INIT_SERVICES ?=
+MIGRATION_DB_SERVICE ?= db_pg
+STAIRWAY_TEST ?= tests/integration/with_infra/test_stairway.py
 
 # -----------------------------
 # Internal vars / aliases
@@ -24,6 +28,7 @@ DOCKER_ENV := scripts/makefile/docker_env.sh
 LOCAL_ENV := scripts/makefile/local_env.sh
 DOCKER_PRUNE := scripts/makefile/docker_prune.sh
 PYCACHE_DEL := scripts/makefile/pycache_del.sh
+MIGRATION := scripts/makefile/migration.sh
 DISHKA_PLOT_DATA := scripts/dishka/plot_dependencies_data.py
 
 # Test stack is isolated by project name
@@ -60,7 +65,7 @@ pip-audit:
 	$(PIP_AUDIT)
 
 # Code quality
-.PHONY: slotscheck lint test check
+.PHONY: slotscheck lint test check check-ci
 slotscheck:
 	$(SLOTSCHECK) src
 
@@ -80,6 +85,20 @@ test:
 		$(PYTEST_ARGS_COV)
 
 check: lint test
+	coverage html
+
+check-ci:
+	ruff check
+	ruff format --check
+	tombi format --check
+	tombi lint
+	deptry
+	$(MAKE) slotscheck
+	lint-imports
+	mypy
+	pytest -v \
+		$(PYTEST_PATHS_LIGHT) \
+		$(PYTEST_ARGS_COV)
 	coverage html
 
 # Docker compose
@@ -107,6 +126,14 @@ down:
 
 stop-all:
 	docker ps -q | xargs -r docker stop
+
+# Migrations
+.PHONY: migration
+migration: local-env
+	PROJECT_NAME=$(PROJECT_NAME) \
+	MIGRATION_DB_SERVICE=$(MIGRATION_DB_SERVICE) \
+	STAIRWAY_TEST=$(STAIRWAY_TEST) \
+	$(MIGRATION) "$(msg)"
 
 # Tests (with infra)
 .PHONY: test-docker

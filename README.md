@@ -46,6 +46,11 @@ Test (all paths)
 make test-docker
 ```
 
+Generate a migration
+```shell
+make migration msg=<msg>
+```
+
 See [Makefile](Makefile) for more commands
 
 Thanks for your patience and support

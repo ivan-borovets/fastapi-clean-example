@@ -22,7 +22,7 @@ jobs:
         run: uv sync --locked --group dev
 
       - name: Check code
-        run: uv run make check
+        run: uv run make check-ci
 
       - name: Test with Docker
         env:
