@@ -8,12 +8,12 @@ if [ "$#" -ne 1 ] || [ -z "$1" ]; then
 fi
 slug="$1"
 
-: "${PROJECT_NAME:?must be set in Makefile}"
+MIGRATION_PROJECT="$(basename "$PWD")-migration"
 : "${MIGRATION_DB_SERVICE:?must be set in Makefile (transactional db service for alembic)}"
 
-trap 'docker compose -p "$PROJECT_NAME" stop "$MIGRATION_DB_SERVICE" >/dev/null' EXIT
+trap 'docker compose -p "$MIGRATION_PROJECT" down -v --remove-orphans >/dev/null' EXIT
 
-docker compose -p "$PROJECT_NAME" up -d --build --wait --wait-timeout 180 "$MIGRATION_DB_SERVICE"
+docker compose -p "$MIGRATION_PROJECT" up -d --build --wait --wait-timeout 180 "$MIGRATION_DB_SERVICE"
 alembic upgrade head
 alembic revision --autogenerate -m "$slug"
 

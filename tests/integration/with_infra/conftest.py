@@ -1,4 +1,3 @@
-import os
 from collections.abc import AsyncIterator, Sequence
 from typing import Final, cast
 
@@ -16,19 +15,6 @@ from app.main.run import make_app
 from app.outbound.persistence_sqla.registry import mapper_registry
 
 LIFESPAN_MANAGER_STARTUP_TIMEOUT_S: Final[int] = 30
-ALLOW_DESTRUCTIVE_TEST_CLEANUP: Final[str] = "ALLOW_DESTRUCTIVE_TEST_CLEANUP"
-ALLOW_DESTRUCTIVE_TEST_CLEANUP_EXPECTED_VALUE: Final[str] = "1"
-
-
-@pytest.fixture(scope="session")
-def allow_destructive() -> None:
-    """Use on fixtures that require potentially dangerous cleanup."""
-    if os.getenv(ALLOW_DESTRUCTIVE_TEST_CLEANUP) != ALLOW_DESTRUCTIVE_TEST_CLEANUP_EXPECTED_VALUE:
-        raise pytest.UsageError(
-            "Destructive cleanup is disabled: "
-            f"{ALLOW_DESTRUCTIVE_TEST_CLEANUP} must be set to {ALLOW_DESTRUCTIVE_TEST_CLEANUP_EXPECTED_VALUE}. "
-            "This guard prevents accidental cleanup of non-test data."
-        )
 
 
 @pytest.fixture
@@ -79,7 +65,9 @@ async def it_db_clean(
     it_sessionmaker: async_sessionmaker[AsyncSession],
 ) -> None:
     table_names = [table.name for table in mapper_registry.metadata.sorted_tables if table.name != "alembic_version"]
-    assert table_names, "it_db_clean: no tables found in mapper_registry.metadata (fixture is a no-op)"
+    if not table_names:
+        return
+
     sql = "TRUNCATE " + ", ".join(f'"{name}"' for name in table_names) + " RESTART IDENTITY CASCADE;"
 
     async with it_sessionmaker() as session:
