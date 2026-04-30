@@ -16,7 +16,7 @@ PROJECT_NAME ?= $(notdir $(abspath .))
 INFRA_SERVICES ?= db_pg
 INFRA_INIT_SERVICES ?=
 MIGRATION_DB_SERVICE ?= db_pg
-STAIRWAY_TEST ?= tests/integration/with_infra/test_stairway.py
+STAIRWAY_TEST ?= tests/integration/migrations/test_stairway.py
 
 # -----------------------------
 # Internal vars / aliases
@@ -44,10 +44,12 @@ PYTEST_PATHS_LIGHT := \
 	tests/sanity \
 	tests/unit \
 	tests/integration/no_infra
-PYTEST_PATHS_ALL := \
+PYTEST_PATHS_APP_INFRA := \
 	$(PYTEST_PATHS_LIGHT) \
 	tests/smoke \
 	tests/integration/with_infra
+PYTEST_PATHS_MIGRATIONS := \
+	tests/integration/migrations
 
 # Pytest args
 PYTEST_ARGS_VERBOSE := -s -vv
@@ -130,14 +132,14 @@ stop-all:
 # Migrations
 .PHONY: migration
 migration: local-env
-	PROJECT_NAME=$(PROJECT_NAME) \
 	MIGRATION_DB_SERVICE=$(MIGRATION_DB_SERVICE) \
+	INFRA_INIT_SERVICES="$(INFRA_INIT_SERVICES)" \
 	STAIRWAY_TEST=$(STAIRWAY_TEST) \
 	$(MIGRATION) "$(msg)"
 
 # Tests (with infra)
-.PHONY: test-docker
-test-docker: docker-env
+.PHONY: test-docker test-docker-app test-docker-migrations
+test-docker-app: docker-env
 	rc=0; \
 	$(DC_TEST_DOCKER) down -v --remove-orphans >/dev/null 2>&1 || true; \
 	if [ -n "$(strip $(INFRA_SERVICES))" ]; then \
@@ -150,15 +152,35 @@ test-docker: docker-env
 	fi; \
 	$(DC_TEST_DOCKER) run --build --name $(TEST_RUNNER) app \
 		pytest $(PYTEST_ARGS_VERBOSE) \
-			$(PYTEST_PATHS_ALL) \
+			$(PYTEST_PATHS_APP_INFRA) \
 			$(PYTEST_ARGS_COV_DOCKER) \
 		|| rc=$$?; \
 	docker cp $(TEST_RUNNER):/tmp/.coverage ./.coverage.docker 2>/dev/null || true; \
 	docker rm $(TEST_RUNNER) >/dev/null 2>&1 || true; \
 	$(DC_TEST_DOCKER) down -v --remove-orphans; \
-	coverage html --data-file=.coverage.docker -d htmlcov-docker && \
-		echo "Coverage HTML report: htmlcov-docker/index.html" || true; \
 	exit $$rc
+
+test-docker-migrations: docker-env
+	if [ -z "$(strip $(PYTEST_PATHS_MIGRATIONS))" ] || [ -z "$(strip $(MIGRATION_DB_SERVICE))" ]; then \
+	  echo "PYTEST_PATHS_MIGRATIONS or MIGRATION_DB_SERVICE is empty, skipping migrations tests"; \
+	  exit 0; \
+	fi; \
+	rc=0; \
+	$(DC_TEST_DOCKER) down -v --remove-orphans >/dev/null 2>&1 || true; \
+	$(DC_TEST_DOCKER) up -d --build --wait --wait-timeout 180 $(MIGRATION_DB_SERVICE); \
+	$(DC_TEST_DOCKER) run --build --no-deps --name $(TEST_RUNNER) app \
+		pytest $(PYTEST_ARGS_VERBOSE) \
+			$(PYTEST_PATHS_MIGRATIONS) \
+		|| rc=$$?; \
+	docker rm $(TEST_RUNNER) >/dev/null 2>&1 || true; \
+	$(DC_TEST_DOCKER) down -v --remove-orphans; \
+	exit $$rc
+
+test-docker:
+	$(MAKE) test-docker-app
+	$(MAKE) test-docker-migrations
+	coverage html --data-file=.coverage.docker -d htmlcov-docker && \
+		echo "Coverage HTML report: htmlcov-docker/index.html" || true
 
 .PHONY: prune
 prune:
