@@ -11,34 +11,34 @@ authors = [
 dependencies = [
   "alembic==1.18.4",
   "bcrypt==5.0.0",
-  "dishka==1.9.1",
-  "fastapi==0.135.3",
+  "dishka==1.10.1",
+  "fastapi==0.136.1",
   "fastapi-error-map==0.9.10",
-  "psycopg[binary]==3.3.3",
-  "pydantic-settings==2.13.1",
+  "psycopg[binary]==3.3.4",
+  "pydantic-settings==2.14.1",
   "pyjwt[crypto]==2.12.1",
-  "sqlalchemy[mypy]==2.0.48",
-  "uuid-utils==0.14.1",
-  "uvicorn==0.42.0",
+  "sqlalchemy[mypy]==2.0.49",
+  "uuid-utils==0.15.0",
+  "uvicorn==0.46.0",
 ]
 
 [dependency-groups]
 dev = [
   "asgi-lifespan==2.1.0",
-  "coverage==7.13.5",
+  "coverage==7.14.0",
   "deptry==0.25.1",
   "httpx==0.28.1",
   "import-linter==2.11",
   "line-profiler==5.0.2",
-  "mypy==1.20.0",
+  "mypy==2.1.0",
   "pip-audit==2.10.0",
-  "pre-commit==4.5.1",
-  "pytest==9.0.2",
+  "pre-commit==4.6.0",
+  "pytest==9.0.3",
   "pytest-asyncio==1.3.0",
   "pytest-cov==7.1.0",
-  "ruff==0.15.8",
+  "ruff==0.15.12",
   "slotscheck==0.19.1",
-  "tombi==0.9.13",
+  "tombi==0.11.3",
 ]
 
 [build-system]
@@ -157,6 +157,12 @@ strict_optional = true
 no_implicit_optional = true
 warn_no_return = true
 warn_unreachable = true
+enable_error_code = [
+  "redundant-expr",
+  "truthy-bool",
+  "unused-awaitable",
+  "ignore-without-code",
+]
 plugins = [
   "pydantic.mypy",
   "sqlalchemy.ext.mypy.plugin",
