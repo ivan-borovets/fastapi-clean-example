@@ -207,19 +207,20 @@ select = [
   "FLY",  # flynt
   "FURB",  # refurb
   "G",  # flake8-logging-format
+  "INP",  # flake8-no-pep420
   "I",  # isort
   "INT",  # flake8-gettext
   "ISC",  # flake8-implicit-str-concat
   "LOG",  # flake8-logging
   "N",  # pep8-naming
   "PERF",  # Perflint
-  "PL",  # pylint
+  "PLC",  # Pylint (convention)
   "PLE",  # Pylint (error)
   "PLR5501",  # Pylint Refactor: collapsible-else-if
   "PT",  # flake8-pytest-style
   "PTH",  # flake8-use-pathlib
   "Q",  # flake8-quotes
-  "RSE",  # flake8-raise (RSE)
+  "RSE",  # flake8-raise
   "RUF",  # Ruff-specific rules
   "S",  # flake8-bandit
   "SIM",  # flake8-simplify
@@ -246,12 +247,16 @@ ignore = [
   "TC006",  # runtime-cast-value
 ]
 
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"typing.TYPE_CHECKING".msg = "TYPE_CHECKING is banned: keep imports at module level; resolve cycles by refactoring."
+
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-wrap-aliases = true
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
+"scripts/**" = ["INP001"]  # runnable scripts, not an importable package
 "scripts/dishka/plot_dependencies_data.py" = ["T201"]  # print
 "src/app/outbound/persistence_sqla/alembic/**" = ["ALL"]
 "tests/**" = [
@@ -274,3 +279,6 @@ exclude-modules = '''
 
 [tool.typos.files]
 extend-exclude = []
+
+[tool.uv]
+default-groups = ["dev"]

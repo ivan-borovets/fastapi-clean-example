@@ -14,9 +14,9 @@ MIGRATION_PROJECT="$(basename "$PWD")-migration"
 trap 'docker compose -p "$MIGRATION_PROJECT" down -v --remove-orphans >/dev/null' EXIT
 
 docker compose -p "$MIGRATION_PROJECT" up -d --build --wait --wait-timeout 180 "$MIGRATION_DB_SERVICE"
-alembic upgrade head
-alembic revision --autogenerate -m "$slug"
+uv run alembic upgrade head
+uv run alembic revision --autogenerate -m "$slug"
 
 if [ -n "${STAIRWAY_TEST:-}" ]; then
-  ALLOW_DESTRUCTIVE_TEST_CLEANUP=1 pytest -s -vv "$STAIRWAY_TEST"
+  ALLOW_DESTRUCTIVE_TEST_CLEANUP=1 uv run pytest -s -vv "$STAIRWAY_TEST"
 fi

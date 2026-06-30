@@ -3,8 +3,8 @@ from enum import StrEnum
 
 
 class SortingOrder(StrEnum):
-    ASC = "ASC"
-    DESC = "DESC"
+    ASC = "asc"
+    DESC = "desc"
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

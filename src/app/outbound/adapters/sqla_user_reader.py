@@ -23,7 +23,7 @@ class SqlaUserReader(UserReader):
     ) -> ListUsersQm:
         sorting_column = users_table.c.get(sorting.field)
         if sorting_column is None:
-            raise SortingError(f"Invalid sorting field: '{sorting.field}'")
+            raise SortingError("Invalid sorting field")
         order_by_expression = sorting_column.asc() if sorting.order == SortingOrder.ASC else sorting_column.desc()
         secondary_order_by = users_table.c.id.asc() if sorting.order == SortingOrder.ASC else users_table.c.id.desc()
         stmt = (

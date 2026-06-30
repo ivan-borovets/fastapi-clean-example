@@ -112,7 +112,7 @@ async def test_returns_200_and_sorts_by_username_asc(
     await it_session.commit()
     await authenticate(it_client, admin.username.value, admin_password)
 
-    r = await it_client.get(USERS_ENDPOINT, params={"sorting_field": "username", "sorting_order": "ASC"})
+    r = await it_client.get(USERS_ENDPOINT, params={"sorting_field": "username", "sorting_order": "asc"})
 
     assert r.status_code == 200
     payload = r.json()
