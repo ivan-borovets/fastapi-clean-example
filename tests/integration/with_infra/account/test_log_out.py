@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.common.services.user import UserService
@@ -8,7 +8,7 @@ from tests.integration.with_infra.factories import create_raw_password, create_u
 
 
 async def test_returns_204_and_clears_cookie(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -25,7 +25,7 @@ async def test_returns_204_and_clears_cookie(
 
 
 async def test_returns_401_when_not_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     r = await it_client.delete(LOG_OUT_ENDPOINT)
 

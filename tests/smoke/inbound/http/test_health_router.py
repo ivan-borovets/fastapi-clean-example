@@ -1,16 +1,16 @@
-import httpx
+import httpx2
 import pytest
 from fastapi import FastAPI, status
 
 
-async def test_liveness_probe(smoke_client: httpx.AsyncClient) -> None:
+async def test_liveness_probe(smoke_client: httpx2.AsyncClient) -> None:
     r = await smoke_client.get("/livez/")
 
     assert r.status_code == status.HTTP_200_OK
     assert r.json() == "OK"
 
 
-async def test_readiness_probe(smoke_client: httpx.AsyncClient) -> None:
+async def test_readiness_probe(smoke_client: httpx2.AsyncClient) -> None:
     r = await smoke_client.get("/healthz/")
 
     assert r.status_code == status.HTTP_200_OK
@@ -18,7 +18,7 @@ async def test_readiness_probe(smoke_client: httpx.AsyncClient) -> None:
 
 
 async def test_error_handling_prod_contract(
-    smoke_client: httpx.AsyncClient,
+    smoke_client: httpx2.AsyncClient,
     smoke_app: FastAPI,
 ) -> None:
     if smoke_app.debug:

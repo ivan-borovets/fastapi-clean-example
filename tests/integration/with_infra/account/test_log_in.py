@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.common.services.user import UserService
@@ -14,7 +14,7 @@ from tests.integration.with_infra.factories import (
 
 
 async def test_returns_204_and_sets_cookie(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -31,7 +31,7 @@ async def test_returns_204_and_sets_cookie(
 
 
 async def test_returns_400_when_username_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": "x" * (Username.MIN_LEN - 1), "password": create_raw_password()}
 
@@ -41,7 +41,7 @@ async def test_returns_400_when_username_is_too_short(
 
 
 async def test_returns_400_when_password_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": create_raw_username(), "password": "x" * (RawPassword.MIN_LEN - 1)}
 
@@ -51,7 +51,7 @@ async def test_returns_400_when_password_is_too_short(
 
 
 async def test_returns_401_when_user_does_not_exist(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": create_raw_username(), "password": create_raw_password()}
 
@@ -61,7 +61,7 @@ async def test_returns_401_when_user_does_not_exist(
 
 
 async def test_returns_401_when_password_is_wrong(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -76,7 +76,7 @@ async def test_returns_401_when_password_is_wrong(
 
 
 async def test_returns_401_when_user_is_inactive(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -92,7 +92,7 @@ async def test_returns_401_when_user_is_inactive(
 
 
 async def test_returns_403_when_already_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:

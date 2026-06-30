@@ -1,6 +1,6 @@
 from collections.abc import AsyncIterator
 
-import httpx
+import httpx2
 import pytest
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
@@ -14,11 +14,11 @@ def smoke_app() -> FastAPI:
 
 
 @pytest.fixture
-async def smoke_client(smoke_app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
+async def smoke_client(smoke_app: FastAPI) -> AsyncIterator[httpx2.AsyncClient]:
     async with (
         LifespanManager(smoke_app, startup_timeout=60) as manager,
-        httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=manager.app),
+        httpx2.AsyncClient(
+            transport=httpx2.ASGITransport(app=manager.app),
             base_url="http://test",
         ) as client,
     ):

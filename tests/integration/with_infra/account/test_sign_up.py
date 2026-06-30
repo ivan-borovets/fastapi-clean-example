@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +19,7 @@ from tests.integration.with_infra.factories import (
 
 
 async def test_returns_204_and_creates_user(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
 ) -> None:
     username = create_raw_username()
@@ -37,7 +37,7 @@ async def test_returns_204_and_creates_user(
 
 
 async def test_returns_400_when_username_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": "x" * (Username.MIN_LEN - 1), "password": create_raw_password()}
 
@@ -47,7 +47,7 @@ async def test_returns_400_when_username_is_too_short(
 
 
 async def test_returns_400_when_password_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": create_raw_username(), "password": "x" * (RawPassword.MIN_LEN - 1)}
 
@@ -57,7 +57,7 @@ async def test_returns_400_when_password_is_too_short(
 
 
 async def test_returns_409_when_username_already_exists(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -76,7 +76,7 @@ async def test_returns_409_when_username_already_exists(
 
 
 async def test_returns_403_when_already_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:

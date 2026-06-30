@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,7 +18,7 @@ from tests.integration.with_infra.users.constants import USERS_ENDPOINT
 
 
 async def test_returns_201_and_creates_user(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
 ) -> None:
@@ -38,7 +38,7 @@ async def test_returns_201_and_creates_user(
 
 
 async def test_returns_201_and_super_admin_creates_admin(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_super_admin: User,
 ) -> None:
@@ -55,7 +55,7 @@ async def test_returns_201_and_super_admin_creates_admin(
 
 
 async def test_returns_400_when_username_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_admin: User,
 ) -> None:
     payload = {"username": "x" * (Username.MIN_LEN - 1), "password": create_raw_password(), "role": "user"}
@@ -66,7 +66,7 @@ async def test_returns_400_when_username_is_too_short(
 
 
 async def test_returns_400_when_password_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_admin: User,
 ) -> None:
     payload = {"username": create_raw_username(), "password": "x" * (RawPassword.MIN_LEN - 1), "role": "user"}
@@ -77,7 +77,7 @@ async def test_returns_400_when_password_is_too_short(
 
 
 async def test_returns_401_when_not_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": create_raw_username(), "password": create_raw_password(), "role": "user"}
 
@@ -87,7 +87,7 @@ async def test_returns_401_when_not_authenticated(
 
 
 async def test_returns_403_when_user_role(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -104,7 +104,7 @@ async def test_returns_403_when_user_role(
 
 
 async def test_returns_403_when_admin_creates_admin(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_admin: User,
 ) -> None:
     payload = {"username": create_raw_username(), "password": create_raw_password(), "role": "admin"}
@@ -115,7 +115,7 @@ async def test_returns_403_when_admin_creates_admin(
 
 
 async def test_returns_409_when_username_already_exists(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
     it_user_service: UserService,

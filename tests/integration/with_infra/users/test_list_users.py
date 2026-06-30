@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-import httpx
+import httpx2
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.common.entities.types_ import UserRole
@@ -17,7 +17,7 @@ from tests.integration.with_infra.users.constants import USERS_ENDPOINT
 
 
 async def test_returns_200_and_lists_single_user(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_admin: User,
 ) -> None:
     r = await it_client.get(USERS_ENDPOINT)
@@ -33,7 +33,7 @@ async def test_returns_200_and_lists_single_user(
 
 
 async def test_returns_200_and_lists_multiple_users(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
     it_user_service: UserService,
@@ -52,7 +52,7 @@ async def test_returns_200_and_lists_multiple_users(
 
 
 async def test_returns_200_and_respects_pagination_params(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
     it_user_service: UserService,
@@ -72,7 +72,7 @@ async def test_returns_200_and_respects_pagination_params(
 
 
 async def test_returns_200_and_sorts_by_updated_at_desc(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -98,7 +98,7 @@ async def test_returns_200_and_sorts_by_updated_at_desc(
 
 
 async def test_returns_200_and_sorts_by_username_asc(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -123,7 +123,7 @@ async def test_returns_200_and_sorts_by_username_asc(
 
 
 async def test_returns_401_when_not_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     r = await it_client.get(USERS_ENDPOINT)
 
@@ -131,7 +131,7 @@ async def test_returns_401_when_not_authenticated(
 
 
 async def test_returns_403_when_user_role(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:

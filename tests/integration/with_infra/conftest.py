@@ -2,7 +2,7 @@ from collections.abc import AsyncIterator, Sequence
 from typing import Final, cast
 
 import asgi_lifespan
-import httpx
+import httpx2
 import pytest
 from dishka import Provider
 from fastapi import FastAPI
@@ -35,14 +35,14 @@ def it_fastapi_app(it_di_overrides: Sequence[Provider]) -> FastAPI:
 
 
 @pytest.fixture
-async def it_client(it_fastapi_app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
+async def it_client(it_fastapi_app: FastAPI) -> AsyncIterator[httpx2.AsyncClient]:
     async with (
         asgi_lifespan.LifespanManager(
             it_fastapi_app,
             startup_timeout=LIFESPAN_MANAGER_STARTUP_TIMEOUT_S,
         ),
-        httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=it_fastapi_app),
+        httpx2.AsyncClient(
+            transport=httpx2.ASGITransport(app=it_fastapi_app),
             base_url="http://test",
         ) as client,
     ):
@@ -51,7 +51,7 @@ async def it_client(it_fastapi_app: FastAPI) -> AsyncIterator[httpx.AsyncClient]
 
 @pytest.fixture
 async def it_sessionmaker(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_fastapi_app: FastAPI,
 ) -> async_sessionmaker[AsyncSession]:
     container = it_fastapi_app.state.dishka_container
@@ -86,7 +86,7 @@ async def it_session(
 
 @pytest.fixture
 async def it_user_service(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_fastapi_app: FastAPI,
 ) -> UserService:
     container = it_fastapi_app.state.dishka_container

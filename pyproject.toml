@@ -27,7 +27,7 @@ dev = [
   "asgi-lifespan==2.1.0",
   "coverage==7.14.0",
   "deptry==0.25.1",
-  "httpx==0.28.1",
+  "httpx2==2.5.0",
   "import-linter==2.11",
   "line-profiler==5.0.2",
   "mypy==2.1.0",
