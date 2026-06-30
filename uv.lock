@@ -450,7 +450,7 @@ requires-dist = [
     { name = "bcrypt", specifier = "==5.0.0" },
     { name = "dishka", specifier = "==1.10.1" },
     { name = "fastapi", specifier = "==0.136.1" },
-    { name = "fastapi-error-map", specifier = "==0.9.10" },
+    { name = "fastapi-error-map", specifier = "==1.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.4" },
     { name = "pydantic-settings", specifier = "==2.14.1" },
     { name = "pyjwt", extras = ["crypto"], specifier = "==2.12.1" },
@@ -480,15 +480,15 @@ dev = [
 
 [[package]]
 name = "fastapi-error-map"
-version = "0.9.10"
+version = "1.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
-    { name = "packaging" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/64/a48e0da4a9f07ac4893335f64e2ceccb44baeb3e296095f9f8d572d993b6/fastapi_error_map-0.9.10.tar.gz", hash = "sha256:38a62f48981515e5e861691d70c06675bb021e1c5be347d03518b09699d27ad4", size = 381321, upload-time = "2026-02-24T15:58:07.37Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2d/b7/275fdf248a4bd67f66c77200f5db039d6073b319f7724db7444afa68f593/fastapi_error_map-1.0.0.tar.gz", hash = "sha256:7799954314684b7106e326d7a0c2c2ba362fdfea0ddff7ec3e089dc10946744f", size = 337739, upload-time = "2026-06-24T00:15:33.698Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/1e/a4406d8f5dcf900be04bd4a0410d37487f5a1c1de6ba9a1c258e28414e32/fastapi_error_map-0.9.10-py3-none-any.whl", hash = "sha256:5bf727bf7de3a4aabdcb5107e29281b812060c6c198a16264e7fee20aa3c4c89", size = 21422, upload-time = "2026-02-24T15:58:06.315Z" },
+    { url = "https://files.pythonhosted.org/packages/44/4f/071b43fc51580ed22e6cbf4f77a171be2d5866812c36e0bb007dcd4bbf4e/fastapi_error_map-1.0.0-py3-none-any.whl", hash = "sha256:bf8e2d6c8c43c1db96b28bc5eb34431576c176a2c35754c659fe88e17f26d7fe", size = 25572, upload-time = "2026-06-24T00:15:32.463Z" },
 ]
 
 [[package]]

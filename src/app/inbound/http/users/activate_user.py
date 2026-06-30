@@ -5,19 +5,19 @@ from uuid import UUID
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Path, status
-from fastapi_error_map import ErrorAwareRouter
 
 from app.core.commands.activate_user import ActivateUser, ActivateUserRequest
 from app.core.commands.exceptions import UserNotFoundError
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.inbound.http.errors.callbacks import log_info
+from app.inbound.http.errors.router import make_error_aware_router
 from app.inbound.http.errors.rules import HTTP_503_SERVICE_UNAVAILABLE_RULE
 from app.outbound.auth_ctx.exceptions import AuthenticationError
 from app.outbound.exceptions import StorageError
 
 
 def make_activate_user_router() -> APIRouter:
-    router = ErrorAwareRouter()
+    router = make_error_aware_router(on_error=log_info)
 
     @router.put(
         "/{user_id}/activation/",
@@ -27,7 +27,6 @@ def make_activate_user_router() -> APIRouter:
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             UserNotFoundError: status.HTTP_404_NOT_FOUND,
         },
-        default_on_error=log_info,
         status_code=status.HTTP_204_NO_CONTENT,
         description=getdoc(ActivateUser),
     )

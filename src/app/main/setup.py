@@ -1,8 +1,12 @@
 import logging
 
 from fastapi import FastAPI
+from starlette import status
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from app.inbound.http.auth_cookie_middleware import AuthCookieMiddleware
+from app.inbound.http.errors.internal_server_error import internal_server_error
 from app.main.config.logging_ import DATEFMT, FMT, LoggingLevel
 from app.main.config.settings import CookieSettings
 
@@ -31,6 +35,13 @@ def setup_middlewares(app: FastAPI, cookie_settings: CookieSettings) -> None:
     logger.info("Middlewares are set up")
 
 
-def setup_global_exception_handlers(_app: FastAPI) -> None:
-    # A place to register global exception handlers
+def setup_global_exception_handlers(app: FastAPI) -> None:
+    @app.exception_handler(Exception)
+    async def handle_unexpected(_request: Request, exc: Exception) -> JSONResponse:
+        logger.exception("Unhandled exception")
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=internal_server_error(exc),
+        )
+
     logger.info("Global exception handlers are set up")

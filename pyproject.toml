@@ -13,7 +13,7 @@ dependencies = [
   "bcrypt==5.0.0",
   "dishka==1.10.1",
   "fastapi==0.136.1",
-  "fastapi-error-map==0.9.10",
+  "fastapi-error-map==1.0.0",
   "psycopg[binary]==3.3.4",
   "pydantic-settings==2.14.1",
   "pyjwt[crypto]==2.12.1",
@@ -256,8 +256,10 @@ force-wrap-aliases = true
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
-"scripts/**" = ["INP001"]  # runnable scripts, not an importable package
-"scripts/dishka/plot_dependencies_data.py" = ["T201"]  # print
+"scripts/**" = [
+  "INP001",  # runnable scripts, not an importable package
+  "T20",  # print is legitimate output here
+]
 "src/app/outbound/persistence_sqla/alembic/**" = ["ALL"]
 "tests/**" = [
   "ARG002",  # unused-method-argument
