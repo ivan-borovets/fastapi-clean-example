@@ -72,36 +72,34 @@ slotscheck:
 	$(SLOTSCHECK) src
 
 lint:
-	ruff check --fix
-	ruff format
-	tombi format
-	tombi lint
-	deptry
+	uv run ruff check --fix
+	uv run ruff format
+	uv run tombi format
+	uv run tombi lint
+	uv run deptry
 	$(MAKE) slotscheck
-	lint-imports
-	mypy
+	uv run lint-imports
+	uv run mypy
 
 test:
-	pytest -v \
+	uv run pytest -v \
 		$(PYTEST_PATHS_LIGHT) \
 		$(PYTEST_ARGS_COV)
 
 check: lint test
-	coverage html
+	uv run coverage html
 
 check-ci:
-	ruff check
-	ruff format --check
-	tombi format --check
-	tombi lint
-	deptry
+	uv run ruff check
+	uv run ruff format --check
+	uv run tombi format --check
+	uv run tombi lint
+	uv run deptry
 	$(MAKE) slotscheck
-	lint-imports
-	mypy
-	pytest -v \
-		$(PYTEST_PATHS_LIGHT) \
-		$(PYTEST_ARGS_COV)
-	coverage html
+	uv run lint-imports
+	uv run mypy
+	$(MAKE) test
+	uv run coverage html
 
 # Docker compose
 .PHONY: docker-env local-env upd up upd-local up-local down stop-all
@@ -128,6 +126,10 @@ down:
 
 stop-all:
 	docker ps -q | xargs -r docker stop
+
+.PHONY: prune
+prune:
+	$(DOCKER_PRUNE)
 
 # Migrations
 .PHONY: migration
@@ -179,12 +181,8 @@ test-docker-migrations: docker-env
 test-docker:
 	$(MAKE) test-docker-app
 	$(MAKE) test-docker-migrations
-	coverage html --data-file=.coverage.docker -d htmlcov-docker && \
+	uv run coverage html --data-file=.coverage.docker -d htmlcov-docker && \
 		echo "Coverage HTML report: htmlcov-docker/index.html" || true
-
-.PHONY: prune
-prune:
-	$(DOCKER_PRUNE)
 
 # Project structure visualization
 .PHONY: pycache-del tree plot-data
@@ -195,4 +193,4 @@ tree: pycache-del
 	tree
 
 plot-data:
-	APP_LOGGING_LEVEL=CRITICAL python $(DISHKA_PLOT_DATA)
+	APP_LOGGING_LEVEL=CRITICAL uv run python $(DISHKA_PLOT_DATA)

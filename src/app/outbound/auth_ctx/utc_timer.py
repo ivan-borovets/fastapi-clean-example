@@ -22,7 +22,7 @@ class AuthSessionUtcTimer:
         return UtcDatetime(self.now.value + self._ttl)
 
     def is_expired(self, session: AuthSession) -> bool:
-        return session.expiration.value <= self.now.value
+        return session.expiration <= self.now
 
     def needs_refresh(self, session: AuthSession) -> bool:
         remaining = session.expiration.value - self.now.value

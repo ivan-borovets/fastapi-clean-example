@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.common.entities.types_ import UserRole
@@ -16,7 +16,7 @@ from tests.integration.with_infra.users.constants import USERS_ENDPOINT
 
 
 async def test_returns_204_and_sets_password(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
     it_user_service: UserService,
@@ -35,7 +35,7 @@ async def test_returns_204_and_sets_password(
 
 
 async def test_returns_400_when_password_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
     it_user_service: UserService,
@@ -51,7 +51,7 @@ async def test_returns_400_when_password_is_too_short(
 
 
 async def test_returns_401_when_not_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"password": create_raw_password()}
 
@@ -61,7 +61,7 @@ async def test_returns_401_when_not_authenticated(
 
 
 async def test_returns_403_when_user_role(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -79,7 +79,7 @@ async def test_returns_403_when_user_role(
 
 
 async def test_returns_403_when_admin_targets_admin(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_admin: User,
     it_user_service: UserService,
@@ -95,7 +95,7 @@ async def test_returns_403_when_admin_targets_admin(
 
 
 async def test_returns_404_when_user_not_found(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_admin: User,
 ) -> None:
     payload = {"password": create_raw_password()}

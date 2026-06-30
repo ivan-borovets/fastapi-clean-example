@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.common.services.user import UserService
@@ -9,7 +9,7 @@ from tests.integration.with_infra.factories import create_raw_password, create_u
 
 
 async def test_returns_204_and_changes_password(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -29,7 +29,7 @@ async def test_returns_204_and_changes_password(
 
 
 async def test_returns_400_when_new_password_is_too_short(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -46,7 +46,7 @@ async def test_returns_400_when_new_password_is_too_short(
 
 
 async def test_returns_400_when_new_password_equals_current(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:
@@ -63,7 +63,7 @@ async def test_returns_400_when_new_password_equals_current(
 
 
 async def test_returns_401_when_not_authenticated(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"current_password": create_raw_password(), "new_password": create_raw_password()}
 
@@ -73,7 +73,7 @@ async def test_returns_401_when_not_authenticated(
 
 
 async def test_returns_403_when_current_password_is_wrong(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> None:

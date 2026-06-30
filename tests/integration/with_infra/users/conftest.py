@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +15,7 @@ from tests.integration.with_infra.factories import (
 
 @pytest.fixture
 async def it_admin(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> User:
@@ -29,7 +29,7 @@ async def it_admin(
 
 @pytest.fixture
 async def it_super_admin(
-    it_client: httpx.AsyncClient,
+    it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
 ) -> User:

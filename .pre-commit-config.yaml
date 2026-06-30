@@ -8,12 +8,12 @@ repos:
     hooks:
       - id: code-check
         name: code-check (local)
-        entry: uv run make check
+        entry: make check
         language: system
         pass_filenames: false
       - id: pip-audit-local
         name: pip-audit (local)
-        entry: uv run make pip-audit
+        entry: make pip-audit
         language: system
         pass_filenames: false
         verbose: true
