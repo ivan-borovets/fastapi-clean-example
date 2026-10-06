@@ -40,7 +40,7 @@ def create_role(value: str | None = None) -> UserRole:
     return UserRole(value) if value is not None else UserRole.USER
 
 
-def create_is_active(value: bool | None = None) -> bool:
+def create_is_active(*, value: bool | None = None) -> bool:
     return value if value is not None else True
 
 

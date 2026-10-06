@@ -33,6 +33,7 @@ class ListUsers:
     """
     - Open to admins.
     - Retrieves paginated list of existing users with relevant info.
+    - Sorts by `updated_at` descending by default.
     """
 
     def __init__(
@@ -62,7 +63,7 @@ class ListUsers:
             field=request.sorting_field,
             order=request.sorting_order,
         )
-        users = await self._user_reader.list_users(
+        users = await self._user_reader.list_all(
             pagination=pagination,
             sorting=sorting,
         )

@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from app.core.commands.ports.utc_timer import UtcTimer
+from app.core.common.ports.utc_timer import UtcTimer
 from app.core.common.value_objects.utc_datetime import UtcDatetime
 
 

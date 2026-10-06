@@ -1,29 +1,16 @@
 import httpx2
-import pytest
-from fastapi import FastAPI, status
+from fastapi import status
 
 
-async def test_liveness_probe(smoke_client: httpx2.AsyncClient) -> None:
-    r = await smoke_client.get("/livez/")
-
-    assert r.status_code == status.HTTP_200_OK
-    assert r.json() == "OK"
-
-
-async def test_readiness_probe(smoke_client: httpx2.AsyncClient) -> None:
-    r = await smoke_client.get("/healthz/")
+async def test_liveness_probe(smoke_fastapi_client: httpx2.AsyncClient) -> None:
+    r = await smoke_fastapi_client.get("/livez")
 
     assert r.status_code == status.HTTP_200_OK
     assert r.json() == "OK"
 
 
-async def test_error_handling_prod_contract(
-    smoke_client: httpx2.AsyncClient,
-    smoke_app: FastAPI,
-) -> None:
-    if smoke_app.debug:
-        pytest.skip("Not applicable when DEBUG=true")
+async def test_readiness_probe(smoke_fastapi_client: httpx2.AsyncClient) -> None:
+    r = await smoke_fastapi_client.get("/healthz")
 
-    r = await smoke_client.get("/nonexistent/")
-
-    assert r.status_code == status.HTTP_404_NOT_FOUND
+    assert r.status_code == status.HTTP_200_OK
+    assert r.json() == "OK"

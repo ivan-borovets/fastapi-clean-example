@@ -1,21 +1,25 @@
 from datetime import timedelta
 from typing import Literal
 
-from pydantic import BaseModel, Field, PostgresDsn
+from pydantic import BaseModel, ConfigDict, Field, PostgresDsn
 
-from app.main.config.logging_ import LoggingLevel
+from app.main.config.logging_ import LogLevel
 from app.outbound.auth_ctx.jwt_types import JwtAlgorithm
 
 
 class AppSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     SERVICE_NAME: str = "clean-example"
     VERSION: str = "development"
     ROOT_PATH: str = "/"
     DEBUG_MODE: bool = False
-    LOGGING_LEVEL: LoggingLevel = LoggingLevel.INFO
+    LOGGING_LEVEL: LogLevel = "INFO"
 
 
 class PostgresSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     DB: str
     HOST: str
     PORT: int
@@ -37,13 +41,18 @@ class PostgresSettings(BaseModel):
 
 
 class SqlaSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     ECHO: bool = False
     ECHO_POOL: bool = False
     POOL_SIZE: int = 15
     MAX_OVERFLOW: int = 0
+    CONNECT_TIMEOUT_S: int = Field(default=5, gt=0)
 
 
 class PasswordHasherSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     # https://www.ietf.org/archive/id/draft-ietf-kitten-password-storage-04.html#section-4.2
     PEPPER: str = Field(min_length=32)
 
@@ -56,6 +65,8 @@ class PasswordHasherSettings(BaseModel):
 
 
 class JwtSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     # Min length 32 for 256-bit: https://www.rfc-editor.org/rfc/rfc7518#section-3.2
     SECRET: str = Field(min_length=32)
 
@@ -63,6 +74,8 @@ class JwtSettings(BaseModel):
 
 
 class SessionSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     TTL_MIN: int = Field(ge=1, default=5)
     REFRESH_THRESHOLD_RATIO: float = Field(gt=0, lt=1, default=0.2)
 
@@ -72,6 +85,8 @@ class SessionSettings(BaseModel):
 
 
 class CookieSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     NAME: str = "auth_token"
     PATH: str = "/"
     HTTPONLY: bool = True

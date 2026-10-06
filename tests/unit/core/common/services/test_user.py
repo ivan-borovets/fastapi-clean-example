@@ -102,7 +102,7 @@ async def test_fails_to_create_user_with_unassignable_role() -> None:
         pytest.param("wrong-password", False, id="invalid"),
     ],
 )
-async def test_checks_password_authenticity(password: str, expected: bool) -> None:
+async def test_checks_password_authenticity(*, password: str, expected: bool) -> None:
     sut = create_user_service()
     user = await sut.create_user_with_raw_password(
         user_id=create_user_id(),
@@ -146,6 +146,7 @@ async def test_changes_password() -> None:
     ],
 )
 def test_set_role_changes_role_when_needed(
+    *,
     initial_role: UserRole,
     target_is_admin: bool,
     expected_role: UserRole,
@@ -171,6 +172,7 @@ def test_set_role_changes_role_when_needed(
     ],
 )
 def test_set_role_does_nothing_when_already_in_target_role(
+    *,
     role: UserRole,
     is_admin: bool,
 ) -> None:
@@ -191,7 +193,7 @@ def test_set_role_does_nothing_when_already_in_target_role(
     "is_admin",
     [True, False],
 )
-def test_preserves_super_admin_role(is_admin: bool) -> None:
+def test_preserves_super_admin_role(*, is_admin: bool) -> None:
     sut = create_user_service()
     created_at = create_now()
     user = create_super_user(now=created_at)
@@ -211,6 +213,7 @@ def test_preserves_super_admin_role(is_admin: bool) -> None:
     ],
 )
 def test_set_activation_changes_state_when_needed(
+    *,
     initial_state: bool,
     target_state: bool,
 ) -> None:
@@ -234,7 +237,7 @@ def test_set_activation_changes_state_when_needed(
         pytest.param(False, id="already_inactive"),
     ],
 )
-def test_set_activation_does_nothing_when_already_in_target_state(state: bool) -> None:
+def test_set_activation_does_nothing_when_already_in_target_state(*, state: bool) -> None:
     sut = create_user_service()
     created_at = create_now()
     user = create_user(is_active=state, now=created_at)
@@ -252,7 +255,7 @@ def test_set_activation_does_nothing_when_already_in_target_state(state: bool) -
     "is_active",
     [True, False],
 )
-def test_preserves_system_user_activation_state(is_active: bool) -> None:
+def test_preserves_system_user_activation_state(*, is_active: bool) -> None:
     sut = create_user_service()
     created_at = create_now()
     user = create_super_user(now=created_at, is_active=is_active)

@@ -1,5 +1,4 @@
-from enum import StrEnum
-from typing import Final
+from typing import Final, Literal
 
 # fmt: off
 FMT: Final[str] = (
@@ -11,10 +10,4 @@ FMT: Final[str] = (
 # fmt: on
 DATEFMT: Final[str] = "%Y-%m-%d %H:%M:%S"
 
-
-class LoggingLevel(StrEnum):
-    DEBUG = "DEBUG"
-    INFO = "INFO"
-    WARNING = "WARNING"
-    ERROR = "ERROR"
-    CRITICAL = "CRITICAL"
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]

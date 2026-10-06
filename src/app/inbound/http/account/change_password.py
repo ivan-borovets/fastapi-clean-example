@@ -4,7 +4,6 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 from fastapi.security import APIKeyCookie
-from pydantic import BaseModel, ConfigDict
 
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.core.common.exceptions import BusinessTypeError
@@ -15,18 +14,6 @@ from app.outbound.adapters.exceptions import PasswordHasherBusyError
 from app.outbound.auth_ctx.exceptions import AuthenticationChangeError, AuthenticationError, ReAuthenticationError
 from app.outbound.auth_ctx.handlers.change_password import ChangePassword, ChangePasswordRequest
 from app.outbound.exceptions import StorageError
-
-
-class ChangePasswordRequestSchema(BaseModel):
-    """
-    Using Pydantic model here is generally unnecessary.
-    It's only implemented to render specific Swagger UI.
-    """
-
-    model_config = ConfigDict(frozen=True)
-
-    current_password: str
-    new_password: str
 
 
 def make_change_password_router(*, cookie_name: str) -> APIRouter:
@@ -49,13 +36,9 @@ def make_change_password_router(*, cookie_name: str) -> APIRouter:
     )
     @inject
     async def change_password(
-        request_schema: ChangePasswordRequestSchema,
+        request: ChangePasswordRequest,
         handler: FromDishka[ChangePassword],
     ) -> None:
-        request = ChangePasswordRequest(
-            current_password=request_schema.current_password,
-            new_password=request_schema.new_password,
-        )
         await handler.execute(request)
 
     return router

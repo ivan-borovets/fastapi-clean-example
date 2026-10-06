@@ -9,3 +9,6 @@
 !alembic.ini
 !src/**
 !tests/**
+
+# Ignore again: tooling runs on the host
+tests/tooling/**

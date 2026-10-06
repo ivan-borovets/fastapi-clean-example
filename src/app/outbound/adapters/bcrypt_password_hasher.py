@@ -77,18 +77,17 @@ class BcryptPasswordHasher(PasswordHasher):
         Work factor:
         https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#introduction
         """
-        base64_hmac_peppered = self._add_pepper(raw_password, self._pepper)
+        base64_hmac_peppered = self._add_pepper(raw_password)
         salt = bcrypt.gensalt(rounds=self._work_factor)
         return UserPasswordHash(bcrypt.hashpw(base64_hmac_peppered, salt))
 
     def verify_sync(self, raw_password: RawPassword, hashed_password: UserPasswordHash) -> bool:
-        base64_hmac_peppered = self._add_pepper(raw_password, self._pepper)
+        base64_hmac_peppered = self._add_pepper(raw_password)
         return bcrypt.checkpw(base64_hmac_peppered, hashed_password)
 
-    @staticmethod
-    def _add_pepper(raw_password: RawPassword, pepper: bytes) -> bytes:
+    def _add_pepper(self, raw_password: RawPassword) -> bytes:
         hmac_password = hmac.new(
-            key=pepper,
+            key=self._pepper,
             msg=raw_password.value,
             digestmod=hashlib.sha384,
         ).digest()

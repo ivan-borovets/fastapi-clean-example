@@ -7,9 +7,9 @@ from app.core.common.entities.user import User
 from app.core.common.ports.access_revoker import AccessRevoker
 from app.core.common.ports.identity_provider import IdentityProvider
 
-AUTHZ_NO_CURRENT_USER: Final[str] = "Failed to retrieve current user. Removing all access."
-
 logger = logging.getLogger(__name__)
+
+AUTHZ_NO_CURRENT_USER: Final[str] = "Failed to retrieve current user. Removing all access."
 
 
 class CurrentUserService:

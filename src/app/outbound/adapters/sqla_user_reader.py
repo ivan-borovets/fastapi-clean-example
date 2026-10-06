@@ -15,7 +15,7 @@ class SqlaUserReader(UserReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def list_users(
+    async def list_all(
         self,
         *,
         pagination: OffsetPaginationParams,

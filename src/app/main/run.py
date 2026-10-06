@@ -3,7 +3,7 @@ from contextlib import AbstractAsyncContextManager, asynccontextmanager
 
 from dishka import Provider, make_async_container
 from dishka.integrations.fastapi import setup_dishka
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 from app.inbound.http.root_router import make_fastapi_root_router
 from app.main.config.loader import (
@@ -53,11 +53,11 @@ def make_app(
     jwt_settings: JwtSettings | None = None,
     session_settings: SessionSettings | None = None,
     cookie_settings: CookieSettings | None = None,
+    fastapi_root_router: APIRouter | None = None,
 ) -> FastAPI:
     """Pass providers to override existing ones for testing."""
     if app_settings is None:
         app_settings = load_app_settings()
-
     setup_logging(level=app_settings.LOGGING_LEVEL)
 
     if postgres_settings is None:
@@ -73,11 +73,16 @@ def make_app(
     if cookie_settings is None:
         cookie_settings = load_cookie_settings()
 
+    if fastapi_root_router is None:
+        fastapi_root_router = make_fastapi_root_router(
+            debug=app_settings.DEBUG_MODE,
+            cookie_name=cookie_settings.NAME,
+        )
+
     app = FastAPI(
-        debug=app_settings.DEBUG_MODE,
         title=app_settings.SERVICE_NAME,
-        version=app_settings.VERSION,
         summary=f"OpenAPI schema for {app_settings.SERVICE_NAME}",
+        version=app_settings.VERSION,
         lifespan=make_lifespan(),
         root_path=app_settings.ROOT_PATH.rstrip("/"),
     )
@@ -85,7 +90,6 @@ def make_app(
         *get_providers(),
         *di_providers,
         context={
-            AppSettings: app_settings,
             PostgresSettings: postgres_settings,
             SqlaSettings: sqla_settings,
             PasswordHasherSettings: password_hasher_settings,
@@ -97,12 +101,7 @@ def make_app(
     setup_dishka(container, app)
     setup_middlewares(app, cookie_settings)
     setup_global_exception_handlers(app)
-    app.include_router(
-        make_fastapi_root_router(
-            debug_mode=app_settings.DEBUG_MODE,
-            cookie_name=cookie_settings.NAME,
-        )
-    )
+    app.include_router(fastapi_root_router)
     return app
 
 

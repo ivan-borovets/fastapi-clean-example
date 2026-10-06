@@ -22,6 +22,7 @@ during database migrations.
 """
 
 from app.outbound.persistence_sqla.mappings.auth_session import map_auth_sessions_table
+from app.outbound.persistence_sqla.mappings.composite.registry import patch_composite
 from app.outbound.persistence_sqla.mappings.user import map_users_table
 from app.outbound.persistence_sqla.registry import mapper_registry
 
@@ -29,5 +30,6 @@ from app.outbound.persistence_sqla.registry import mapper_registry
 def map_tables() -> None:
     if mapper_registry.mappers:
         return
+    patch_composite()
     map_users_table()
     map_auth_sessions_table()

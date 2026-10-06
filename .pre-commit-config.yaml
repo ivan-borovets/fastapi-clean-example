@@ -17,54 +17,45 @@ repos:
         language: system
         pass_filenames: false
         verbose: true
-      - id: test-docker
-        name: test-docker (local)
-        entry: make test-docker
+      - id: shellcheck
+        name: shellcheck (local)
+        entry: uv run shellcheck
         language: system
-        stages: [pre-push]
-        pass_filenames: false
-        verbose: true
+        args: ["--severity=warning"]
+        types: [shell]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: check-ast
-      - id: check-case-conflict
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-        exclude: ^docs/
       - id: check-added-large-files
-      - id: check-docstring-first
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
       - id: check-json
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
       - id: check-toml
       - id: check-yaml
-        exclude: docker-compose.test.yml
+        exclude: docker-compose.test.yml|docker-compose.migration.yml
       - id: detect-private-key
-      - id: debug-statements
-      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
       - id: mixed-line-ending
         args: ["--fix=lf"]
       - id: no-commit-to-branch
-        args: [--branch, develop, --branch, dev, --branch, master, --branch, main]
+        args: ["--branch=develop", "--branch=dev", "--branch=master", "--branch=main"]
+      - id: trailing-whitespace
 
   - repo: https://github.com/crate-ci/typos
-    rev: v1.40.0
+    rev: v1.50.1
     hooks:
       - id: typos
-        args: [--force-exclude]
+        args: ["--force-exclude"]
 
-  - repo: https://github.com/google/yamlfmt
-    rev: v0.20.0
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.16.0
     hooks:
-      - id: yamlfmt
+      - id: pretty-format-yaml
         name: YAML formatter
         files: (^|/).*\.ya?ml$
-        args:
-          - "--conf"
-          - ".yamlfmt"
-
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck
-        args: ["--severity=warning"]
+        args: ["--autofix", "--indent", "2", "--offset", "2", "--preserve-quotes"]

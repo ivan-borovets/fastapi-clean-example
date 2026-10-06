@@ -15,7 +15,7 @@ class ListUsersQm(TypedDict):
 
 class UserReader(Protocol):
     @abstractmethod
-    async def list_users(
+    async def list_all(
         self,
         *,
         pagination: OffsetPaginationParams,

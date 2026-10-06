@@ -28,15 +28,15 @@ class SqlaFlusher(Flusher):
     async def flush(self) -> None:
         try:
             await self._session.flush()
-            logger.debug("%s.", DB_FLUSH_DONE)
+            logger.debug("%s", DB_FLUSH_DONE)
 
         except IntegrityError as e:
             msg = str(e)
             for name, exc_type in CONSTRAINT_TO_ERROR.items():
                 if name in msg:
-                    raise exc_type from e
+                    raise exc_type from None
 
-            logger.warning("Unhandled integrity error: %s", msg)
+            logger.warning("Unhandled integrity error: %s", e.orig)
             raise StorageError(DB_CONSTRAINT_VIOLATION) from e
 
         except SQLAlchemyError as e:

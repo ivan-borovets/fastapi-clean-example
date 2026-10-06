@@ -23,13 +23,13 @@ async def test_returns_200_and_lists_single_user(
     r = await it_client.get(USERS_ENDPOINT)
 
     assert r.status_code == 200
-    payload = r.json()
-    users = payload["users"]
+    body = r.json()
+    users = body["users"]
     assert len(users) == 1
     assert users[0]["id"] == str(it_admin.id_)
-    assert payload["total"] == 1
-    assert payload["limit"] == 20
-    assert payload["offset"] == 0
+    assert body["total"] == 1
+    assert body["limit"] == 20
+    assert body["offset"] == 0
 
 
 async def test_returns_200_and_lists_multiple_users(
@@ -46,9 +46,9 @@ async def test_returns_200_and_lists_multiple_users(
     r = await it_client.get(USERS_ENDPOINT)
 
     assert r.status_code == 200
-    payload = r.json()
-    assert payload["total"] == 3
-    assert len(payload["users"]) == 3
+    body = r.json()
+    assert body["total"] == 3
+    assert len(body["users"]) == 3
 
 
 async def test_returns_200_and_respects_pagination_params(
@@ -64,11 +64,11 @@ async def test_returns_200_and_respects_pagination_params(
     r = await it_client.get(USERS_ENDPOINT, params={"limit": 2, "offset": 1})
 
     assert r.status_code == 200
-    payload = r.json()
-    assert payload["total"] == 5
-    assert payload["limit"] == 2
-    assert payload["offset"] == 1
-    assert len(payload["users"]) == 2
+    body = r.json()
+    assert body["total"] == 5
+    assert body["limit"] == 2
+    assert body["offset"] == 1
+    assert len(body["users"]) == 2
 
 
 async def test_returns_200_and_sorts_by_updated_at_desc(
@@ -90,8 +90,8 @@ async def test_returns_200_and_sorts_by_updated_at_desc(
     r = await it_client.get(USERS_ENDPOINT)
 
     assert r.status_code == 200
-    payload = r.json()
-    users = payload["users"]
+    body = r.json()
+    users = body["users"]
     assert users[0]["id"] == str(admin.id_)
     assert users[1]["id"] == str(user_2.id_)
     assert users[2]["id"] == str(user_1.id_)
@@ -115,8 +115,8 @@ async def test_returns_200_and_sorts_by_username_asc(
     r = await it_client.get(USERS_ENDPOINT, params={"sorting_field": "username", "sorting_order": "asc"})
 
     assert r.status_code == 200
-    payload = r.json()
-    users = payload["users"]
+    body = r.json()
+    users = body["users"]
     assert users[0]["username"] == admin.username.value
     assert users[1]["username"] == user_2.username.value
     assert users[2]["username"] == user_1.username.value

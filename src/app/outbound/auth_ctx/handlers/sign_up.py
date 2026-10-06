@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from app.core.commands.exceptions import UsernameAlreadyExistsError
 from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.transaction_manager import TransactionManager
-from app.core.commands.ports.utc_timer import UtcTimer
 from app.core.common.authorization.current_user_service import CurrentUserService
 from app.core.common.factories.id_factory import create_user_id
+from app.core.common.ports.utc_timer import UtcTimer
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username

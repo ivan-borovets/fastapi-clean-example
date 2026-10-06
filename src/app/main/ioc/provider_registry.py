@@ -7,7 +7,4 @@ from app.main.ioc.outbound import outbound_providers
 
 
 def get_providers() -> Iterable[Provider]:
-    return (
-        CoreProvider(),
-        *outbound_providers(),
-    )
+    return (CoreProvider(), *outbound_providers())
