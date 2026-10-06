@@ -2,10 +2,9 @@ import asyncio
 import logging
 from collections.abc import AsyncIterator, Iterator
 from concurrent.futures import ThreadPoolExecutor
-from typing import cast
 
 from dishka import Provider, Scope, from_context, provide
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from starlette.requests import Request
 
 from app.main.config.settings import (
@@ -29,6 +28,7 @@ from app.outbound.auth_ctx.sqla_tx_storage import AuthSessionSqlaTxStorage
 from app.outbound.auth_ctx.sqla_user_tx_storage import AuthSqlaUserTxStorage
 from app.outbound.auth_ctx.types_ import AuthAsyncSession
 from app.outbound.auth_ctx.utc_timer import AuthSessionUtcTimer
+from app.outbound.persistence_sqla.engine import make_async_engine, make_async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -64,60 +64,43 @@ class PersistenceSqlaProvider(Provider):
         postgres: PostgresSettings,
         sqla: SqlaSettings,
     ) -> AsyncIterator[AsyncEngine]:
-        async_engine = create_async_engine(
-            url=postgres.dsn,
+        async_engine = make_async_engine(
+            dsn=postgres.dsn,
             echo=sqla.ECHO,
             echo_pool=sqla.ECHO_POOL,
             pool_size=sqla.POOL_SIZE,
             max_overflow=sqla.MAX_OVERFLOW,
-            connect_args={"connect_timeout": 5},
-            pool_pre_ping=True,
+            connect_timeout_s=sqla.CONNECT_TIMEOUT_S,
         )
-        logger.debug("Async engine created with DSN: %s", postgres.dsn)
         yield async_engine
         logger.debug("Disposing async engine...")
         await async_engine.dispose()
         logger.debug("Engine is disposed.")
 
     @provide(scope=Scope.APP)
-    def provide_async_session_factory(
+    def provide_async_sessionmaker(
         self,
         engine: AsyncEngine,
     ) -> async_sessionmaker[AsyncSession]:
-        async_session_factory = async_sessionmaker(
-            bind=engine,
-            class_=AsyncSession,
-            autoflush=False,
-            expire_on_commit=False,
-        )
-        logger.debug("Async session maker initialized.")
-        return async_session_factory
+        return make_async_sessionmaker(engine)
 
     @provide(scope=Scope.REQUEST)
-    async def provide_primary_async_session(
+    async def provide_async_session(
         self,
-        async_session_factory: async_sessionmaker[AsyncSession],
+        sessionmaker: async_sessionmaker[AsyncSession],
     ) -> AsyncIterator[AsyncSession]:
         """Provides UoW (AsyncSession) for the primary context"""
-        logger.debug("Starting primary async session...")
-        async with async_session_factory() as session:
-            logger.debug("Primary async session started.")
+        async with sessionmaker() as session:
             yield session
-            logger.debug("Closing primary async session...")
-        logger.debug("Primary async session closed.")
 
     @provide(scope=Scope.REQUEST)
     async def provide_auth_async_session(
         self,
-        async_session_factory: async_sessionmaker[AsyncSession],
+        sessionmaker: async_sessionmaker[AsyncSession],
     ) -> AsyncIterator[AuthAsyncSession]:
-        """Provides UoW (AsyncSession) for the auth context."""
-        logger.debug("Starting auth async session...")
-        async with async_session_factory() as session:
-            logger.debug("Auth async session started.")
-            yield cast(AuthAsyncSession, session)
-            logger.debug("Closing auth async session...")
-        logger.debug("Auth async session closed.")
+        """Provides UoW (AsyncSession) for the auth context"""
+        async with sessionmaker() as session:
+            yield AuthAsyncSession(session)
 
 
 class AuthProvider(Provider):

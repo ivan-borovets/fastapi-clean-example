@@ -6,7 +6,7 @@ echo "Warning: This will remove all unused containers, networks, images, and vol
 echo "Are you sure you want to continue? [y/N]"
 read -r response
 if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
-    docker system prune -a --volumes
+  docker system prune -a --volumes
 else
-    echo "Operation cancelled."
+  echo "Operation cancelled."
 fi

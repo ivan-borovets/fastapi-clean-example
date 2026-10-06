@@ -21,10 +21,18 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --group dev
 
+      - name: Run hooks
+        run: >-
+          uv run prek run --all-files --show-diff-on-failure
+          --skip code-check --skip pip-audit-local --skip no-commit-to-branch
+
       - name: Check code
         run: make check-ci
 
       - name: Test with Docker
-        env:
-          ALLOW_DESTRUCTIVE_TEST_CLEANUP: 1
         run: make test-docker
+
+      - name: Check coverage
+        env:
+          MIN_COVERAGE: 75
+        run: uv run coverage report --data-file=.coverage.docker --fail-under="${MIN_COVERAGE}"

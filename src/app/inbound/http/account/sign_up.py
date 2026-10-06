@@ -2,7 +2,8 @@ from inspect import getdoc
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, status
+from fastapi import APIRouter
+from starlette import status
 
 from app.core.commands.exceptions import UsernameAlreadyExistsError
 from app.core.common.authorization.exceptions import AuthorizationError

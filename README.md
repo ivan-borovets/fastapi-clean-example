@@ -11,7 +11,7 @@ Prerequisites
 ```shell
 uv sync
 source .venv/bin/activate
-pre-commit install --hook-type pre-commit --hook-type pre-push
+prek install --overwrite --hook-type pre-commit --hook-type pre-push
 ```
 
 Start in Docker
@@ -23,7 +23,7 @@ Start locally
 ```shell
 make upd-local
 alembic upgrade head
-uvicorn app.main.run:make_app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main.run:make_app --factory --host 0.0.0.0 --port 8000 --reload
 # or `src/app/main/run.py` in IDE
 ```
 Full API access:

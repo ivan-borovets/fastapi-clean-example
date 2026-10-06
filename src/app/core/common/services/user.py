@@ -49,9 +49,9 @@ class UserService:
     ) -> User:
         password_hash = await self._password_hasher.hash(raw_password)
         return self.create_user(
-            user_id,
-            username,
-            password_hash,
+            user_id=user_id,
+            username=username,
+            password_hash=password_hash,
             now=now,
             role=role,
             is_active=is_active,

@@ -7,7 +7,6 @@ from app.core.commands.grant_admin import GrantAdmin
 from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.transaction_manager import TransactionManager
 from app.core.commands.ports.user_tx_storage import UserTxStorage
-from app.core.commands.ports.utc_timer import UtcTimer
 from app.core.commands.revoke_admin import RevokeAdmin
 from app.core.commands.set_user_password import SetUserPassword
 from app.core.common.authorization.current_user_service import CurrentUserService
@@ -15,6 +14,7 @@ from app.core.common.authorization.ports import AuthzUserFinder
 from app.core.common.ports.access_revoker import AccessRevoker
 from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.common.ports.password_hasher import PasswordHasher
+from app.core.common.ports.utc_timer import UtcTimer
 from app.core.common.services.user import UserService
 from app.core.queries.list_users import ListUsers
 from app.core.queries.ports.user_reader import UserReader
@@ -56,12 +56,12 @@ class CoreProvider(Provider):
             semaphore_wait_timeout_s=settings.SEMAPHORE_WAIT_TIMEOUT_S,
         )
 
+    utc_timer = provide(SystemUtcTimer, provides=UtcTimer, scope=Scope.APP)
     identity_provider = provide(AuthSessionIdentityProvider, provides=IdentityProvider)
     authz_user_finder = provide(SqlaUserTxStorage, provides=AuthzUserFinder)
     access_revoker = provide(AuthSessionAccessRevoker, provides=AccessRevoker)
 
-    # Commands Ports
-    utc_timer = provide(SystemUtcTimer, provides=UtcTimer)
+    # Command Ports
     user_tx_storage = provide(SqlaUserTxStorage, provides=UserTxStorage)
     flusher = provide(SqlaFlusher, provides=Flusher)
     tx_manager = provide(SqlaTransactionManager, provides=TransactionManager)

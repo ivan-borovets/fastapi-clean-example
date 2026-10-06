@@ -8,7 +8,6 @@ and mistakes in migrations forever.
 https://github.com/alvassin/alembic-quickstart
 """
 
-from argparse import Namespace
 from typing import Final
 
 import pytest
@@ -16,29 +15,15 @@ from alembic.command import downgrade, upgrade
 from alembic.config import Config
 from alembic.script import Script, ScriptDirectory
 
-from app.main.config.loader import BASE_DIR, load_postgres_settings
+from app.main.config.loader import BASE_DIR
 from app.main.config.settings import PostgresSettings
 
 ALEMBIC_INI_PATH: Final[str] = str(BASE_DIR / "alembic.ini")
 
 
-@pytest.fixture(scope="module")
-def postgres_settings() -> PostgresSettings:
-    return load_postgres_settings()
-
-
-@pytest.fixture(scope="module")
-def alembic_config(postgres_settings: PostgresSettings) -> Config:
-    cmd_opts = Namespace(
-        config=ALEMBIC_INI_PATH,
-        name="alembic",
-        db_url=postgres_settings.dsn,
-        raiseerr=False,
-        x=None,
-    )
-    config = Config(file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts)
-    config.set_main_option("sqlalchemy.url", f"{postgres_settings.dsn}?async_fallback=true")
-    return config
+@pytest.fixture
+def alembic_config(migration_stairway_settings: PostgresSettings) -> Config:
+    return Config(ALEMBIC_INI_PATH, attributes={"postgres_settings": migration_stairway_settings})
 
 
 def get_revisions() -> list[Script]:
@@ -57,7 +42,6 @@ def get_revisions() -> list[Script]:
 
 @pytest.mark.parametrize("revision", get_revisions())
 def test_migrations_stairway(
-    allow_destructive: None,
     alembic_config: Config,
     revision: Script,
 ) -> None:

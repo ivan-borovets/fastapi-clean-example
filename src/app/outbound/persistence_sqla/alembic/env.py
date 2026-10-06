@@ -31,7 +31,9 @@ target_metadata = mapper_registry.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-settings: PostgresSettings = load_postgres_settings()
+settings: PostgresSettings | None = config.attributes.get("postgres_settings")
+if settings is None:
+    settings = load_postgres_settings()
 
 config.set_main_option("sqlalchemy.url", settings.dsn)
 

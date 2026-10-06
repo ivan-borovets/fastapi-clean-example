@@ -14,7 +14,7 @@ from tests.integration.with_infra.factories import (
 
 
 @pytest.fixture
-async def it_admin(
+async def it_authenticated_admin(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
@@ -23,12 +23,12 @@ async def it_admin(
     admin = await create_user_with_password(it_user_service, raw_password=password, role=UserRole.ADMIN)
     it_session.add(admin)
     await it_session.commit()
-    await authenticate(it_client, admin.username.value, password)
+    await authenticate(it_client, username=admin.username.value, password=password)
     return admin
 
 
 @pytest.fixture
-async def it_super_admin(
+async def it_authenticated_super_admin(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
@@ -37,5 +37,5 @@ async def it_super_admin(
     super_admin = await create_super_admin_with_password(it_user_service, raw_password=password)
     it_session.add(super_admin)
     await it_session.commit()
-    await authenticate(it_client, super_admin.username.value, password)
+    await authenticate(it_client, username=super_admin.username.value, password=password)
     return super_admin

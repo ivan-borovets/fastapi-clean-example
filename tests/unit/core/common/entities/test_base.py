@@ -5,9 +5,9 @@ from tests.unit.core.common.entities.factories import (
     create_named_entity,
     create_named_entity_id,
     create_named_entity_subclass,
-    create_single_field_vo,
     create_tagged_entity,
 )
+from tests.unit.core.common.value_objects.factories import create_single_field_vo
 
 
 def test_cannot_init() -> None:

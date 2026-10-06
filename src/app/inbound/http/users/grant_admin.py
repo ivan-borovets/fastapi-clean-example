@@ -4,7 +4,8 @@ from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Path, status
+from fastapi import APIRouter, Path
+from starlette import status
 
 from app.core.commands.exceptions import UserNotFoundError
 from app.core.commands.grant_admin import GrantAdmin, GrantAdminRequest
@@ -35,7 +36,7 @@ def make_grant_admin_router() -> APIRouter:
         user_id: Annotated[UUID, Path()],
         interactor: FromDishka[GrantAdmin],
     ) -> None:
-        request = GrantAdminRequest(user_id)
+        request = GrantAdminRequest(user_id=user_id)
         await interactor.execute(request)
 
     return router

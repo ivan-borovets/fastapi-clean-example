@@ -8,15 +8,24 @@ if [ "$#" -ne 1 ] || [ -z "$1" ]; then
 fi
 slug="$1"
 
-MIGRATION_PROJECT="$(basename "$PWD")-migration"
+: "${ENV_FILE:?must be set in Makefile (env file for compose interpolation)}"
+: "${MIGRATION_PROJECT:?must be set in Makefile (compose project for the migration db)}"
 : "${MIGRATION_DB_SERVICE:?must be set in Makefile (transactional db service for alembic)}"
 
-trap 'docker compose -p "$MIGRATION_PROJECT" down -v --remove-orphans >/dev/null' EXIT
+compose=(
+  docker compose
+  -p "$MIGRATION_PROJECT"
+  --env-file "$ENV_FILE"
+  -f docker-compose.yml
+  -f docker-compose.migration.yml
+)
 
-docker compose -p "$MIGRATION_PROJECT" up -d --build --wait --wait-timeout 180 "$MIGRATION_DB_SERVICE"
+trap '"${compose[@]}" down -v --remove-orphans >/dev/null' EXIT
+"${compose[@]}" up -d --build --wait --wait-timeout 180 "$MIGRATION_DB_SERVICE"
+
 uv run alembic upgrade head
 uv run alembic revision --autogenerate -m "$slug"
 
 if [ -n "${STAIRWAY_TEST:-}" ]; then
-  ALLOW_DESTRUCTIVE_TEST_CLEANUP=1 uv run pytest -s -vv "$STAIRWAY_TEST"
+  ALLOW_DESTRUCTIVE_TEST_CLEANUP=1 uv run pytest -v -ra "$STAIRWAY_TEST"
 fi

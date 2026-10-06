@@ -2,8 +2,8 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.queries.models.user import UserQm
-from app.core.queries.ports.user_reader import ListUsersQm, UserReader
+from app.core.queries.models.user import ListUsersQm, UserQm
+from app.core.queries.ports.user_reader import UserReader
 from app.core.queries.query_support.exceptions import SortingError
 from app.core.queries.query_support.offset_pagination import OffsetPaginationParams
 from app.core.queries.query_support.sorting import SortingOrder, SortingParams
@@ -15,7 +15,7 @@ class SqlaUserReader(UserReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def list_users(
+    async def list_all(
         self,
         *,
         pagination: OffsetPaginationParams,
@@ -48,7 +48,8 @@ class SqlaUserReader(UserReader):
         if not rows:
             total_stmt = select(func.count()).select_from(users_table)
             try:
-                total = int(await self._session.scalar(total_stmt) or 0)
+                total_result = await self._session.execute(total_stmt)
+                total = total_result.scalar_one()
             except SQLAlchemyError as e:
                 raise ReaderError from e
             return ListUsersQm(

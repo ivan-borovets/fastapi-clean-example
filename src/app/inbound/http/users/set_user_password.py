@@ -30,6 +30,12 @@ class SetUserPasswordRequestSchema(BaseModel):
 
     password: str
 
+    def to_request(self, user_id: UUID) -> SetUserPasswordRequest:
+        return SetUserPasswordRequest(
+            user_id=user_id,
+            password=self.password,
+        )
+
 
 def make_set_user_password_router() -> APIRouter:
     router = make_error_aware_router(on_error=log_info)
@@ -53,10 +59,6 @@ def make_set_user_password_router() -> APIRouter:
         request_schema: SetUserPasswordRequestSchema,
         interactor: FromDishka[SetUserPassword],
     ) -> None:
-        request = SetUserPasswordRequest(
-            user_id=user_id,
-            password=request_schema.password,
-        )
-        await interactor.execute(request)
+        await interactor.execute(request_schema.to_request(user_id))
 
     return router

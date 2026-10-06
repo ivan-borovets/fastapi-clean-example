@@ -7,10 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.commands.ports.transaction_manager import TransactionManager
 from app.outbound.exceptions import StorageError
 
+logger = logging.getLogger(__name__)
+
 DB_COMMIT_DONE: Final[str] = "Commit was done."
 DB_COMMIT_FAILED: Final[str] = "Commit failed."
-
-logger = logging.getLogger(__name__)
 
 
 class SqlaTransactionManager(TransactionManager):
@@ -20,7 +20,7 @@ class SqlaTransactionManager(TransactionManager):
     async def commit(self) -> None:
         try:
             await self._session.commit()
-            logger.debug("%s.", DB_COMMIT_DONE)
+            logger.debug("%s", DB_COMMIT_DONE)
 
         except SQLAlchemyError as e:
             raise StorageError(DB_COMMIT_FAILED) from e

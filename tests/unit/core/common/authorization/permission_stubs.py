@@ -1,11 +1,5 @@
-from dataclasses import dataclass
-
-from app.core.common.authorization.base import Permission, PermissionContext
-
-
-@dataclass(frozen=True, slots=True)
-class DummyContext(PermissionContext):
-    pass
+from app.core.common.authorization.base import Permission
+from tests.unit.core.common.authorization.types_ import DummyContext
 
 
 class AlwaysAllow(Permission[DummyContext]):

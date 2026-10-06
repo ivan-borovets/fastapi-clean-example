@@ -6,10 +6,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.outbound.auth_ctx.types_ import AuthAsyncSession
 from app.outbound.exceptions import StorageError
 
+logger = logging.getLogger(__name__)
+
 DB_COMMIT_DONE: Final[str] = "Commit was done."
 DB_COMMIT_FAILED: Final[str] = "Commit failed."
-
-logger = logging.getLogger(__name__)
 
 
 class AuthSqlaTransactionManager:
@@ -19,7 +19,7 @@ class AuthSqlaTransactionManager:
     async def commit(self) -> None:
         try:
             await self._session.commit()
-            logger.debug("%s.", DB_COMMIT_DONE)
+            logger.debug("%s", DB_COMMIT_DONE)
 
         except SQLAlchemyError as e:
             raise StorageError(DB_COMMIT_FAILED) from e

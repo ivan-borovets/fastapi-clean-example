@@ -9,20 +9,10 @@ from app.main.config.loader import (
     load_session_settings,
     load_sqla_settings,
 )
-from app.main.config.logging_ import LoggingLevel
 
 
-@pytest.mark.parametrize(
-    "logging_level",
-    [
-        LoggingLevel.DEBUG,
-        LoggingLevel.INFO,
-        LoggingLevel.WARNING,
-        LoggingLevel.ERROR,
-        LoggingLevel.CRITICAL,
-    ],
-)
-def test_load_app_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch, logging_level: LoggingLevel) -> None:
+@pytest.mark.parametrize("logging_level", ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+def test_load_app_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch, logging_level: str) -> None:
     monkeypatch.setenv("APP_SERVICE_NAME", "test-service")
     monkeypatch.setenv("APP_VERSION", "test-version")
     monkeypatch.setenv("APP_ROOT_PATH", "test-path")
@@ -35,37 +25,39 @@ def test_load_app_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch, loggi
     assert sut.VERSION == "test-version"
     assert sut.ROOT_PATH == "test-path"
     assert sut.DEBUG_MODE is True
-    assert sut.LOGGING_LEVEL == logging_level
+    assert sut.LOGGING_LEVEL == logging_level  # noqa: SIM300
 
 
 def test_load_postgres_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("POSTGRES_DB", "test-db")
-    monkeypatch.setenv("POSTGRES_HOST", "test-host")
-    monkeypatch.setenv("POSTGRES_PORT", "123456789")
-    monkeypatch.setenv("POSTGRES_USER", "test-user")
-    monkeypatch.setenv("POSTGRES_PASSWORD", "test-password")
+    monkeypatch.setenv("POSTGRES_DB", "test_db")
+    monkeypatch.setenv("POSTGRES_HOST", "test_host")
+    monkeypatch.setenv("POSTGRES_PORT", "54321")
+    monkeypatch.setenv("POSTGRES_USER", "test_user")
+    monkeypatch.setenv("POSTGRES_PASSWORD", "test_password")
 
     sut = load_postgres_settings()
 
-    assert sut.DB == "test-db"
-    assert sut.HOST == "test-host"
-    assert sut.PORT == 123456789
-    assert sut.USER == "test-user"
-    assert sut.PASSWORD == "test-password"
+    assert sut.DB == "test_db"
+    assert sut.HOST == "test_host"
+    assert sut.PORT == 54321
+    assert sut.USER == "test_user"
+    assert sut.PASSWORD == "test_password"  # noqa: S105
 
 
 def test_load_sqla_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SQLA_ECHO", "true")
     monkeypatch.setenv("SQLA_ECHO_POOL", "true")
-    monkeypatch.setenv("SQLA_POOL_SIZE", "123456789")
-    monkeypatch.setenv("SQLA_MAX_OVERFLOW", "987654321")
+    monkeypatch.setenv("SQLA_POOL_SIZE", "123")
+    monkeypatch.setenv("SQLA_MAX_OVERFLOW", "456")
+    monkeypatch.setenv("SQLA_CONNECT_TIMEOUT_S", "7")
 
     sut = load_sqla_settings()
 
     assert sut.ECHO is True
     assert sut.ECHO_POOL is True
-    assert sut.POOL_SIZE == 123456789
-    assert sut.MAX_OVERFLOW == 987654321
+    assert sut.POOL_SIZE == 123
+    assert sut.MAX_OVERFLOW == 456
+    assert sut.CONNECT_TIMEOUT_S == 7
 
 
 def test_load_password_hasher_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -88,7 +80,7 @@ def test_load_jwt_settings_reads_env_vars(monkeypatch: pytest.MonkeyPatch) -> No
 
     sut = load_jwt_settings()
 
-    assert sut.SECRET == "test-secret-test-secret-test-secret"
+    assert sut.SECRET == "test-secret-test-secret-test-secret"  # noqa: S105
     assert sut.ALGORITHM == "HS384"
 
 

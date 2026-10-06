@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env*
 .venv
 env/
 venv/
@@ -161,6 +161,7 @@ cython_debug/
 
 # other
 .claude/
+.grimp_cache/
 .import_linter_cache/
 .ruff_cache/
 .vscode/
@@ -169,6 +170,7 @@ todo/
 
 .constraints.in
 .secrets
+.codex
 AGENTS.md
 CLAUDE.md
 pylock.toml

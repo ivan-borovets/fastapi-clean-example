@@ -6,7 +6,8 @@ from app.core.common.authorization.authorize import authorize
 from app.core.common.authorization.current_user_service import CurrentUserService
 from app.core.common.authorization.permissions import CanManageRole, RoleManagementContext
 from app.core.common.entities.types_ import UserRole
-from app.core.queries.ports.user_reader import ListUsersQm, UserReader
+from app.core.queries.models.user import ListUsersQm
+from app.core.queries.ports.user_reader import UserReader
 from app.core.queries.query_support.offset_pagination import OffsetPaginationParams
 from app.core.queries.query_support.sorting import SortingOrder, SortingParams
 
@@ -33,6 +34,7 @@ class ListUsers:
     """
     - Open to admins.
     - Retrieves paginated list of existing users with relevant info.
+    - Sorts by `updated_at` descending by default.
     """
 
     def __init__(
@@ -62,7 +64,7 @@ class ListUsers:
             field=request.sorting_field,
             order=request.sorting_order,
         )
-        users = await self._user_reader.list_users(
+        users = await self._user_reader.list_all(
             pagination=pagination,
             sorting=sorting,
         )

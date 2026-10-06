@@ -4,7 +4,8 @@ from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Path, status
+from fastapi import APIRouter, Path
+from starlette import status
 
 from app.core.commands.exceptions import UserNotFoundError
 from app.core.commands.revoke_admin import RevokeAdmin, RevokeAdminRequest
@@ -35,7 +36,7 @@ def make_revoke_admin_router() -> APIRouter:
         user_id: Annotated[UUID, Path()],
         interactor: FromDishka[RevokeAdmin],
     ) -> None:
-        request = RevokeAdminRequest(user_id)
+        request = RevokeAdminRequest(user_id=user_id)
         await interactor.execute(request)
 
     return router

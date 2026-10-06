@@ -1,3 +1,6 @@
+import uuid
+from datetime import datetime
+
 import httpx2
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,12 +10,10 @@ from app.core.common.entities.user import User
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
-from tests.integration.with_infra.authentication import authenticate
 from tests.integration.with_infra.factories import (
     create_raw_password,
     create_raw_username,
     create_user,
-    create_user_with_password,
 )
 from tests.integration.with_infra.users.constants import USERS_ENDPOINT
 
@@ -20,7 +21,7 @@ from tests.integration.with_infra.users.constants import USERS_ENDPOINT
 async def test_returns_201_and_creates_user(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
-    it_admin: User,
+    it_authenticated_admin: User,
 ) -> None:
     username = create_raw_username()
     payload = {"username": username, "password": create_raw_password(), "role": "user"}
@@ -29,34 +30,33 @@ async def test_returns_201_and_creates_user(
 
     assert r.status_code == 201
     body = r.json()
-    assert "created_at" in body
-    user = await it_session.get(User, body["id"])
+    user = await it_session.get(User, uuid.UUID(body["id"]))
     assert isinstance(user, User)
+    assert datetime.fromisoformat(body["created_at"]) == user.created_at.value
     assert user.username.value == username
     assert user.role == UserRole.USER
     assert user.is_active is True
 
 
-async def test_returns_201_and_super_admin_creates_admin(
+async def test_returns_201_and_creates_admin_when_super_admin(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
-    it_super_admin: User,
+    it_authenticated_super_admin: User,
 ) -> None:
-    username = create_raw_username()
-    payload = {"username": username, "password": create_raw_password(), "role": "admin"}
+    payload = {"username": create_raw_username(), "password": create_raw_password(), "role": "admin"}
 
     r = await it_client.post(USERS_ENDPOINT, json=payload)
 
     assert r.status_code == 201
     body = r.json()
-    user = await it_session.get(User, body["id"])
+    user = await it_session.get(User, uuid.UUID(body["id"]))
     assert isinstance(user, User)
     assert user.role == UserRole.ADMIN
 
 
 async def test_returns_400_when_username_is_too_short(
     it_client: httpx2.AsyncClient,
-    it_admin: User,
+    it_authenticated_admin: User,
 ) -> None:
     payload = {"username": "x" * (Username.MIN_LEN - 1), "password": create_raw_password(), "role": "user"}
 
@@ -67,7 +67,7 @@ async def test_returns_400_when_username_is_too_short(
 
 async def test_returns_400_when_password_is_too_short(
     it_client: httpx2.AsyncClient,
-    it_admin: User,
+    it_authenticated_admin: User,
 ) -> None:
     payload = {"username": create_raw_username(), "password": "x" * (RawPassword.MIN_LEN - 1), "role": "user"}
 
@@ -86,38 +86,38 @@ async def test_returns_401_when_not_authenticated(
     assert r.status_code == 401
 
 
-async def test_returns_403_when_user_role(
+async def test_returns_403_and_creates_no_user_when_user(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
-    it_user_service: UserService,
+    it_authenticated_user: User,
 ) -> None:
-    password = create_raw_password()
-    user = await create_user_with_password(it_user_service, raw_password=password)
-    it_session.add(user)
-    await it_session.commit()
-    await authenticate(it_client, user.username.value, password)
     payload = {"username": create_raw_username(), "password": create_raw_password(), "role": "user"}
 
     r = await it_client.post(USERS_ENDPOINT, json=payload)
 
     assert r.status_code == 403
+    count = await it_session.scalar(select(func.count()).select_from(User))
+    assert count == 1
 
 
-async def test_returns_403_when_admin_creates_admin(
+async def test_returns_403_and_creates_no_user_when_admin_creates_admin(
     it_client: httpx2.AsyncClient,
-    it_admin: User,
+    it_session: AsyncSession,
+    it_authenticated_admin: User,
 ) -> None:
     payload = {"username": create_raw_username(), "password": create_raw_password(), "role": "admin"}
 
     r = await it_client.post(USERS_ENDPOINT, json=payload)
 
     assert r.status_code == 403
+    count = await it_session.scalar(select(func.count()).select_from(User))
+    assert count == 1
 
 
-async def test_returns_409_when_username_already_exists(
+async def test_returns_409_and_creates_no_user_when_username_already_exists(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
-    it_admin: User,
+    it_authenticated_admin: User,
     it_user_service: UserService,
 ) -> None:
     username = create_raw_username()

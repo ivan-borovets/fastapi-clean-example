@@ -2,8 +2,8 @@ import logging
 from dataclasses import dataclass
 
 from app.core.commands.ports.transaction_manager import TransactionManager
-from app.core.commands.ports.utc_timer import UtcTimer
 from app.core.common.authorization.current_user_service import CurrentUserService
+from app.core.common.ports.utc_timer import UtcTimer
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.outbound.auth_ctx.exceptions import (
@@ -48,7 +48,8 @@ class ChangePassword:
         if current_password == new_password:
             raise AuthenticationChangeError
 
-        if not await self._user_service.is_password_valid(current_user, current_password):
+        is_password_valid = await self._user_service.is_password_valid(current_user, current_password)
+        if not is_password_valid:
             raise ReAuthenticationError
 
         await self._user_service.change_password(

@@ -7,4 +7,4 @@ class Flusher(Protocol):
 
     @abstractmethod
     async def flush(self) -> None:
-        """Flush pending changes to validate constraints or trigger side effects."""
+        """Flush pending changes when their effect is needed before commit, e.g. constraint checks, DB-generated IDs."""

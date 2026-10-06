@@ -13,9 +13,9 @@ from app.outbound.auth_ctx.exceptions import (
 from app.outbound.auth_ctx.service import AuthService
 from app.outbound.auth_ctx.sqla_user_tx_storage import AuthSqlaUserTxStorage
 
-AUTH_ACCOUNT_INACTIVE: Final[str] = "Your account is inactive. Please contact support."
-
 logger = logging.getLogger(__name__)
+
+AUTH_ACCOUNT_INACTIVE: Final[str] = "Your account is inactive. Please contact support."
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -60,7 +60,8 @@ class LogIn:
         if user is None:
             raise AuthenticationError
 
-        if not await self._user_service.is_password_valid(user, password):
+        is_password_valid = await self._user_service.is_password_valid(user, password)
+        if not is_password_valid:
             raise AuthenticationError
 
         if not user.is_active:

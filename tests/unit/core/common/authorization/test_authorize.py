@@ -2,7 +2,8 @@ import pytest
 
 from app.core.common.authorization.authorize import authorize
 from app.core.common.authorization.exceptions import AuthorizationError
-from tests.unit.core.common.authorization.permission_stubs import AlwaysAllow, AlwaysDeny, DummyContext
+from tests.unit.core.common.authorization.permission_stubs import AlwaysAllow, AlwaysDeny
+from tests.unit.core.common.authorization.types_ import DummyContext
 
 
 def test_authorize_allows_when_permission_is_satisfied() -> None:
