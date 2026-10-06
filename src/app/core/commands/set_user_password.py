@@ -21,7 +21,7 @@ from app.core.common.value_objects.raw_password import RawPassword
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class SetUserPasswordRequest:
     user_id: UUID
     password: str

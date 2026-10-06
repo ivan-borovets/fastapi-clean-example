@@ -2,8 +2,9 @@ from inspect import getdoc
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from fastapi.security import APIKeyCookie
+from starlette import status
 
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.core.common.exceptions import BusinessTypeError
@@ -27,8 +28,8 @@ def make_change_password_router(*, cookie_name: str) -> APIRouter:
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             BusinessTypeError: status.HTTP_400_BAD_REQUEST,
             AuthenticationChangeError: status.HTTP_400_BAD_REQUEST,
-            ReAuthenticationError: status.HTTP_403_FORBIDDEN,
             PasswordHasherBusyError: HTTP_503_SERVICE_UNAVAILABLE_RULE,
+            ReAuthenticationError: status.HTTP_403_FORBIDDEN,
         },
         status_code=status.HTTP_204_NO_CONTENT,
         dependencies=[Depends(APIKeyCookie(name=cookie_name))],

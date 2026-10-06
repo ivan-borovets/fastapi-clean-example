@@ -33,12 +33,6 @@ class AuthSessionSqlaTxStorage:
         except SQLAlchemyError as e:
             raise StorageError from e
 
-    async def update(self, auth_session: AuthSession) -> None:
-        try:
-            await self._session.merge(auth_session)
-        except SQLAlchemyError as e:
-            raise StorageError from e
-
     async def delete(self, session_id: SessionId) -> None:
         stmt = delete(auth_sessions_table).where(auth_sessions_table.c.id == session_id)
         try:

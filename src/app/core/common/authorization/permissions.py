@@ -1,4 +1,3 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
 
 from app.core.common.authorization.base import Permission, PermissionContext
@@ -19,11 +18,8 @@ class CanManageSelf(Permission[UserManagementContext]):
 
 
 class CanManageSubordinate(Permission[UserManagementContext]):
-    def __init__(self, role_hierarchy: Mapping[UserRole, set[UserRole]] = ROLE_HIERARCHY) -> None:
-        self._role_hierarchy = role_hierarchy
-
     def is_satisfied_by(self, context: UserManagementContext) -> bool:
-        allowed_roles = self._role_hierarchy.get(context.subject.role, set())
+        allowed_roles = ROLE_HIERARCHY.get(context.subject.role, set())
         return context.target.role in allowed_roles
 
 
@@ -34,9 +30,6 @@ class RoleManagementContext(PermissionContext):
 
 
 class CanManageRole(Permission[RoleManagementContext]):
-    def __init__(self, role_hierarchy: Mapping[UserRole, set[UserRole]] = ROLE_HIERARCHY) -> None:
-        self._role_hierarchy = role_hierarchy
-
     def is_satisfied_by(self, context: RoleManagementContext) -> bool:
-        allowed_roles = self._role_hierarchy.get(context.subject.role, set())
+        allowed_roles = ROLE_HIERARCHY.get(context.subject.role, set())
         return context.target_role in allowed_roles

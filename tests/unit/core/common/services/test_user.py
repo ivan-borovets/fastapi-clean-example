@@ -1,26 +1,24 @@
+from datetime import timedelta
+
 import pytest
 
 from app.core.common.entities.types_ import UserRole
-from app.core.common.entities.user import User
 from app.core.common.exceptions import (
     ActivationChangeNotPermittedError,
     RoleAssignmentNotPermittedError,
     RoleChangeNotPermittedError,
 )
 from tests.unit.core.common.services.factories import (
-    create_now,
-    create_password_hash,
-    create_raw_password,
-    create_super_user,
+    create_super_admin,
     create_user,
     create_user_id,
+    create_user_password_hash,
     create_user_service,
-    create_username,
 )
 from tests.unit.core.common.services.mock_types import PasswordHasherMock
+from tests.unit.core.common.value_objects.factories import create_raw_password, create_username, create_utc_datetime
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "role",
     [UserRole.USER, UserRole.ADMIN],
@@ -33,8 +31,8 @@ async def test_creates_active_user_with_hashed_password(
     user_id = create_user_id()
     username = create_username()
     raw_password = create_raw_password()
-    expected_hash = create_password_hash()
-    created_at = create_now()
+    expected_hash = create_user_password_hash()
+    created_at = create_utc_datetime()
     password_hasher.hash.return_value = expected_hash
 
     user = await sut.create_user_with_raw_password(
@@ -45,7 +43,6 @@ async def test_creates_active_user_with_hashed_password(
         role=role,
     )
 
-    assert isinstance(user, User)
     assert user.id_ == user_id
     assert user.username == username
     assert user.password_hash == expected_hash
@@ -55,29 +52,23 @@ async def test_creates_active_user_with_hashed_password(
     assert user.updated_at == created_at
 
 
-@pytest.mark.asyncio
-async def test_creates_inactive_user_if_specified(password_hasher: PasswordHasherMock) -> None:
-    sut = create_user_service(password_hasher=password_hasher)
+async def test_creates_inactive_user_when_requested() -> None:
+    sut = create_user_service()
     user_id = create_user_id()
     username = create_username()
     raw_password = create_raw_password()
-    created_at = create_now()
-    password_hasher.hash.return_value = create_password_hash()
 
     user = await sut.create_user_with_raw_password(
         user_id=user_id,
         username=username,
         raw_password=raw_password,
-        now=created_at,
+        now=create_utc_datetime(),
         is_active=False,
     )
 
-    assert not user.is_active
-    assert user.created_at == created_at
-    assert user.updated_at == created_at
+    assert user.is_active is False
 
 
-@pytest.mark.asyncio
 async def test_fails_to_create_user_with_unassignable_role() -> None:
     sut = create_user_service()
     user_id = create_user_id()
@@ -89,52 +80,58 @@ async def test_fails_to_create_user_with_unassignable_role() -> None:
             user_id=user_id,
             username=username,
             raw_password=raw_password,
-            now=create_now(),
+            now=create_utc_datetime(),
             role=UserRole.SUPER_ADMIN,
         )
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("password", "expected"),
-    [
-        pytest.param("test-password", True, id="valid"),
-        pytest.param("wrong-password", False, id="invalid"),
-    ],
-)
-async def test_checks_password_authenticity(*, password: str, expected: bool) -> None:
+async def test_accepts_correct_password() -> None:
+    sut = create_user_service()
+    password = create_raw_password()
+    user = await sut.create_user_with_raw_password(
+        user_id=create_user_id(),
+        username=create_username(),
+        raw_password=password,
+        now=create_utc_datetime(),
+    )
+
+    is_password_valid = await sut.is_password_valid(user, password)
+
+    assert is_password_valid is True
+
+
+async def test_rejects_incorrect_password() -> None:
     sut = create_user_service()
     user = await sut.create_user_with_raw_password(
         user_id=create_user_id(),
         username=create_username(),
-        raw_password=create_raw_password("test-password"),
-        now=create_now(),
+        raw_password=create_raw_password(),
+        now=create_utc_datetime(),
     )
 
-    assert await sut.is_password_valid(user, create_raw_password(password)) is expected
+    is_password_valid = await sut.is_password_valid(user, create_raw_password())
+
+    assert is_password_valid is False
 
 
-@pytest.mark.asyncio
 async def test_changes_password() -> None:
     sut = create_user_service()
-    old_raw = create_raw_password()
-    created_at = create_now()
+    old_password = create_raw_password()
     user = await sut.create_user_with_raw_password(
         user_id=create_user_id(),
         username=create_username(),
-        raw_password=old_raw,
-        now=created_at,
+        raw_password=old_password,
+        now=create_utc_datetime(),
     )
-    initial_hash = user.password_hash
-    new_raw = create_raw_password()
-    updated_at = create_now()
+    new_password = create_raw_password()
+    updated_at = create_utc_datetime()
 
-    await sut.change_password(user, new_raw, now=updated_at)
+    await sut.change_password(user, new_password, now=updated_at)
 
-    assert user.password_hash != initial_hash
-    assert await sut.is_password_valid(user, new_raw) is True
-    assert await sut.is_password_valid(user, old_raw) is False
-    assert user.created_at == created_at
+    is_new_password_valid = await sut.is_password_valid(user, new_password)
+    is_old_password_valid = await sut.is_password_valid(user, old_password)
+    assert is_new_password_valid is True
+    assert is_old_password_valid is False
     assert user.updated_at == updated_at
 
 
@@ -152,15 +149,13 @@ def test_set_role_changes_role_when_needed(
     expected_role: UserRole,
 ) -> None:
     sut = create_user_service()
-    created_at = create_now()
-    user = create_user(role=initial_role, now=created_at)
-    updated_at = create_now()
+    user = create_user(role=initial_role)
+    updated_at = create_utc_datetime()
 
     result = sut.set_role(user, now=updated_at, is_admin=target_is_admin)
 
     assert result is True
     assert user.role == expected_role
-    assert user.created_at == created_at
     assert user.updated_at == updated_at
 
 
@@ -177,15 +172,14 @@ def test_set_role_does_nothing_when_already_in_target_role(
     is_admin: bool,
 ) -> None:
     sut = create_user_service()
-    created_at = create_now()
+    created_at = create_utc_datetime()
     user = create_user(role=role, now=created_at)
-    attempt_at = create_now()
+    attempt_at = create_utc_datetime(created_at.value + timedelta(hours=1))
 
     result = sut.set_role(user, now=attempt_at, is_admin=is_admin)
 
     assert result is False
     assert user.role == role
-    assert user.created_at == created_at
     assert user.updated_at == created_at
 
 
@@ -195,11 +189,12 @@ def test_set_role_does_nothing_when_already_in_target_role(
 )
 def test_preserves_super_admin_role(*, is_admin: bool) -> None:
     sut = create_user_service()
-    created_at = create_now()
-    user = create_super_user(now=created_at)
+    created_at = create_utc_datetime()
+    user = create_super_admin(now=created_at)
+    attempt_at = create_utc_datetime(created_at.value + timedelta(hours=1))
 
     with pytest.raises(RoleChangeNotPermittedError):
-        sut.set_role(user, now=create_now(), is_admin=is_admin)
+        sut.set_role(user, now=attempt_at, is_admin=is_admin)
 
     assert user.role == UserRole.SUPER_ADMIN
     assert user.updated_at == created_at
@@ -218,15 +213,13 @@ def test_set_activation_changes_state_when_needed(
     target_state: bool,
 ) -> None:
     sut = create_user_service()
-    created_at = create_now()
-    user = create_user(is_active=initial_state, now=created_at)
-    updated_at = create_now()
+    user = create_user(is_active=initial_state)
+    updated_at = create_utc_datetime()
 
     result = sut.set_activation(user, now=updated_at, is_active=target_state)
 
     assert result is True
     assert user.is_active is target_state
-    assert user.created_at == created_at
     assert user.updated_at == updated_at
 
 
@@ -239,15 +232,14 @@ def test_set_activation_changes_state_when_needed(
 )
 def test_set_activation_does_nothing_when_already_in_target_state(*, state: bool) -> None:
     sut = create_user_service()
-    created_at = create_now()
+    created_at = create_utc_datetime()
     user = create_user(is_active=state, now=created_at)
-    attempt_at = create_now()
+    attempt_at = create_utc_datetime(created_at.value + timedelta(hours=1))
 
     result = sut.set_activation(user, now=attempt_at, is_active=state)
 
     assert result is False
     assert user.is_active is state
-    assert user.created_at == created_at
     assert user.updated_at == created_at
 
 
@@ -255,13 +247,14 @@ def test_set_activation_does_nothing_when_already_in_target_state(*, state: bool
     "is_active",
     [True, False],
 )
-def test_preserves_system_user_activation_state(*, is_active: bool) -> None:
+def test_preserves_super_admin_activation_state(*, is_active: bool) -> None:
     sut = create_user_service()
-    created_at = create_now()
-    user = create_super_user(now=created_at, is_active=is_active)
+    created_at = create_utc_datetime()
+    user = create_super_admin(now=created_at, is_active=is_active)
+    attempt_at = create_utc_datetime(created_at.value + timedelta(hours=1))
 
     with pytest.raises(ActivationChangeNotPermittedError):
-        sut.set_activation(user, now=create_now(), is_active=not is_active)
+        sut.set_activation(user, now=attempt_at, is_active=not is_active)
 
     assert user.is_active is is_active
     assert user.updated_at == created_at

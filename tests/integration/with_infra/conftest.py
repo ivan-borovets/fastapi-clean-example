@@ -12,14 +12,17 @@ from fastapi import APIRouter, FastAPI
 from sqlalchemy import Engine, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
+from app.core.common.entities.user import User
 from app.core.common.services.user import UserService
 from app.inbound.http.root_router import make_fastapi_root_router
-from app.main.config.loader import BASE_DIR, load_cookie_settings, load_sqla_settings
-from app.main.config.settings import AppSettings, CookieSettings, PostgresSettings, SqlaSettings
+from app.main.config.loader import BASE_DIR, load_cookie_settings, load_session_settings, load_sqla_settings
+from app.main.config.settings import AppSettings, CookieSettings, PostgresSettings, SessionSettings, SqlaSettings
 from app.main.run import make_app
 from app.outbound.persistence_sqla.engine import make_async_engine, make_async_sessionmaker
 from app.outbound.persistence_sqla.mappings.all import map_tables
 from app.outbound.persistence_sqla.registry import mapper_registry
+from tests.integration.with_infra.authentication import authenticate
+from tests.integration.with_infra.factories import create_raw_password, create_user_with_password
 
 LIFESPAN_MANAGER_STARTUP_TIMEOUT_S: Final[int] = 30
 
@@ -32,6 +35,11 @@ def it_mapped_tables() -> None:
 @pytest.fixture(scope="session")
 def it_sqla_settings() -> SqlaSettings:
     return load_sqla_settings()
+
+
+@pytest.fixture(scope="session")
+def it_auth_session_settings() -> SessionSettings:
+    return load_session_settings()
 
 
 @pytest.fixture(scope="session")
@@ -145,6 +153,7 @@ def it_fastapi_app(
     it_di_overrides: Sequence[Provider],
     it_worker_postgres_settings: PostgresSettings,
     it_sqla_settings: SqlaSettings,
+    it_auth_session_settings: SessionSettings,
     it_cookie_settings: CookieSettings,
     it_http_root_router: APIRouter,
 ) -> FastAPI:
@@ -153,6 +162,7 @@ def it_fastapi_app(
         app_settings=AppSettings(DEBUG_MODE=False),
         postgres_settings=it_worker_postgres_settings,
         sqla_settings=it_sqla_settings,
+        session_settings=it_auth_session_settings,
         cookie_settings=it_cookie_settings,
         fastapi_root_router=it_http_root_router,
     )
@@ -193,3 +203,22 @@ async def it_user_service(
 ) -> UserService:
     container: AsyncContainer = it_fastapi_app.state.dishka_container
     return await container.get(UserService)
+
+
+@pytest.fixture
+def it_authenticated_user_password() -> str:
+    return create_raw_password()
+
+
+@pytest.fixture
+async def it_authenticated_user(
+    it_client: httpx2.AsyncClient,
+    it_session: AsyncSession,
+    it_user_service: UserService,
+    it_authenticated_user_password: str,
+) -> User:
+    user = await create_user_with_password(it_user_service, raw_password=it_authenticated_user_password)
+    it_session.add(user)
+    await it_session.commit()
+    await authenticate(it_client, username=user.username.value, password=it_authenticated_user_password)
+    return user

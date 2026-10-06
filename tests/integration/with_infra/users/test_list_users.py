@@ -18,7 +18,7 @@ from tests.integration.with_infra.users.constants import USERS_ENDPOINT
 
 async def test_returns_200_and_lists_single_user(
     it_client: httpx2.AsyncClient,
-    it_admin: User,
+    it_authenticated_admin: User,
 ) -> None:
     r = await it_client.get(USERS_ENDPOINT)
 
@@ -26,35 +26,42 @@ async def test_returns_200_and_lists_single_user(
     body = r.json()
     users = body["users"]
     assert len(users) == 1
-    assert users[0]["id"] == str(it_admin.id_)
+    user = users[0]
+    assert user["id"] == str(it_authenticated_admin.id_)
+    assert user["username"] == it_authenticated_admin.username.value
+    assert user["role"] == it_authenticated_admin.role
+    assert user["is_active"] is it_authenticated_admin.is_active
     assert body["total"] == 1
-    assert body["limit"] == 20
-    assert body["offset"] == 0
 
 
-async def test_returns_200_and_lists_multiple_users(
+async def test_returns_200_and_applies_default_pagination(
     it_client: httpx2.AsyncClient,
-    it_session: AsyncSession,
-    it_admin: User,
-    it_user_service: UserService,
+    it_authenticated_admin: User,
 ) -> None:
-    user_1 = create_user(it_user_service)
-    user_2 = create_user(it_user_service)
-    it_session.add_all([user_1, user_2])
-    await it_session.commit()
-
     r = await it_client.get(USERS_ENDPOINT)
 
     assert r.status_code == 200
     body = r.json()
-    assert body["total"] == 3
-    assert len(body["users"]) == 3
+    assert body["limit"] == 20
+    assert body["offset"] == 0
+
+
+async def test_returns_200_and_empty_page_when_offset_exceeds_total(
+    it_client: httpx2.AsyncClient,
+    it_authenticated_admin: User,
+) -> None:
+    r = await it_client.get(USERS_ENDPOINT, params={"offset": 1})
+
+    assert r.status_code == 200
+    body = r.json()
+    assert body["users"] == []
+    assert body["total"] == 1
 
 
 async def test_returns_200_and_respects_pagination_params(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
-    it_admin: User,
+    it_authenticated_admin: User,
     it_user_service: UserService,
 ) -> None:
     users = [create_user(it_user_service) for _ in range(4)]
@@ -85,16 +92,16 @@ async def test_returns_200_and_sorts_by_updated_at_desc(
     user_2 = create_user(it_user_service, raw_now=now - timedelta(hours=1))
     it_session.add_all([admin, user_1, user_2])
     await it_session.commit()
-    await authenticate(it_client, admin.username.value, admin_password)
+    await authenticate(it_client, username=admin.username.value, password=admin_password)
 
     r = await it_client.get(USERS_ENDPOINT)
 
     assert r.status_code == 200
     body = r.json()
-    users = body["users"]
-    assert users[0]["id"] == str(admin.id_)
-    assert users[1]["id"] == str(user_2.id_)
-    assert users[2]["id"] == str(user_1.id_)
+    first, second, third = body["users"]
+    assert first["id"] == str(admin.id_)
+    assert second["id"] == str(user_2.id_)
+    assert third["id"] == str(user_1.id_)
 
 
 async def test_returns_200_and_sorts_by_username_asc(
@@ -110,16 +117,16 @@ async def test_returns_200_and_sorts_by_username_asc(
     user_2 = create_user(it_user_service, raw_username="bob001")
     it_session.add_all([admin, user_1, user_2])
     await it_session.commit()
-    await authenticate(it_client, admin.username.value, admin_password)
+    await authenticate(it_client, username=admin.username.value, password=admin_password)
 
     r = await it_client.get(USERS_ENDPOINT, params={"sorting_field": "username", "sorting_order": "asc"})
 
     assert r.status_code == 200
     body = r.json()
-    users = body["users"]
-    assert users[0]["username"] == admin.username.value
-    assert users[1]["username"] == user_2.username.value
-    assert users[2]["username"] == user_1.username.value
+    first, second, third = body["users"]
+    assert first["username"] == admin.username.value
+    assert second["username"] == user_2.username.value
+    assert third["username"] == user_1.username.value
 
 
 async def test_returns_401_when_not_authenticated(
@@ -130,17 +137,10 @@ async def test_returns_401_when_not_authenticated(
     assert r.status_code == 401
 
 
-async def test_returns_403_when_user_role(
+async def test_returns_403_when_user(
     it_client: httpx2.AsyncClient,
-    it_session: AsyncSession,
-    it_user_service: UserService,
+    it_authenticated_user: User,
 ) -> None:
-    password = create_raw_password()
-    user = await create_user_with_password(it_user_service, raw_password=password)
-    it_session.add(user)
-    await it_session.commit()
-    await authenticate(it_client, user.username.value, password)
-
     r = await it_client.get(USERS_ENDPOINT)
 
     assert r.status_code == 403

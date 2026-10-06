@@ -2,8 +2,9 @@ from inspect import getdoc
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from fastapi.security import APIKeyCookie
+from starlette import status
 
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.inbound.http.errors.callbacks import log_info

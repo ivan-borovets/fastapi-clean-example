@@ -7,6 +7,8 @@ from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
 from app.core.common.value_objects.utc_datetime import UtcDatetime
+from app.main.config.settings import SessionSettings
+from app.outbound.auth_ctx.model import AuthSession, SessionId
 
 
 def create_raw_user_id(value: uuid.UUID | None = None) -> uuid.UUID:
@@ -27,9 +29,17 @@ def create_raw_password_hash(value: bytes | None = None) -> bytes:
 
 def create_raw_now(value: datetime | None = None) -> datetime:
     if value is not None:
-        UtcDatetime(value)
-        return value
+        vo = UtcDatetime(value)
+        return vo.value
     return datetime.now(UTC)
+
+
+def create_password(value: str | None = None) -> RawPassword:
+    return RawPassword(value if value is not None else create_raw_password())
+
+
+def create_utc_datetime(value: datetime | None = None) -> UtcDatetime:
+    return UtcDatetime(value if value is not None else create_raw_now())
 
 
 def create_user(
@@ -76,6 +86,28 @@ async def create_user_with_password(
     )
 
 
+def create_super_admin(
+    user_service: UserService,
+    *,
+    raw_user_id: uuid.UUID | None = None,
+    raw_username: str | None = None,
+    raw_password_hash: bytes | None = None,
+    is_active: bool = True,
+    raw_now: datetime | None = None,
+) -> User:
+    """System role is not assignable via UserService; create as USER, then promote."""
+    user = create_user(
+        user_service,
+        raw_user_id=raw_user_id,
+        raw_username=raw_username,
+        raw_password_hash=raw_password_hash,
+        is_active=is_active,
+        raw_now=raw_now,
+    )
+    user.role = UserRole.SUPER_ADMIN
+    return user
+
+
 async def create_super_admin_with_password(
     user_service: UserService,
     *,
@@ -96,3 +128,21 @@ async def create_super_admin_with_password(
     )
     user.role = UserRole.SUPER_ADMIN
     return user
+
+
+def create_raw_session_id(value: str | None = None) -> str:
+    return value if value is not None else uuid.uuid4().hex
+
+
+def create_auth_session(
+    *,
+    raw_session_id: str | None = None,
+    raw_user_id: uuid.UUID | None = None,
+    raw_expiration: datetime | None = None,
+) -> AuthSession:
+    expiration = raw_expiration if raw_expiration is not None else create_raw_now() + SessionSettings().ttl
+    return AuthSession(
+        id_=SessionId(raw_session_id if raw_session_id is not None else create_raw_session_id()),
+        user_id=UserId(raw_user_id if raw_user_id is not None else create_raw_user_id()),
+        expiration=UtcDatetime(expiration),
+    )

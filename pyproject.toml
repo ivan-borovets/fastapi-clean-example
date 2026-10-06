@@ -1,6 +1,6 @@
 [project]
 name = "fastapi-clean-example"
-version = "0.2"
+version = "0.3"
 description = "Practical Clean Architecture backend example built with FastAPI"
 readme = "README.md"
 requires-python = "==3.13.*"
@@ -288,7 +288,7 @@ extend-ignore-identifiers-re = [
 ]
 
 [tool.typos.default.extend-words]
-ser = "ser"  # username test data: "u.ser-name123"
+ser = "ser"  # username test data
 
 [tool.uv]
 default-groups = ["dev"]

@@ -60,7 +60,8 @@ class LogIn:
         if user is None:
             raise AuthenticationError
 
-        if not await self._user_service.is_password_valid(user, password):
+        is_password_valid = await self._user_service.is_password_valid(user, password)
+        if not is_password_valid:
             raise AuthenticationError
 
         if not user.is_active:

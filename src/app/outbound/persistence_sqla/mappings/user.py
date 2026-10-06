@@ -1,12 +1,13 @@
 from enum import StrEnum
 
-from sqlalchemy import UUID, Boolean, Column, DateTime, Enum, LargeBinary, String, Table
+from sqlalchemy import UUID, Boolean, Column, DateTime, Enum, LargeBinary, String, Table, UniqueConstraint
 from sqlalchemy.orm import composite
 
 from app.core.common.entities.types_ import UserRole
 from app.core.common.entities.user import User
 from app.core.common.value_objects.username import Username
 from app.core.common.value_objects.utc_datetime import UtcDatetime
+from app.outbound.persistence_sqla import constraint_names as cn
 from app.outbound.persistence_sqla.registry import mapper_registry
 
 
@@ -19,7 +20,7 @@ users_table = Table(
     "users",
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
-    Column("username", String(Username.MAX_LEN), nullable=False, unique=True),
+    Column("username", String(Username.MAX_LEN), nullable=False),
     Column("password_hash", LargeBinary, nullable=False),
     Column(
         "role",
@@ -35,6 +36,7 @@ users_table = Table(
     Column("is_active", Boolean, nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=False),
     Column("updated_at", DateTime(timezone=True), nullable=False),
+    UniqueConstraint("username", name=cn.UQ_USERS_USERNAME),
 )
 
 

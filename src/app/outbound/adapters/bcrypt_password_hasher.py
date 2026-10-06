@@ -56,20 +56,6 @@ class BcryptPasswordHasher(PasswordHasher):
                 hashed_password,
             )
 
-    @asynccontextmanager
-    async def _permit(self) -> AsyncIterator[None]:
-        try:
-            await asyncio.wait_for(
-                self._semaphore.acquire(),
-                timeout=self._semaphore_wait_timeout_s,
-            )
-        except TimeoutError as e:
-            raise PasswordHasherBusyError from e
-        try:
-            yield
-        finally:
-            self._semaphore.release()
-
     def hash_sync(self, raw_password: RawPassword) -> UserPasswordHash:
         """
         Pre-hashing:
@@ -84,6 +70,20 @@ class BcryptPasswordHasher(PasswordHasher):
     def verify_sync(self, raw_password: RawPassword, hashed_password: UserPasswordHash) -> bool:
         base64_hmac_peppered = self._add_pepper(raw_password)
         return bcrypt.checkpw(base64_hmac_peppered, hashed_password)
+
+    @asynccontextmanager
+    async def _permit(self) -> AsyncIterator[None]:
+        try:
+            await asyncio.wait_for(
+                self._semaphore.acquire(),
+                timeout=self._semaphore_wait_timeout_s,
+            )
+        except TimeoutError as e:
+            raise PasswordHasherBusyError from e
+        try:
+            yield
+        finally:
+            self._semaphore.release()
 
     def _add_pepper(self, raw_password: RawPassword) -> bytes:
         hmac_password = hmac.new(

@@ -49,7 +49,6 @@ class AuthService:
 
         if self._session_timer.needs_refresh(session):
             session.expiration = self._session_timer.expiration_from_now
-            await self._session_tx_storage.update(session)
             await self._transaction_manager.commit()
             token = self._jwt_processor.encode(session)
             self._cookie_manager.stage_set(token)

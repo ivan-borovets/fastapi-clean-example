@@ -9,8 +9,8 @@ from starlette import status
 
 from app.core.common.authorization.exceptions import AuthorizationError
 from app.core.queries.list_users import ListUsers, ListUsersRequest, UserSortingField
-from app.core.queries.ports.user_reader import ListUsersQm
-from app.core.queries.query_support.exceptions import PaginationError
+from app.core.queries.models.user import ListUsersQm
+from app.core.queries.query_support.exceptions import PaginationError, SortingError
 from app.core.queries.query_support.offset_pagination import OffsetPaginationParams
 from app.core.queries.query_support.sorting import SortingOrder
 from app.inbound.http.errors.callbacks import log_info
@@ -52,6 +52,7 @@ def make_list_users_router() -> APIRouter:
             StorageError: HTTP_503_SERVICE_UNAVAILABLE_RULE,
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             PaginationError: status.HTTP_400_BAD_REQUEST,
+            SortingError: status.HTTP_400_BAD_REQUEST,
             ReaderError: HTTP_503_SERVICE_UNAVAILABLE_RULE,
         },
         status_code=status.HTTP_200_OK,

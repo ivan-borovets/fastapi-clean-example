@@ -10,4 +10,5 @@ class StubPasswordHasher(PasswordHasher):
         return UserPasswordHash(hashlib.sha256(raw_password.value).digest())
 
     async def verify(self, raw_password: RawPassword, hashed_password: UserPasswordHash) -> bool:
-        return await self.hash(raw_password) == hashed_password
+        password_hash = await self.hash(raw_password)
+        return password_hash == hashed_password

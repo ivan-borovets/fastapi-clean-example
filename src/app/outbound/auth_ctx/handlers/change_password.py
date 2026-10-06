@@ -48,7 +48,8 @@ class ChangePassword:
         if current_password == new_password:
             raise AuthenticationChangeError
 
-        if not await self._user_service.is_password_valid(current_user, current_password):
+        is_password_valid = await self._user_service.is_password_valid(current_user, current_password)
+        if not is_password_valid:
             raise ReAuthenticationError
 
         await self._user_service.change_password(

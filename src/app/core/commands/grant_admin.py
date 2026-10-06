@@ -20,7 +20,7 @@ from app.core.common.services.user import UserService
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class GrantAdminRequest:
     user_id: UUID
 

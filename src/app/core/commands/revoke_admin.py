@@ -20,7 +20,7 @@ from app.core.common.services.user import UserService
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class RevokeAdminRequest:
     user_id: UUID
 
@@ -29,7 +29,7 @@ class RevokeAdmin:
     """
     - Open to super admins.
     - Revokes admin rights from specified user.
-    - Super admin rights cannot be changed
+    - Super admin rights cannot be changed.
     """
 
     def __init__(

@@ -1,11 +1,14 @@
 import httpx2
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.common.entities.user import User
 from app.core.common.services.user import UserService
 from app.core.common.value_objects.raw_password import RawPassword
 from app.core.common.value_objects.username import Username
-from tests.integration.with_infra.account.constants import AUTH_COOKIE_NAME, LOG_IN_ENDPOINT
-from tests.integration.with_infra.authentication import authenticate
+from app.main.config.settings import CookieSettings
+from app.outbound.auth_ctx.model import AuthSession
+from tests.integration.with_infra.account.constants import LOG_IN_ENDPOINT
 from tests.integration.with_infra.factories import (
     create_raw_password,
     create_raw_username,
@@ -13,10 +16,11 @@ from tests.integration.with_infra.factories import (
 )
 
 
-async def test_returns_204_and_sets_cookie(
+async def test_returns_204_and_issues_session(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
+    it_cookie_settings: CookieSettings,
 ) -> None:
     password = create_raw_password()
     user = await create_user_with_password(it_user_service, raw_password=password)
@@ -27,7 +31,10 @@ async def test_returns_204_and_sets_cookie(
     r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
 
     assert r.status_code == 204
-    assert AUTH_COOKIE_NAME in r.cookies
+    assert it_cookie_settings.NAME in r.cookies
+    result = await it_session.execute(select(AuthSession))
+    auth_session = result.scalar_one()
+    assert auth_session.user_id == user.id_
 
 
 async def test_returns_400_when_username_is_too_short(
@@ -50,7 +57,7 @@ async def test_returns_400_when_password_is_too_short(
     assert r.status_code == 400
 
 
-async def test_returns_401_when_user_does_not_exist(
+async def test_returns_401_when_user_not_found(
     it_client: httpx2.AsyncClient,
 ) -> None:
     payload = {"username": create_raw_username(), "password": create_raw_password()}
@@ -60,7 +67,7 @@ async def test_returns_401_when_user_does_not_exist(
     assert r.status_code == 401
 
 
-async def test_returns_401_when_password_is_wrong(
+async def test_returns_401_and_issues_no_session_when_password_is_wrong(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
@@ -73,9 +80,11 @@ async def test_returns_401_when_password_is_wrong(
     r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
 
     assert r.status_code == 401
+    count = await it_session.scalar(select(func.count()).select_from(AuthSession))
+    assert count == 0
 
 
-async def test_returns_401_when_user_is_inactive(
+async def test_returns_401_and_issues_no_session_when_user_is_inactive(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
     it_user_service: UserService,
@@ -89,20 +98,20 @@ async def test_returns_401_when_user_is_inactive(
     r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
 
     assert r.status_code == 401
+    count = await it_session.scalar(select(func.count()).select_from(AuthSession))
+    assert count == 0
 
 
-async def test_returns_403_when_already_authenticated(
+async def test_returns_403_and_issues_no_session_when_already_authenticated(
     it_client: httpx2.AsyncClient,
     it_session: AsyncSession,
-    it_user_service: UserService,
+    it_authenticated_user: User,
+    it_authenticated_user_password: str,
 ) -> None:
-    password = create_raw_password()
-    user = await create_user_with_password(it_user_service, raw_password=password)
-    it_session.add(user)
-    await it_session.commit()
-    await authenticate(it_client, user.username.value, password)
-    payload = {"username": user.username.value, "password": password}
+    payload = {"username": it_authenticated_user.username.value, "password": it_authenticated_user_password}
 
     r = await it_client.post(LOG_IN_ENDPOINT, json=payload)
 
     assert r.status_code == 403
+    count = await it_session.scalar(select(func.count()).select_from(AuthSession))
+    assert count == 1

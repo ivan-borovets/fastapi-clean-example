@@ -4,7 +4,8 @@ from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Path, status
+from fastapi import APIRouter, Path
+from starlette import status
 
 from app.core.commands.activate_user import ActivateUser, ActivateUserRequest
 from app.core.commands.exceptions import UserNotFoundError
@@ -35,7 +36,7 @@ def make_activate_user_router() -> APIRouter:
         user_id: Annotated[UUID, Path()],
         interactor: FromDishka[ActivateUser],
     ) -> None:
-        request = ActivateUserRequest(user_id)
+        request = ActivateUserRequest(user_id=user_id)
         await interactor.execute(request)
 
     return router
