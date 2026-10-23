@@ -1,0 +1,8 @@
+services:
+  app:
+    ports: !reset []
+    environment:
+      ALLOW_DESTRUCTIVE_TEST_CLEANUP: "1"
+
+  db_pg:
+    ports: !reset []

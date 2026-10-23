@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        ENVIRONMENT: dev
+    restart: on-failure
+    volumes:
+      - .:/code
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db_pg:
+        condition: service_healthy
+    env_file:
+      - ${ENV_FILE:-.env}
+    environment:
+      COVERAGE_FILE: /tmp/.coverage
+    command: ["start", "8000"]
+
+  db_pg:
+    image: postgres:18-alpine
+    shm_size: 128mb
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 1m

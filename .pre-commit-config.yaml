@@ -1,14 +1,62 @@
+default_stages: [pre-commit]
+
 repos:
   - repo: local
     hooks:
-      - id: make-check
-        name: source-code-check
-        entry: make code.check
+      - id: code-check
+        name: code-check
+        entry: make check
         language: system
         pass_filenames: false
-        always_run: true
+      - id: pip-audit-local
+        name: pip-audit
+        entry: make pip-audit
+        language: system
+        pass_filenames: false
+        verbose: true
+      - id: shellcheck
+        name: shellcheck
+        entry: uv run shellcheck
+        language: system
+        args: ["--severity=warning"]
+        types: [shell]
 
-  - repo: https://github.com/google/yamlfmt
-    rev: v0.20.0
+  - repo: builtin
     hooks:
-      - id: yamlfmt
+      - id: check-added-large-files
+        stages: [pre-commit]
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+        stages: [pre-commit]
+      - id: check-illegal-windows-names
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+        stages: [pre-commit]
+      - id: check-toml
+      - id: check-yaml
+        exclude: docker-compose.test.yml|docker-compose.migration.yml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        stages: [pre-commit]
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: no-commit-to-branch
+        args: ["--branch=develop", "--branch=dev", "--branch=master", "--branch=main"]
+      - id: trailing-whitespace
+        stages: [pre-commit]
+
+  - repo: local
+    hooks:
+      - id: typos
+        name: typos
+        entry: uv run typos
+        language: system
+        args: ["--force-exclude"]
+      - id: pretty-format-yaml
+        name: YAML formatter
+        entry: uv run pretty-format-yaml
+        language: system
+        args: ["--autofix", "--indent", "2", "--offset", "2", "--preserve-quotes"]
+        files: (^|/).*\.ya?ml$

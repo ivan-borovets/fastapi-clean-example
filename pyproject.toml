@@ -1,91 +1,90 @@
-[build-system]
-requires = ["hatchling>=1.13"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build]
-sources = ["src"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/app"]
-
 [project]
 name = "fastapi-clean-example"
-version = "0.1"
+version = "0.3"
 description = "Practical Clean Architecture backend example built with FastAPI"
 readme = "README.md"
+requires-python = "==3.13.*"
 license = "MIT"
 authors = [
-    { name = "Ivan Borovets", email = "ivan.r.borovets@gmail.com" },
+  { name = "Ivan Borovets", email = "ivan.r.borovets@gmail.com" },
 ]
-requires-python = "==3.13.*"
 dependencies = [
-    "alembic==1.17.1",
-    "alembic-postgresql-enum==1.8.0",
-    "bcrypt==5.0.0",
-    "dishka==1.7.2",
-    "fastapi-error-map==0.9.8",
-    "fastapi==0.121.0",
-    "orjson==3.11.4",
-    "psycopg[binary]==3.2.12",
-    "pyjwt[crypto]==2.10.1",
-    "sqlalchemy[mypy]==2.0.44",
-    "uvicorn==0.38.0",
-    "uvloop==0.22.1",
-    "uuid-utils==0.11.1",
+  "alembic==1.20.0",
+  "bcrypt==5.0.0",
+  "dishka==1.10.1",
+  "fastapi==0.142.2",
+  "fastapi-error-map==1.0.0",
+  "psycopg[binary]==3.3.6",
+  "pydantic==2.13.5",  # ships with fastapi, we build settings and request schemas on it
+  "pydantic-settings==2.15.0",
+  "pyjwt[crypto]==2.15.1",
+  "sqlalchemy==2.0.54",
+  "starlette==1.7.0",  # ships with fastapi, we write the auth cookie middleware on it
+  "uuid-utils==1.0.0",
+  "uvicorn==0.54.0",
 ]
 
 [dependency-groups]
 dev = [
-    "deptry==0.24.0",
-    "import-linter==2.9",
-    "mypy==1.17.0",
-    "pre-commit==4.2.0",
-    "ruff==0.12.5",
-    "slotscheck==0.19.1",
-    { include-group = "test" },
+  "asgi-lifespan==2.1.0",
+  "deptry==0.25.1",
+  "httpx2==2.13.1",
+  "import-linter==2.15",
+  "jsonschema==4.26.0",
+  "language-formatters-pre-commit-hooks==2.16.0",
+  "line-profiler==5.0.2",
+  "mypy==2.4.0",
+  "pip-audit==2.10.1",
+  "prek==0.5.5",
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
+  "pytest-cov==7.1.0",
+  "pytest-xdist==3.8.0",
+  "ruff==0.16.10",
+  "shellcheck-py==0.11.0.1; platform_machine != 'aarch64'",  # no wheel for it
+  "slotscheck==0.21.0",
+  "tombi==1.7.3",
+  "typos==1.50.1",
 ]
-test = [
-    "coverage==7.10.0",
-    "line-profiler==5.0.0",
-    "pytest==8.4.1",
-    "pytest-asyncio==1.1.0"
-]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
-exclude_lines = [
-    "if __name__ == .__main__.:",
-    "pass",
-    "\\.\\.\\.",
-    "from .* import .*",
-    "import .*",
-    "logging\\..*",
-    "log\\..*",
-    "@(abc\\.)?abstractmethod",
-    ".* = NewType\\(.*\\)",
-    ".* = Literal\\[.*\\]",
+exclude_also = [
+  ".* = Literal\\[.*\\]",
+  ".* = NewType\\(.*\\)",
+  "^\\s*pass\\s*$",
+  "^\\s*raise\\s*$",
+  "from .* import .*",
+  "if __name__ == .__main__.:",
+  "import .*",
+  "logger\\..*",
+  "logging\\..*",
 ]
 
 [tool.coverage.run]
+concurrency = ["thread"]
+core = "sysmon"
+relative_files = true
 source = ["src"]
 omit = [
-    "**/__init__.py",
-    "**/alembic/**",
+  "src/app/main/**",
+  "**/health/**",
+  "**/alembic/**",
 ]
-concurrency = [
-    "multiprocessing",
-    "thread",
-]
-parallel = true
-branch = true
 
 [tool.deptry]
 root = ["src"]
 ignore = [
-    "DEP002", # Unused dependencies
-    "DEP003", # Transitive dependencies
+  "DEP002",  # Unused dependencies
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/app"]
 
 [tool.importlinter]
 root_package = "app"
@@ -97,38 +96,71 @@ name = "inner must not import outer"
 type = "layers"
 containers = ["app"]
 layers = [
-    "(run)",
-    "(setup)",
-    "presentation",
-    "infrastructure",
-    "application",
-    "domain",
+  "(main)",
+  "inbound",
+  "outbound",
+  "core",
 ]
 ignore_imports = [
-    "app.infrastructure.persistence_sqla.alembic.env -> app.setup.config.settings",
+  "app.outbound.persistence_sqla.alembic.env ->  app.main.config.loader",
+  "app.outbound.persistence_sqla.alembic.env ->  app.main.config.settings",
 ]
+
+[[tool.importlinter.contracts]]
+id = "cqrs-common-must-not-import-commands"
+name = "cqrs: common must not import commands"
+type = "forbidden"
+source_modules = ["app.core.common"]
+forbidden_modules = ["app.core.commands"]
+
+[[tool.importlinter.contracts]]
+id = "cqrs-common-must-not-import-queries"
+name = "cqrs: common must not import queries"
+type = "forbidden"
+source_modules = ["app.core.common"]
+forbidden_modules = ["app.core.queries"]
+
+[[tool.importlinter.contracts]]
+id = "cqrs-commands-must-not-import-queries"
+name = "cqrs: commands must not import queries"
+type = "forbidden"
+source_modules = ["app.core.commands"]
+forbidden_modules = ["app.core.queries"]
+
+[[tool.importlinter.contracts]]
+id = "cqrs-queries-must-not-import-commands"
+name = "cqrs: queries must not import commands"
+type = "forbidden"
+source_modules = ["app.core.queries"]
+forbidden_modules = ["app.core.commands"]
+
+[[tool.importlinter.contracts]]
+id = "auth-ctx"
+name = "auth-ctx must use its own adapters"
+type = "forbidden"
+source_modules = ["app.outbound.auth_ctx"]
+forbidden_modules = ["app.outbound.adapters"]
 
 [tool.mypy]
 mypy_path = ["src"]
-files = [
-    "config",
-    "scripts",
-    "src",
-    "tests",
-]
-exclude = "^.*alembic.*$"
+files = ["src", "tests", "scripts"]
+explicit_package_bases = true
+exclude = "(^|/)alembic/"
 python_version = "3.13"
 strict = true
 pretty = true
-follow_imports = "silent"
 ignore_missing_imports = true
-strict_optional = true
-no_implicit_optional = true
-warn_no_return = true
 warn_unreachable = true
+enable_error_code = [
+  "ignore-without-code",
+  "possibly-undefined",
+  "redundant-expr",
+  "truthy-bool",
+  "truthy-iterable",
+  "unused-awaitable",
+]
 plugins = [
-    "pydantic.mypy",
-    "sqlalchemy.ext.mypy.plugin",
+  "pydantic.mypy",
 ]
 
 [tool.pydantic-mypy]
@@ -136,71 +168,99 @@ warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 init_typed = true
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-markers = ["slow"]
-addopts = "-m 'not slow'"
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+[tool.pytest]
+addopts = ["--color=yes", "-m", "not slow", "-p", "no:cacheprovider"]
 filterwarnings = []
+markers = ["slow"]
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+asyncio_mode = "auto"
 
 [tool.ruff]
-line-length = 88
+line-length = 120
 target-version = "py313"
-preview = true  # experimental
+extend-exclude = [
+  "docs",
+]
 
 [tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 skip-magic-trailing-comma = false
 
 [tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
 select = [
-    "A", # flake8-builtins            https://docs.astral.sh/ruff/rules/#flake8-builtins-a
-    "ARG", # flake8-unused-arguments  https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
-    "ASYNC", # flake8-async           https://docs.astral.sh/ruff/rules/#flake8-async-async
-    "B", # flake8-bugbear             https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
-    "C4", # flake8-comprehensions     https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
-    "C90", # mccabe                   https://docs.astral.sh/ruff/rules/#mccabe-c90
-    #    "COM", # flake8-commas            https://docs.astral.sh/ruff/rules/#flake8-commas-com
-    # Incompatible with ruff formatter, but can be useful (uncomment once, then review changes)
-    # See: https://github.com/astral-sh/ruff/issues/9216
-    "DTZ", # flake8-datetimez         https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
-    "E", # pycodestyle-error          https://docs.astral.sh/ruff/rules/#error-e
-    "ERA001", # commented-out-code    https://docs.astral.sh/ruff/rules/#eradicate-era
-    "F", # pyflakes                   https://docs.astral.sh/ruff/rules/#pyflakes-f
-    "FLY", # flynt                    https://docs.astral.sh/ruff/rules/#flynt-fly
-    "I", # isort                      https://docs.astral.sh/ruff/rules/#isort-i
-    "LOG", # flake8-logging           https://docs.astral.sh/ruff/rules/#flake8-logging-log
-    "N", # pep8-naming                https://docs.astral.sh/ruff/rules/#pep8-naming-n
-    "PERF", # Perflint                https://docs.astral.sh/ruff/rules/#perflint-perf
-    "PL", # pylint                    https://docs.astral.sh/ruff/rules/#pylint-pl
-    "PT", # flake8-pytest-style       https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
-    "PTH", # flake8-use-pathlib       https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
-    "Q", # flake8-quotes              https://docs.astral.sh/ruff/rules/#flake8-quotes-q
-    "RET", # flake8-return (RET)      https://docs.astral.sh/ruff/rules/#flake8-return-ret
-    "RSE", # flake8-raise (RSE)       https://docs.astral.sh/ruff/rules/#flake8-raise-rse
-    "RUF", # Ruff-specific rules      https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-    "S", # flake8-bandit              https://docs.astral.sh/ruff/rules/#flake8-bandit-s
-    "SIM", # flake8-simplify          https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
-    "SLF", # flake8-self (SLF)        https://docs.astral.sh/ruff/rules/#flake8-self-slf
-    "SLOT", # flake8-slots            https://docs.astral.sh/ruff/rules/#flake8-slots-slot
-    "T20", # flake8-print             https://docs.astral.sh/ruff/rules/#flake8-print-t20
-    "TCH", # flake8-type-checking     https://docs.astral.sh/ruff/rules/#flake8-type-checking-tch
-    "TID", # flake8-tidy-imports      https://docs.astral.sh/ruff/rules/#flake8-tidy-imports-tid
-    "UP", # pyupgrade                 https://docs.astral.sh/ruff/rules/#pyupgrade-up
-    "W", # pycodestyle-warning        https://docs.astral.sh/ruff/rules/#warning-w
+  "A",  # flake8-builtins
+  "ASYNC",  # flake8-async
+  "B",  # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "C90",  # mccabe
+  "DTZ",  # flake8-datetimez
+  "E",  # pycodestyle (Error)
+  "EXE",  # flake8-executable
+  "F",  # Pyflakes
+  "FAST",  # FastAPI
+  "FBT",  # flake8-boolean-trap
+  "FLY",  # flynt
+  "FURB",  # refurb
+  "G",  # flake8-logging-format
+  "I",  # isort
+  "INP",  # flake8-no-pep420
+  "INT",  # flake8-gettext
+  "ISC",  # flake8-implicit-str-concat
+  "LOG",  # flake8-logging
+  "N",  # pep8-naming
+  "PERF",  # Perflint
+  "PGH",  # pygrep-hooks
+  "PLC",  # Pylint (convention)
+  "PLE",  # Pylint (error)
+  "PLR5501",  # collapsible-else-if
+  "PLW",  # Pylint (warning)
+  "PT",  # flake8-pytest-style
+  "PTH",  # flake8-use-pathlib
+  "PYI",  # flake8-pyi
+  "Q",  # flake8-quotes
+  "RET",  # flake8-return
+  "RSE",  # flake8-raise
+  "RUF",  # Ruff-specific rules
+  "RUF067",  # non-empty-init-module
+  "S",  # flake8-bandit
+  "SIM",  # flake8-simplify
+  "SLF",  # flake8-self
+  "SLOT",  # flake8-slots
+  "T",  # flake8-debugger, flake8-print
+  "TC",  # flake8-type-checking
+  "TID",  # flake8-tidy-imports
+  "UP",  # pyupgrade
+  "W",  # pycodestyle (Warning)
+  "pytest-fixture-autouse",  # RUF, preview
 ]
 ignore = [
-    "N818", # error-suffix-on-exception-name
-    "PLR0913", # too-many-arguments
-    "PLR0917", # too-many-positional-arguments
-    "PLR6301", # no-self-use
-    "PTH123", # builtin-open
-    "TC001", # typing-only-first-party-import
-    "TC002", # typing-only-third-party-import
-    "TC003", # typing-only-standard-library-import
-    "TC006", # runtime-cast-value
-    "UP015", # redundant-open-modes
+  "PLR0913",  # too-many-arguments
+  "PLR0917",  # too-many-positional-arguments
+  "PLR6301",  # no-self-use
+  "RUF001",  # ambiguous-unicode-character-string (cyrillic)
+  "RUF002",  # ambiguous-unicode-character-docstring (cyrillic)
+  "RUF003",  # ambiguous-unicode-character-comment (cyrillic)
+  "RUF036",  # none-not-at-end-of-union (sentinel goes last: T | None | Omitted)
+  "S311",  # suspicious-non-cryptographic-random-usage
+  "TC001",  # typing-only-first-party-import
+  "TC002",  # typing-only-third-party-import
+  "TC003",  # typing-only-standard-library-import
+  "TC006",  # runtime-cast-value
 ]
+
+[tool.ruff.lint.ruff]
+strictly-empty-init-modules = true
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"typing.TYPE_CHECKING".msg = "keep imports at module level; resolve cycles by refactoring."
+"typing.runtime_checkable".msg = "isinstance against a Protocol checks attribute presence only, not signatures."
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
@@ -208,25 +268,29 @@ force-wrap-aliases = true
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
-"src/app/infrastructure/persistence_sqla/alembic/**" = ["ALL"]
-"tests/**" = [
-    "ARG002", # unused-method-argument
-    "PLC2801", # unnecessary-dunder-call
-    "PLR2004", # magic-value-comparison
-    "PT011", # pytest-raises-too-broad
-    "S101", # assert
-    "S106", # hardcoded-password-func-arg
-    "S107", # hardcoded-password-default
+"scripts/**" = [
+  "INP001",  # runnable scripts, not an importable package
+  "T20",  # print is legitimate output here
 ]
-#
-"src/app/infrastructure/adapters/password_hasher_bcrypt.py" = ["E501"]  # line-too-long
-"src/app/infrastructure/auth/handlers/constants.py" = ["S105"]          # hardcoded-password-string
-"src/app/presentation/http/auth/constants.py" = ["S105"]                # hardcoded-password-string
-"src/app/presentation/http/errors/translators.py" = ["ARG002"]          # unused-method-argument
-"scripts/dishka/plot_dependencies_data.py" = ["T201"]                   # print
+"src/app/outbound/persistence_sqla/alembic/**" = ["ALL"]
+"tests/**" = [
+  "PT011",  # pytest-raises-too-broad
+  "S101",  # assert
+]
 
 [tool.slotscheck]
 strict-imports = true
 exclude-modules = '''
-^app\.infrastructure\.persistence_sqla\.alembic
+^app\.outbound\.persistence_sqla\.alembic
 '''
+
+[tool.typos.default]
+extend-ignore-identifiers-re = [
+  "[0-9a-f]{8,}",  # hex ids
+]
+
+[tool.typos.default.extend-words]
+ser = "ser"  # username test data
+
+[tool.uv]
+default-groups = ["dev"]
