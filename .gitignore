@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env*
 .venv
 env/
 venv/
@@ -159,18 +159,18 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Config
-config/local/*
-!config/local/.gitkeep
-config/dev/*
-!config/dev/.gitkeep
-config/prod/*
-!config/prod/.gitkeep
-.secrets.*
-.env.*
-
-# IgnoreToDo
+# other
+.claude/
+.grimp_cache/
+.import_linter_cache/
+.ruff_cache/
+.vscode/
+htmlcov-docker/
 todo/
 
-# ImportLinter
-.import_linter_cache/
+.constraints.in
+.secrets
+.codex
+AGENTS.md
+CLAUDE.md
+pylock.toml

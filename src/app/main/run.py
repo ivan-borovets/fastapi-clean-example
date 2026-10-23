@@ -1,0 +1,112 @@
+from collections.abc import AsyncIterator, Callable
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
+
+from dishka import Provider, make_async_container
+from dishka.integrations.fastapi import setup_dishka
+from fastapi import APIRouter, FastAPI
+
+from app.inbound.http.root_router import make_fastapi_root_router
+from app.main.config.loader import (
+    load_app_settings,
+    load_cookie_settings,
+    load_jwt_settings,
+    load_password_hasher_settings,
+    load_postgres_settings,
+    load_session_settings,
+    load_sqla_settings,
+)
+from app.main.config.settings import (
+    AppSettings,
+    CookieSettings,
+    JwtSettings,
+    PasswordHasherSettings,
+    PostgresSettings,
+    SessionSettings,
+    SqlaSettings,
+)
+from app.main.ioc.provider_registry import get_providers
+from app.main.setup import setup_global_exception_handlers, setup_logging, setup_middlewares
+from app.outbound.persistence_sqla.mappings.all import map_tables
+
+
+def make_lifespan() -> Callable[[FastAPI], AbstractAsyncContextManager[None]]:
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        """Here one can bind APP-scoped dependencies to `app.state` and close them if needed"""
+        # https://dishka.readthedocs.io/en/stable/integrations/fastapi.html
+        container = app.state.dishka_container
+        try:
+            map_tables()
+            yield
+        finally:
+            await container.close()
+
+    return lifespan
+
+
+def make_app(
+    *di_providers: Provider,
+    app_settings: AppSettings | None = None,
+    postgres_settings: PostgresSettings | None = None,
+    sqla_settings: SqlaSettings | None = None,
+    password_hasher_settings: PasswordHasherSettings | None = None,
+    jwt_settings: JwtSettings | None = None,
+    session_settings: SessionSettings | None = None,
+    cookie_settings: CookieSettings | None = None,
+    fastapi_root_router: APIRouter | None = None,
+) -> FastAPI:
+    """Pass providers to override existing ones for testing."""
+    if app_settings is None:
+        app_settings = load_app_settings()
+    setup_logging(level=app_settings.LOGGING_LEVEL)
+
+    if postgres_settings is None:
+        postgres_settings = load_postgres_settings()
+    if sqla_settings is None:
+        sqla_settings = load_sqla_settings()
+    if password_hasher_settings is None:
+        password_hasher_settings = load_password_hasher_settings()
+    if jwt_settings is None:
+        jwt_settings = load_jwt_settings()
+    if session_settings is None:
+        session_settings = load_session_settings()
+    if cookie_settings is None:
+        cookie_settings = load_cookie_settings()
+
+    if fastapi_root_router is None:
+        fastapi_root_router = make_fastapi_root_router(
+            debug=app_settings.DEBUG_MODE,
+            cookie_name=cookie_settings.NAME,
+        )
+
+    app = FastAPI(
+        title=app_settings.SERVICE_NAME,
+        summary=f"OpenAPI schema for {app_settings.SERVICE_NAME}",
+        version=app_settings.VERSION,
+        lifespan=make_lifespan(),
+        root_path=app_settings.ROOT_PATH.rstrip("/"),
+    )
+    container = make_async_container(
+        *get_providers(),
+        *di_providers,
+        context={
+            PostgresSettings: postgres_settings,
+            SqlaSettings: sqla_settings,
+            PasswordHasherSettings: password_hasher_settings,
+            JwtSettings: jwt_settings,
+            SessionSettings: session_settings,
+            CookieSettings: cookie_settings,
+        },
+    )
+    setup_dishka(container, app)
+    setup_middlewares(app, cookie_settings)
+    setup_global_exception_handlers(app)
+    app.include_router(fastapi_root_router)
+    return app
+
+
+if __name__ == "__main__":
+    """See clck.ru/3RUG2j if debug in PyCharm is broken"""
+    import uvicorn
+
+    uvicorn.run(app=make_app())
